@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.IO;
+using UnityEditor;
 using UnityEngine;
 using UnityEditorInternal;
 using GeoTetra.GTAvaUtil;
@@ -27,7 +28,7 @@ namespace GeoTetra.GTAvaCrypt
             m_DistortRatioProperty = serializedObject.FindProperty("_distortRatio");
             m_KeysProperty = serializedObject.FindProperty("_bitKeys");
             m_VrcSavedParamsPathProperty = serializedObject.FindProperty("_vrcSavedParamsPath");
-            HeaderTexture = (Texture2D)AssetDatabase.LoadAssetAtPath("Packages/com.geotetra.gtavacrypt/Textures/Titlebar.png", typeof(Texture2D));
+            HeaderTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(Path.GetDirectoryName(AssetDatabase.GetAssetPath(this)) + "../Textures/Titlebar.png", typeof(Texture2D));
             m_AdditionalMaterialsProperty = serializedObject.FindProperty("m_AdditionalMaterials");
             m_IgnoredMaterialsProperty = serializedObject.FindProperty("m_IgnoredMaterials");
 
