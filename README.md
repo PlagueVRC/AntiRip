@@ -1,5 +1,5 @@
 The official root repository for this project is here https://github.com/rygo6/GTAvaCrypt. Only download from a fork if you specifically trust that fork and creator!
-This repository is from a direct co-developer of the official root repository who is maintaining the updates. It is up to you if you want to use this repo.
+**This repository is from a direct co-developer of the official root repository who is maintaining the updates. It is up to you if you want to use this repo.**
 
 # GeoTetra AvaCrypt V2
 
@@ -23,29 +23,21 @@ Technically this is more like 'Avatar Obfuscation' but calling it 'AvaObfs' didn
 
 2. This synchronizes the key with Avatar 3.0 parameters and does take up 32 bits. So this system can only work with avatars that use the VRChat Avatar 3.0 SDK.
 
-3. Shaders must be manually edited to work with AvaCrypt. Currently this system will inject itself into the official Poiyomi 8 ToonShader when you click "Encrypt Mesh". Any material which is not Poiyomi 8 will simply be ignored.
+3. Shaders must be manually edited to work with AvaCrypt. Currently this system will inject itself into the official Poiyomi 8/8.1 Toon Shader when you click "Encrypt Mesh". Any material which is not Poiyomi 8/8.1 will simply be ignored.
 
- <i>This could be adapted to other shaders but I really don't have time to port it to every shader out there, so I will only support the latest Poiyomi for now.</i>
+<i>This could be adapted to other shaders but I really don't have time to port it to every shader out there, so I will only support Poiyomi for now. I am open to people contributing in this area. If enough offer to help, I will make this a modular system.</i>
 
 ## Usage Instructions
 
-### Backup your poject before running these operations in case it doesn't work properly and causes difficult to fix, or impossible to fix, changes in your project.
+### Backup your project before running these operations in case it doesn't work properly and causes difficult to fix, or impossible to fix, changes in your project.
 
-#### Really do it. Close Unity, all your programs, and make a full clean copy of your entire Unity Project. Or better yet, learn to use git. A small percentage of avatars did have odd things in their mesh that just wouldn't work, or could cause errors, and the script could leave some assets in the project in a rather messed up state.
-
-#### Upgrading from V2.2.1 Onwards...
-
-1. If you installed via Unity Package Manager click `Tools > GeoTetra > GTAvaCrypt > Check for Update...`.
-
-If you didn't install via Unity Package Manager, delete and re-import. But should use Unity Package Manager, makes it easier and keeps your Assets folder cleaner.
-
-If you have a version older than 2.2.1 read the ["Old Installation" instructions](OLD_INSTALLATION.md).
+#### Really do it. Close Unity, all your programs, and make a full clean copy of your entire Unity Project folder. A small percentage of avatars did have odd things in their mesh that just wouldn't work, or could cause errors, and the script could leave some assets in the project in a rather messed up state.
 
 #### Install AvaCrypt and Poiyomi.
 
-1. Ensure you are using latest VRC SDK. I would personally recommend using the "VRChat Creator Companion Beta" to do this as it makes a number of things simpler. https://vrchat.com/home/download
-2. Download the Poiyomi 8 package from https://github.com/poiyomi/PoiyomiToonShader and import it into your Unity project.
-3. In the Unity Editor click `Window > Package Manager`. Then in the Package Manager window click the `+` in the upper left corner and select `Add package from git url...` and then paste `https://github.com/rygo6/GTAvaCrypt.git` in the field and click `Add`. This will clone the package via the Package Manager into the Package folder. **If you get an error about git not being installed, you may need to install the git package from here: https://git-scm.com**. *Don't be afraid of git, the Unity Package Manager completely abstracts it away*.
+1. Ensure you are using latest VRC SDK.
+2. Download the Poiyomi 8/8.1 package from https://github.com/poiyomi/PoiyomiToonShader or Poiyomi's patreon discord if you bought, and import it into your Unity project.
+3. Click on Code -> download zip on this repo. Once downloaded, extract it. Once you have the folder, put that into your assets folder of your unity project.
 
 #### Setup VRC Components.
 
