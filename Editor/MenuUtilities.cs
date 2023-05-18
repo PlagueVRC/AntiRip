@@ -37,8 +37,8 @@ namespace GeoTetra.GTAvaUtil
                 return;
             }
 
-            SkinnedMeshRenderer[] skinnedMeshRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
-            MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
+            SkinnedMeshRenderer[] skinnedMeshRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer>(true);
 
             if (skinnedMeshRenderers.Length == 0 && renderers.Length == 0)
             {
