@@ -54,8 +54,6 @@ Technically this is more like 'Avatar Obfuscation' but calling it 'AvaObfs' didn
 
 ![Step 4](Textures/DocSteps4.png)
 
-6. <i>Optional V1 Cleanup step.</i> If you have AvaCrypV1 installed, go to 'AvaCryptV2Root' component and under the 'Debug' foldout at the bottom click the button that says 'Delete AvaCryptV1 Objects From Controller'. This should delete all the old AvaCryptV1 layers and blend trees. But still go into the FX AnimatorController and delete any old AvaCrypt keys or layers you see. You can also delete all the 'AvaCryptKey0' 'AvaCryptKey100' animation files it previously generated next to your controller.
-
 #### Delete your old Un-Encrypted Avatar from VRC Backend!
 
 VRC API stores old uploads of your avatar! So if you start uploading an encrypted avatar with an ID that you previously uploaded non-encrypted, it may entirely negate any benefit this provides as rippers can just download an older version that was not encrypted.
@@ -65,83 +63,31 @@ VRC API stores old uploads of your avatar! So if you start uploading an encrypte
 
 #### Encrypting and Uploading
 
-1. Ensure any meshes you wish to have encrypted are using Poiyomi 8. It will skip over meshes that do not use this shader.
+1. Ensure any meshes you wish to have encrypted are using Poiyomi 8/8.1. It will skip over meshes that do not use this shader.
 2. On the `AvaCryptV2Root` component click the 'Encrypt Avatar' button. This will lock all of your Poiyomi materials, make all necessary edits to your AnimatorController, and make a duplicate of your avatar which is encrypted. Be aware your duplicated avatar with "_Encrypted" appended to it's name will appear completely garbled in the editor. This is what other users will see if they do not have your avatar shown. *Do not set the keys on the material inside the Unity Editor.*
 3. Go to the VRChat SDK Menu then 'Build and Publish' your avatar which has '_Encrypted' appended to the name.
 
-*I found some Poi 8 materials get into a weird state with Lock/Unlock and AvaCrypt can't lock them. If you get errors that say something like 'Trying to Inject not-locked shader?!' go to the Poi 8 material it is complaining about and manually click the Lock/Unlock button to get it out of its weird state.*
+*I found some Poi 8/8.1 materials get into a weird state with Lock/Unlock and AvaCrypt can't lock them. If you get errors that say something like 'Trying to Inject not-locked shader?!' go to the Poi 8/8.1 material it is complaining about and manually click the Lock/Unlock button to get it out of its weird state.*
 
 #### Writing Keys
 
-1. If this is the first time you have uploaded this avatar, after upload completes, go to the GameObject of your encrypted avatar. Find the `Pipeline Manager` component and copy it's blueprint ID. Then paste the blueprint ID into the `Pipeline Manager` on the un-encrypted avatar and click 'Attach'.
+1. After upload completes, go to the GameObject of your encrypted avatar. Find the `Pipeline Manager` component and copy it's blueprint ID. Then paste the blueprint ID into the `Pipeline Manager` on the un-encrypted avatar and click 'Attach'. This is important.
 2. Now on the AvaCryptV2Root component click the 'Write Keys' button. Ensure VRC is closed when you do this, as VRC might disallow writing to the file. This will actually read in and alter the saved 3.0 parameters from your VRChat folder to include the new key so you don't have to enter them in-game. <i>This also means if you "Reset Avatar" in game through the 3.0 menu, it will reset your keys and you will need to re-export them with the 'Write Keys' button!</i>
 3. This should provide ample error dialogues or console errors, so ensure no errors came up!. It should popup a success dialogue if it did it correctly. If there were issues make sure the 'Vrc Saved Params Path' actually points to your LocalAvatarData folder.
 4. You only need to run 'Write Keys' once on first setup, or when you change keys.
 
-*Ensure VRChat is closed when you write keys otherwise VRChat may just overwrite them immediately with zeroes! ~thanks Meru*
+*Ensure VRChat is closed when you write keys otherwise VRChat may just overwrite them immediately with zeroes!
 
 #### Un-Encrypting Poiyomi Material in Editor
 
-If you wish to see your avatar again as normal and not encrypted, unlock all of your Poiyomi materials. AvaCrypt only writes itself into the locked Poiyomi shader files, so you can fully turn it off just by unlocking the materials again.
+If you wish to see your avatar again as normal and not encrypted, unlock all of your Poiyomi materials. AvaCrypt only writes itself into the locked Poiyomi shader files, so you can fully turn it off just by unlocking the materials again. AvaCrypt has a utility for this. Click on your original non encrypted avatar and click unlock poi mats.
 
 If you do unlock any of the Poiyomi materials you will need to click the 'Encrypt Avatar' button again before uploaded, as it is during that process that it will inject itself into the locked Poiyomi shaders.
 
 
-If you have any more questions, or suggestions, feel free to join the GeoTetra discord:
-https://discord.gg/nbzqtaVP9J
-
-## Features
-
-### New Features Of Version 2.2.9:
-
-1. Will obfuscate disable GameObjects.
-2. Will ignore meshes being used for cloth.
-
-### New Features Of Version 2.2.8:
-
-1. Added 'Additional Materials' list that lets you specify additional materials to have the AvaCrypt code injected into when you click 'EncryptAvatar'. This will let you encrypt materials used in material swaps.
-2. Made it so the obfuscated mesh/material does not show unless the shaders are fully shown. If your whole avatar is obfuscated then other users will see nothing until they show you.
-3. Added `GeoTetra/UnlitHideWhenShown` shader that will be visible when your avatar is not shown, but hidden when it is shown. This will let placeholder geometry+texture be visible when the avatar is not shown. I included a prefab called `HideWhenShownQuad` which is a quad with a texture that says 'Avatar only visible when fully shown' with this shader on it. Drag this prefab onto your hip bone for a quick to add placeholder, or make whatever placeholder you want.
-4. Fix for some animator controller layers potentially getting messed up. 
-5. Added a 'Delete AvaCrypt Objects From Controller' button under the Debug foldout at the bottom of AvaCryptV2Root component. This will fully flush all avacrypt layers and states from the controller if for some reason your controller gets in a weird state or just want to delete the avacrypt stuff.
-
-### New Features Of Version 2.2.5:
-
-Plethora of bug fixes.
-1. It was possible it could edit the Poiyomi 8 shader before! This is fixed now. If it did this, reimport Poi 8 package.
-2. Double checks more of the animator states to ensure they are properly configured.
-3. Now puts all of the BitKey AnimationClips in a 'BitKeyClips' folder when generating them. If you want to have it move these files automatically, delete all `Avatar_BitKey0_False.anim` animation clips in your Project assets, it should regenerate them properly in the new folder and hook them up.
-
-### New Features Of Version 2.2.2:
-
-1. Added ignored materials list on AvaCryptV2Root. Be aware if you add a material to this list then any mesh which uses that material will also have all the other materials it uses ignored as well.
-
-### New Features Of Version 2.2.1:
-
-1. Added option under `Tools > GeoTetra > GTAvaCrypt > Unlock All Poi Materials In Hierarchy...` to unlock all Poiyomi 8 materials under a selected GameObject. *~thanks Meru for suggestion*
-2.  Added option under `Tools > GeoTetra > GTAvaCrypt > Check for Update...` to automatically update the package if one is available to make future updates easier.
-
-### New Features Of Version 2.2:
-
-Upgraded to work with Poiyomi 8, fixed the terrible workflow with Poiyomi shader and can now be installed through Unity Package Manager.
-
-1. The GTPoiyomiToon fork has now been made obsolete and this works with the official Poiyomi 8 package.
-2. You no longer have to right-click on the 'BitKeys' to mark them animatable. The bitkeys aren't even material properties anymore.
-3. AvaCrypt will "inject" its code into the locked PoiyomiShader when you click "EncryptAvatar" on the AvaCryptV2Root. It does not alter the unlocked PoiyomiShader. So if you want to turn off the AvaCrypt obfuscation to see your mesh again, just unlock the PoiyomiToon material.
-
-### New Features Of Version 2:
-1. You no longer have to input keys into the Avatar 3.0 menu, the package will write the keys to the saved 3.0 avatar parameters file in your VRChat data folder.
-
-2. The keys are now stored and transferred as 32 separate 1-bit bools. It still takes up 32 bits in parameter data, but now it fully utilizes all 32 bits, as before it effectively used maybe 20 of those bits. Before someone would have to brute force a maximum of 1,185,921 combinations. Now they would have to brute force a maximum of 4,294,967,296 combinations. If each brute force attempt took 0.1 seconds it would take over 13 years to brute force, people could put a small compute farm to do this in a number of days, but rarely will someone care to spend the money to do so. This means if you never take your avatar into a public lobby where someone could use a mod to read your keys, it is quite secure.
-
-3. The mesh obfuscation math is now randomly generated and written into the shader each time you encrypt a mesh. What this means is just having the keys is no longer enough to decrypt an avatar. One would also have to decompile and reverse engineer the shader from the asset bundle itself. Currently this makes avatars un-rippable with any currently released tools for VRChat avatar ripping. As Unity 2019 changed the way the shaders get packed into an AssetBundle, now you can only get compiled shader bytecode out of the AssetBundle and no public tool has implemented functionality to do so. If someone were to rip an avatar with this they'd first need to implement a system to decompile the shader bytecode out of an asset bundle, analyze it to determine where the obfuscation math is, then reverse engineer that into C#, or other, to decrypt the mesh. Making such a shader decompiling and transpiling system is a significant difficulty for someone knowledgeable.
+If you have any more questions, or suggestions, feel free to join the AntiRip discord:
+https://discord.gg/SyZcuTPXZA
 
 ## How secure is this?
 
-I try to be as up-front as possible about how exactly you would undo AvaCrypt and how secure it is. I feel comfortable saying it is currently the most difficult anti-ripping scheme to recover usable assets from, and I have a chain of ideas to keep it as such. But it is still possible someone could undo it. This is why I release it as free and MIT. I know some percentage will inevitably have their avatar ripped with this on it if there is enough reason to incentivize rippers to do so. I have some ideas to make something I believe would be secure enough to justify a price, but that may still be a number of months away.
-
-Where this scheme is most secure is in private instances with friends you trust. If you are never in an instance with a ripper, and they try to rip your avatar entirely off the VRChat API, they would have to brute force the 32-bit key. Doing so could take months depending. It would probably be faster and cheaper for them to just remodel it off references.
-
-Currently the biggest source of exploit is that someone can read your "BitKeys" with a mod if you are in the same instance as them. For this reason I do not recommend people run around in public instances with this applied to their avatar if they really wish to keep the avatar protected.
-
-However, even if someone does read your BitKeys with a mod and pulls your avatar's data file, undoing the encryption is still a pain even with the BitKeys. I still have yet to see anything exist that does it automatically. Someone would have to decompile the shader to extract the randomized algorithm in it, then implement that in reverse to undo the encryption with the BitKeys. If some ripper does manage to automate this, I already have something else lined up to pre-occupy them for many more months. I can keep rippers busy for **years**. :)
+I will keep transparent here without guiding rippers on how to attack your works. This is not foolproof, but close to the best you can get at this time. Rip wise, this cannot be currently ripped without a insane amount of work, as ripping compiled shadercode, reversing it back to unity compatible code and also getting hold of the keys would be hell. Hotswap wise, a dedicated enough ripper with experience with mods could hotswap your avatar. This is not immune to that. You can however put a watermark on your avatar to drive hotswappers into being banned which they wont be able to remove, as the meshes will be encrypted, regardless of hotswap. A hotswap done with the high amount of work i have mentioned here would only get the avatar working normally in game; not in unity.
