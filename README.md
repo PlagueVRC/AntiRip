@@ -1,3 +1,5 @@
+![](Textures/Titlebar.png)
+
 The official root repository for this project is here https://github.com/rygo6/GTAvaCrypt. Only download from a fork if you specifically trust that fork and creator!
 
 **This repository is from a direct co-developer of the official root repository who is maintaining the updates. It is up to you if you want to use this repo.**
