@@ -48,7 +48,7 @@ namespace GeoTetra.GTAvaCrypt
                 isY = !isY;
             }
 
-            ModelShaderDecodeSecond += "\r\n\r\n    return vertex;\r\n}\r\n";
+            ModelShaderDecodeSecond += "\r\n    return vertex;\r\n}\r\n";
 
             float[] decodeKeys = new float[data.DividedCount];
             
