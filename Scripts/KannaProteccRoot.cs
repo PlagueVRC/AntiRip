@@ -7,11 +7,13 @@ using UnityEngine.SceneManagement;
 using VRC.SDK3.Avatars.ScriptableObjects;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
+using System.Collections;
 
 #if UNITY_EDITOR
 using Thry;
 using UnityEditor;
 using UnityEditor.Animations;
+using UnityEditor.SceneManagement;
 using VRC.Core;
 using VRC.SDK3.Avatars.Components;
 #endif
@@ -59,7 +61,7 @@ namespace Kanna.Protecc
         public List<string> excludeParamNames = new List<string>();
 
         [SerializeField]
-        public List<KeyValuePair<string, string>> ParameterRenamedValues = new List<KeyValuePair<string, string>>();
+        public StringStringSerializableDictionary ParameterRenamedValues = new StringStringSerializableDictionary();
 
         public string GetBitKeyName(int id, int LimitRenameLength = -1)
         {
@@ -219,6 +221,7 @@ namespace Kanna.Protecc
             encodedGameObject.SetActive(false); // Temp
 
             AssetDatabase.SaveAssets();
+            EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
         }
 
         void AddMaterialsToIgnoreList(Material[] materials, List<Material> aggregateIgnoredMaterials)
@@ -640,4 +643,156 @@ namespace Kanna.Protecc
             return table;
         }
     }
+}
+
+[Serializable]
+public class StringStringSerializableDictionary : SerializableDictionary<string, string>
+{ }
+
+[Serializable]
+public class SerializableDictionary<TKey, TValue> : IDictionary<TKey, TValue>//, ISerializationCallbackReceiver
+{
+    [SerializeField] private List<TKey> keys = new List<TKey>();
+    [SerializeField] private List<TValue> values = new List<TValue>();
+
+    // implement the IDictionary interface methods using the lists
+    public TValue this[TKey key]
+    {
+        get
+        {
+            var index = keys.IndexOf(key);
+            if (index < 0) throw new KeyNotFoundException();
+            return values[index];
+        }
+        set
+        {
+            var index = keys.IndexOf(key);
+            if (index < 0)
+            {
+                keys.Add(key);
+                values.Add(value);
+            }
+            else
+            {
+                values[index] = value;
+            }
+        }
+    }
+
+    public ICollection<TKey> Keys => keys;
+
+    public ICollection<TValue> Values => values;
+
+    public int Count => keys.Count;
+
+    public bool IsReadOnly => false;
+
+    public void Add(TKey key, TValue value)
+    {
+        if (ContainsKey(key)) throw new ArgumentException();
+        keys.Add(key);
+        values.Add(value);
+    }
+
+    public void Add(KeyValuePair<TKey, TValue> item)
+    {
+        Add(item.Key, item.Value);
+    }
+
+    public void Clear()
+    {
+        keys.Clear();
+        values.Clear();
+    }
+
+    public bool Contains(KeyValuePair<TKey, TValue> item)
+    {
+        var index = keys.IndexOf(item.Key);
+        if (index < 0) return false;
+        return EqualityComparer<TValue>.Default.Equals(values[index], item.Value);
+    }
+
+    public bool ContainsKey(TKey key)
+    {
+        return keys.Contains(key);
+    }
+
+    public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+    {
+        for (var i = 0; i < Count; i++)
+        {
+            array[arrayIndex + i] = new KeyValuePair<TKey, TValue>(keys[i], values[i]);
+        }
+    }
+
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+    {
+        for (var i = 0; i < Count; i++)
+        {
+            yield return new KeyValuePair<TKey, TValue>(keys[i], values[i]);
+        }
+    }
+
+    public bool Remove(TKey key)
+    {
+        var index = keys.IndexOf(key);
+        if (index < 0) return false;
+        keys.RemoveAt(index);
+        values.RemoveAt(index);
+        return true;
+    }
+
+    public bool Remove(KeyValuePair<TKey, TValue> item)
+    {
+        var index = keys.IndexOf(item.Key);
+        if (index < 0) return false;
+        if (!EqualityComparer<TValue>.Default.Equals(values[index], item.Value)) return false;
+        keys.RemoveAt(index);
+        values.RemoveAt(index);
+        return true;
+    }
+
+    public bool TryGetValue(TKey key, out TValue value)
+    {
+        var index = keys.IndexOf(key);
+        if (index < 0)
+        {
+            value = default;
+            return false;
+        }
+        value = values[index];
+        return true;
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    //void ISerializationCallbackReceiver.OnBeforeSerialize()
+    //{
+    //    keys.Clear();
+    //    values.Clear();
+
+    //    foreach (KeyValuePair<TKey, TValue> pair in this)
+    //    {
+    //        keys.Add(pair.Key);
+    //        values.Add(pair.Value);
+    //    }
+    //}
+
+    //void ISerializationCallbackReceiver.OnAfterDeserialize()
+    //{
+    //    this.Clear();
+
+    //    if (keys.Count != values.Count)
+    //    {
+    //        throw new System.Exception(string.Format($"Error after deserialization in SerializableDictionary class. There are {keys.Count} keys and {values.Count} values after deserialization. Could not load SerializableDictionary"));
+    //    }
+
+    //    for (int i = 0; i < keys.Count; i++)
+    //    {
+    //        this.Add(keys[i], values[i]);
+    //    }
+    //}
 }

@@ -288,14 +288,7 @@ namespace Kanna.Protecc
                 _parameterDic.Add(parameter.name, newName);
                 if (parameter.name.StartsWith("BitKey"))
                 {
-                    if (root.ParameterRenamedValues.FindIndex(o => o.Key == parameter.name) is var index && index != -1)
-                    {
-                        root.ParameterRenamedValues[index] = new KeyValuePair<string, string>(parameter.name, newName);
-                    }
-                    else
-                    {
-                        root.ParameterRenamedValues.Add(new KeyValuePair<string, string>(parameter.name, newName));
-                    }
+                    root.ParameterRenamedValues[parameter.name] = newName;
                 }
                 parameter.name = newName;
             }
