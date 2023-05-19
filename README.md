@@ -92,5 +92,5 @@ I will keep transparent here without guiding rippers on how to attack your works
 
 # Support
 
-If you have any more questions, or suggestions, feel free to join the AntiRip discord:
+If you have any more questions, or suggestions, feel free to join the Kanna Protecc discord:
 https://discord.gg/SyZcuTPXZA
