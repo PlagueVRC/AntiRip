@@ -13,11 +13,9 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 2. [Usage Instructions](#usage-instructions)
 
-3. [Features](#features)
+3. [How secure is this?](#how-secure-is-this)
 
-4. [How secure is this?](#how-secure-is-this)
-
-5. [Support](#support)
+4. [Support](#support)
 
 ## Caveats of this System
 
