@@ -83,22 +83,22 @@ namespace Kanna.Protecc
             ShaderOptimizer.SetLockedForAllMaterials(poiMats, 0, true, false, false);
         }
         
-        [MenuItem("Tools/Kanna.Protecc/Check for Update...", false)]
-        static void CheckForUpdate()
-        {
-            var list = UnityEditor.PackageManager.Client.List();
-            while (!list.IsCompleted)
-            { }
-            PackageInfo package = list.Result.FirstOrDefault(q => q.name == "com.Kanna.Protecc");
-            if (package == null)
-            {
-                EditorUtility.DisplayDialog("Not installed via UPM!",
-                    "This upgrade option only works if you installed via UPM. Go to AvaCrypt github and reinstall via UPM if you wish to use this",
-                    okText);
-                return;
-            }
+        //[MenuItem("Tools/Kanna.Protecc/Check for Update...", false)]
+        //static void CheckForUpdate()
+        //{
+        //    var list = UnityEditor.PackageManager.Client.List();
+        //    while (!list.IsCompleted)
+        //    { }
+        //    PackageInfo package = list.Result.FirstOrDefault(q => q.name == "com.Kanna.Protecc");
+        //    if (package == null)
+        //    {
+        //        EditorUtility.DisplayDialog("Not installed via UPM!",
+        //            "This upgrade option only works if you installed via UPM. Go to AvaCrypt github and reinstall via UPM if you wish to use this",
+        //            okText);
+        //        return;
+        //    }
 
-            UnityEditor.PackageManager.Client.Add("https://github.com/rygo6/GTAvaCrypt.git");
-        }
+        //    UnityEditor.PackageManager.Client.Add("https://github.com/PlagueVRC/AntiRip.git");
+        //}
     }
 }

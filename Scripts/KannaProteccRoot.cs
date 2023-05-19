@@ -284,7 +284,7 @@ namespace Kanna.Protecc
 
                     var shaderPath = AssetDatabase.GetAssetPath(mat.shader);
                     var path = Path.GetDirectoryName(shaderPath);
-                    var decodeShaderPath = Path.Combine(path, "GTModelDecode.cginc");
+                    var decodeShaderPath = Path.Combine(path, "KannaModelDecode.cginc");
 ;                   File.WriteAllText(decodeShaderPath, decodeShader);
 
                     var shaderText = File.ReadAllText(shaderPath);
@@ -344,7 +344,7 @@ namespace Kanna.Protecc
             var descriptor = GetComponent<VRCAvatarDescriptor>();
             if (descriptor == null)
             {
-                Debug.LogError("Keys not written! Couldn't find VRCAvatarDescriptor next to GTKannaProteccRoot");
+                Debug.LogError("Keys not written! Couldn't find VRCAvatarDescriptor next to KannaProteccRoot");
                 EditorUtility.DisplayDialog("Keys not written! Missing PipelineManager!", "Put KannaProteccRoot next to VRCAvatarDescriptor and run Write Keys again.", "Okay");
                 return;
             }
@@ -373,8 +373,8 @@ namespace Kanna.Protecc
             var pipelineManager = GetComponent<PipelineManager>();
             if (pipelineManager == null)
             {
-                Debug.LogError("Keys not written! Couldn't find PipelineManager next to GTKannaProteccRoot");
-                EditorUtility.DisplayDialog("Keys not written! Couldn't find PipelineManager next to GTKannaProteccRoot", "Put KannaProteccRoot next to PipelineManager and run Write Keys again.", "Okay");
+                Debug.LogError("Keys not written! Couldn't find PipelineManager next to KannaProteccRoot");
+                EditorUtility.DisplayDialog("Keys not written! Couldn't find PipelineManager next to KannaProteccRoot", "Put KannaProteccRoot next to PipelineManager and run Write Keys again.", "Okay");
                 return;
             }
 
@@ -550,7 +550,7 @@ namespace Kanna.Protecc
         }
 #endif
     }
-    public static class GTExtensions
+    public static class KannaExtensions
     {
         public static bool ReplaceOrLog(this StringBuilder text, string textToReplace, string replaceWith)
         {

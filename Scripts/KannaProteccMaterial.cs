@@ -107,9 +107,9 @@ namespace Kanna.Protecc
 
         public const string NewDefaultPoiVert = "VertexOut vert(";
 
-        public const string AlteredPoiVert = "#include \"GTModelDecode.cginc\"\nv2f vert(";
+        public const string AlteredPoiVert = "#include \"KannaModelDecode.cginc\"\nv2f vert(";
 
-        public const string NewAlteredPoiVert = "#include \"GTModelDecode.cginc\"\nVertexOut vert(";
+        public const string NewAlteredPoiVert = "#include \"KannaModelDecode.cginc\"\nVertexOut vert(";
 
         public const string DefaultVertSetup = "UNITY_SETUP_INSTANCE_ID(v);";
         
@@ -119,7 +119,7 @@ namespace Kanna.Protecc
         //
         // public const string AlteredUvTransfer = "o.uv[3] = v.uv3; avUv6 = v.uv6; avUv7 = v.uv7;";
 
-        public const string ModelDecodeIfndef = "#ifndef GTMODELDECODE\n#define GTMODELDECODE\n";
+        public const string ModelDecodeIfndef = "#ifndef KANNAMODELDECODE\n#define KANNAMODELDECODE\n";
         
         public const string ModelDecodeEndif = "#endif\n";
         
