@@ -88,7 +88,7 @@ If you do unlock any of the Poiyomi materials you will need to click the 'Encryp
 
 I will keep transparent here without guiding rippers on how to attack your works. This is not foolproof, but close to the best you can get at this time. Rip wise, this cannot be currently ripped without a insane amount of work, as ripping compiled shadercode, reversing it back to unity compatible code and also getting hold of the keys would be hell. Hotswap wise, a dedicated enough ripper with experience with mods could hotswap your avatar. This is not immune to that. You can however put a watermark on your avatar to drive hotswappers into being banned which they wont be able to remove, as the meshes will be encrypted, regardless of hotswap. A hotswap done with the high amount of work i have mentioned here would only get the avatar working normally in game; not in unity.
 
-# Support
+## Support
 
 If you have any more questions, or suggestions, feel free to join the Kanna Protecc discord:
 https://discord.gg/SyZcuTPXZA
