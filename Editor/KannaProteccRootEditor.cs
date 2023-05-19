@@ -106,6 +106,8 @@ namespace Kanna.Protecc
 
                     element.stringValue = EditorGUI.TextField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), element.stringValue);
                 };
+
+            KannaProteccRoot.Instance = (KannaProteccRoot)target;
         }
 
         void AdditionalDrawHeader(Rect rect)
@@ -164,14 +166,14 @@ namespace Kanna.Protecc
             //Do the properties
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical(GUILayout.Width((Screen.width / 2) - 20f));
-            m_DistortRatioProperty.floatValue = GUILayout.HorizontalSlider(m_DistortRatioProperty.floatValue, .1f, .4f);
+            m_DistortRatioProperty.floatValue = GUILayout.HorizontalSlider(m_DistortRatioProperty.floatValue, .2f, 1.6f);
             GUILayout.Space(15);
             GUILayout.BeginHorizontal();
             GUILayout.Label("Distort Ratio:");
             GUILayout.FlexibleSpace();
             EditorGUILayout.FloatField(m_DistortRatioProperty.floatValue);
             GUILayout.EndHorizontal();
-            GUILayout.Label("Set high enough so your encrypted mesh is visuall. Default = .1", EditorStyles.wordWrappedLabel);
+            GUILayout.Label("Set high enough so your encrypted mesh is visuall. Default = .4", EditorStyles.wordWrappedLabel);
             GUILayout.EndVertical();
 
             GUILayout.FlexibleSpace();

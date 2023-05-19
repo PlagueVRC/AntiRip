@@ -22,6 +22,8 @@ namespace Kanna.Protecc
 {
     public class KannaProteccRoot : MonoBehaviour
     {
+        public static KannaProteccRoot Instance;
+
 #if UNITY_EDITOR
         public Obfuscator obfuscator = new Obfuscator();
 #endif
@@ -29,7 +31,7 @@ namespace Kanna.Protecc
         [Header("Set high enough so your encrypted mesh is visuall. Default = .1")]
         [Range(.1f, .4f)]
         [SerializeField] 
-        float _distortRatio = .2f;
+        float _distortRatio = .4f;
 
         [Header("Ensure this is pointing to your LocalAvatarData folder!")]
         [SerializeField] 
@@ -335,7 +337,7 @@ namespace Kanna.Protecc
                 return;
             }
 
-            if (AddBitKeys(descriptor.expressionParameters))
+            if (AddBitKeys(descriptor.expressionParameters, this))
             {
                 WriteKeysToSaveFile();
             }
@@ -449,19 +451,19 @@ namespace Kanna.Protecc
         
 #if VRC_SDK_VRCSDK3
         [MenuItem("CONTEXT/VRCExpressionParameters/Add BitKeys")]
-        void AddBitKeys(MenuCommand command)
+        static void AddBitKeys(MenuCommand command)
         {
             var parameters = (VRCExpressionParameters) command.context;
-            AddBitKeys(parameters);
+            AddBitKeys(parameters, Instance);
         }
 
-        public bool AddBitKeys(VRCExpressionParameters parameters)
+        public static bool AddBitKeys(VRCExpressionParameters parameters, KannaProteccRoot root)
         {
             var paramList = parameters.parameters.ToList();
             
-            for (var i = 0; i < _bitKeys.Length; ++i)
+            for (var i = 0; i < root._bitKeys.Length; ++i)
             {
-                var bitKeyName = GetBitKeyName(i);
+                var bitKeyName = root.GetBitKeyName(i);
                 
                 var index = Array.FindIndex(parameters.parameters, p => p.name == bitKeyName);
                 if (index != -1)
