@@ -235,11 +235,14 @@ namespace Kanna.Protecc
 
             // Do Obfuscation
             obfuscator.Obfuscate(encodedGameObject, this);
-
+            
             encodedGameObject.SetActive(false); // Temp
 
             AssetDatabase.SaveAssets();
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
+
+            // Force unity to import things
+            AssetDatabase.Refresh();
         }
 
         void AddMaterialsToIgnoreList(Material[] materials, List<Material> aggregateIgnoredMaterials)
@@ -335,7 +338,7 @@ namespace Kanna.Protecc
             return materialEncrypted && !ignoredMats;
         }
 
-        public void WriteBitKeysToExpressions()
+        public void WriteBitKeysToExpressions(VRCExpressionParameters ExtraParams = null, bool WriteOnlyToExtra = false)
         {
 #if VRC_SDK_VRCSDK3
             var descriptor = GetComponent<VRCAvatarDescriptor>();
@@ -353,7 +356,7 @@ namespace Kanna.Protecc
                 return;
             }
 
-            if (AddBitKeys(descriptor.expressionParameters, this))
+            if ((WriteOnlyToExtra || AddBitKeys(descriptor.expressionParameters, this)) && (ExtraParams == null || AddBitKeys(ExtraParams, this, false)))
             {
                 WriteKeysToSaveFile();
             }
@@ -465,7 +468,6 @@ namespace Kanna.Protecc
             }
         }
         
-#if VRC_SDK_VRCSDK3
         [MenuItem("CONTEXT/VRCExpressionParameters/Add BitKeys")]
         static void AddBitKeys(MenuCommand command)
         {
@@ -473,8 +475,13 @@ namespace Kanna.Protecc
             AddBitKeys(parameters, Instance);
         }
 
-        public static bool AddBitKeys(VRCExpressionParameters parameters, KannaProteccRoot root)
+        public static bool AddBitKeys(VRCExpressionParameters parameters, KannaProteccRoot root, bool RemoveOld = true)
         {
+            if (RemoveOld)
+            {
+                //RemoveBitKeys(parameters);
+            }
+
             var paramList = parameters.parameters.ToList();
             
             for (var i = 0; i < root._bitKeys.Length; ++i)
@@ -519,22 +526,21 @@ namespace Kanna.Protecc
             return true;
         }
         
-        [MenuItem("CONTEXT/VRCExpressionParameters/Remove BitKeys")]
-        static void RemoveBitKeys(MenuCommand command)
-        {
-            var parameters = (VRCExpressionParameters) command.context;
-            RemoveBitKeys(parameters);
-        }
+        //[MenuItem("CONTEXT/VRCExpressionParameters/Remove BitKeys")]
+        //static void RemoveBitKeys(MenuCommand command)
+        //{
+        //    var parameters = (VRCExpressionParameters) command.context;
+        //    RemoveBitKeys(parameters);
+        //}
         
-        public static void RemoveBitKeys(VRCExpressionParameters parameters)
-        {
-            var parametersList = parameters.parameters.ToList();
-            parametersList.RemoveAll(p => p.name.Contains("BitKey"));
-            parameters.parameters = parametersList.ToArray();
+        //public static void RemoveBitKeys(VRCExpressionParameters parameters)
+        //{
+        //    var parametersList = parameters.parameters.ToList();
+        //    parametersList.RemoveAll(p => p.name.Contains("BitKey") || (p.valueType == VRCExpressionParameters.ValueType.Bool && p.name.Length == 32 && p.name.All(a => !char.IsUpper(a))));
+        //    parameters.parameters = parametersList.ToArray();
             
-            EditorUtility.SetDirty(parameters);
-        }
-#endif
+        //    EditorUtility.SetDirty(parameters);
+        //}
 
         [ContextMenu("Delete KannaProtecc Objects From Controller")]
         public void DeleteKannaProteccObjectsFromController()

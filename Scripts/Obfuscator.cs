@@ -76,8 +76,10 @@ namespace Kanna.Protecc
         private readonly HashSet<string> _excludeNameSet = new HashSet<string>();
         private uint _tempIndex;
 
-        public void Obfuscate(GameObject gobj, KannaProteccRoot root)
+        public GameObject Obfuscate(GameObject gobj, KannaProteccRoot root)
         {
+            GameObject obj = null;
+
             _parameterDic.Clear();
             _objectNameDic.Clear();
             _filePathDic.Clear();
@@ -96,7 +98,7 @@ namespace Kanna.Protecc
                 ProgressBar("Clone Avatar Object", 1);
                 var o = gobj;
                 var gameObjectName = o.name + "_Obfuscated";
-                var obj = Object.Instantiate(o);
+                obj = Object.Instantiate(o);
                 obj.name = gameObjectName;
                 obj.SetActive(true);
                 o.SetActive(false);
@@ -247,6 +249,8 @@ namespace Kanna.Protecc
                 GC.Collect();
                 AssetDatabase.ImportAsset(root.path, ImportAssetOptions.ImportRecursive);
             }
+
+            return obj;
         }
 
         private void AddAllParent(GameObject root, Animator animator, Transform bone)
@@ -269,11 +273,24 @@ namespace Kanna.Protecc
 #if VRC_SDK_VRCSDK3
         private VRCExpressionParameters ExpressionParametersObfuscator(VRCExpressionParameters oldEp, KannaProteccRoot root)
         {
-            root.ParameterRenamedValues.Clear();
-
             var expressionParameters = CopyAssetFile("asset", oldEp, root);
+
+            var templist = expressionParameters.parameters.ToList();
+            for (var i = 0; i < root._bitKeys.Length; i++)
+            {
+                templist.Add(new VRCExpressionParameters.Parameter
+                {
+                    name = $"BitKey{i}",
+                    saved = true,
+                    valueType = VRCExpressionParameters.ValueType.Bool,
+                    defaultValue = 0f
+                });
+            }
+            expressionParameters.parameters = templist.ToArray();
+
             var parameters = expressionParameters.parameters.ToList().Where(p => !string.IsNullOrEmpty(p.name.Trim()))
                 .ToList();
+
             foreach (var parameter in parameters.Where(parameter => Array.FindIndex(SkipParameterNames, value => value == parameter.name) == -1 && Array.FindIndex(root.excludeParamNames.ToArray(), value => value == parameter.name) == -1))
             {
                 if (_parameterDic.ContainsKey(parameter.name))
@@ -285,11 +302,8 @@ namespace Kanna.Protecc
                 var newName = GUID.Generate().ToString();
                 while (_parameterDic.ContainsKey(newName)) newName = GUID.Generate().ToString();
 
+                root.ParameterRenamedValues[parameter.name] = newName;
                 _parameterDic.Add(parameter.name, newName);
-                if (parameter.name.StartsWith("BitKey"))
-                {
-                    root.ParameterRenamedValues[parameter.name] = newName;
-                }
                 parameter.name = newName;
             }
 
