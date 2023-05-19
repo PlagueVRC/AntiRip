@@ -20,6 +20,10 @@ namespace GeoTetra.GTAvaCrypt
 {
     public class AvaCryptV2Root : MonoBehaviour
     {
+#if UNITY_EDITOR
+        public Obfuscator obfuscator = new Obfuscator();
+#endif
+
         [Header("Set high enough so your encrypted mesh is visuall. Default = .1")]
         [Range(.1f, .4f)]
         [SerializeField] 
@@ -39,7 +43,29 @@ namespace GeoTetra.GTAvaCrypt
         
         [SerializeField] 
         public bool[] _bitKeys = new bool[32];
-        
+
+        public readonly string pathPrefix = "Assets/Kanna/Obfuscated Files/";
+
+        [SerializeField]
+        public string path = "";
+
+        [SerializeField]
+        public bool disableObjectNameObfuscation = false;
+
+        [SerializeField]
+        public List<Transform> excludeObjectNames = new List<Transform>();
+
+        [SerializeField]
+        public List<string> excludeParamNames = new List<string>();
+
+        [SerializeField]
+        public Dictionary<string, string> ParameterRenamedValues = new Dictionary<string, string>();
+
+        public string GetBitKeyName(int id)
+        {
+            return ParameterRenamedValues.ContainsKey($"BitKey{id}") ? ParameterRenamedValues[$"BitKey{id}"] : $"BitKey{id}";
+        }
+
         StringBuilder _sb = new StringBuilder();
 
 #if UNITY_EDITOR
@@ -175,7 +201,7 @@ namespace GeoTetra.GTAvaCrypt
                 }
             }
 
-            var avaCryptRoots = encodedGameObject.GetComponentsInChildren<AvaCryptV2Root>();
+            var avaCryptRoots = encodedGameObject.GetComponentsInChildren<AvaCryptV2Root>(true);
             foreach (var avaCryptRoot in avaCryptRoots)
             {
                 DestroyImmediate(avaCryptRoot);
@@ -183,6 +209,16 @@ namespace GeoTetra.GTAvaCrypt
             
             // Disable old for convienence.
             gameObject.SetActive(false);
+
+            // Force unity to import things
+            AssetDatabase.Refresh();
+
+            // Do Obfuscation
+            obfuscator.Obfuscate(encodedGameObject, this);
+
+            encodedGameObject.SetActive(false); // Temp
+
+            AssetDatabase.SaveAssets();
         }
 
         void AddMaterialsToIgnoreList(Material[] materials, List<Material> aggregateIgnoredMaterials)
@@ -247,6 +283,11 @@ namespace GeoTetra.GTAvaCrypt
 
                     foreach (var include in Directory.GetFiles(path, "*.cginc"))
                     {
+                        if (include.Contains("ShadowVert")) // Bodged Fix
+                        {
+                            continue;
+                        }
+
                         var includeText = File.ReadAllText(include);
                         if (!includeText.Contains("//AvaCrypt Injected"))
                         {
@@ -347,7 +388,7 @@ namespace GeoTetra.GTAvaCrypt
 
                 for (var i = 0; i < _bitKeys.Length; ++i)
                 {
-                    var entryIndex = paramFile.animationParameters.FindIndex(p => p.name == $"BitKey{i}");
+                    var entryIndex = paramFile.animationParameters.FindIndex(p => p.name == GetBitKeyName(i));
                     if (entryIndex != -1)
                     {
                         paramFile.animationParameters[entryIndex].value = _bitKeys[i] ? 1 : 0;
@@ -356,7 +397,7 @@ namespace GeoTetra.GTAvaCrypt
                     {
                         var newEntry = new ParamFileEntry()
                         {
-                            name = $"BitKey{i}",
+                            name = GetBitKeyName(i),
                             value = _bitKeys[i] ? 1 : 0
                         };
                         paramFile.animationParameters.Add(newEntry);
@@ -417,7 +458,7 @@ namespace GeoTetra.GTAvaCrypt
             
             for (var i = 0; i < _bitKeys.Length; ++i)
             {
-                var bitKeyName = $"BitKey{i}";
+                var bitKeyName = GetBitKeyName(i);
                 
                 var index = Array.FindIndex(parameters.parameters, p => p.name == bitKeyName);
                 if (index != -1)
@@ -494,7 +535,7 @@ namespace GeoTetra.GTAvaCrypt
             }
             else
             {
-                Debug.LogError($"{text} Does Not Contain {textToReplace}!");
+                //Debug.LogError($"{text} Does Not Contain {textToReplace}!");
             }
 
             return false;

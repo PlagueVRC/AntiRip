@@ -1,8 +1,10 @@
 ﻿using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEditorInternal;
 using GeoTetra.GTAvaUtil;
+using UnityEngine.SceneManagement;
 
 namespace GeoTetra.GTAvaCrypt
 {
@@ -21,6 +23,15 @@ namespace GeoTetra.GTAvaCrypt
 
         ReorderableList m_IgnoreList;
         ReorderableList m_AdditionalList;
+
+        SerializedProperty _pathProperty;
+        SerializedProperty _disableObjectNameObfuscationProperty;
+        SerializedProperty _excludeObjectNamesProperty;
+        SerializedProperty _excludeParamNamesProperty;
+        ReorderableList _excludeObjectNamesPropertyList;
+        ReorderableList _excludeParamNamesPropertyList;
+
+        static bool _objectNameObfuscationFoldout = false;
 
         Texture2D HeaderTexture;
         void OnEnable()
@@ -43,6 +54,59 @@ namespace GeoTetra.GTAvaCrypt
                 drawElementCallback = IgnoreDrawListItems,
                 drawHeaderCallback = IgnoreDrawHeader
             };
+
+            _pathProperty = serializedObject.FindProperty("path");
+            _disableObjectNameObfuscationProperty = serializedObject.FindProperty("disableObjectNameObfuscation");
+            _excludeObjectNamesProperty = serializedObject.FindProperty("excludeObjectNames");
+            _excludeParamNamesProperty = serializedObject.FindProperty("excludeParamNames");
+
+            _excludeObjectNamesPropertyList = new ReorderableList(
+                serializedObject,
+                _excludeObjectNamesProperty,
+                true,
+                true,
+                true,
+                true
+            );
+
+            _excludeObjectNamesPropertyList.drawHeaderCallback = rect =>
+            {
+                EditorGUI.LabelField(rect, "Exclude Objects From Renaming", EditorStyles.boldLabel);
+            };
+
+            _excludeObjectNamesPropertyList.drawElementCallback =
+                (rect, index, isActive, isFocused) =>
+                {
+                    var element = _excludeObjectNamesPropertyList.serializedProperty.GetArrayElementAtIndex(index);
+                    rect.y += 2;
+
+                    EditorGUI.ObjectField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), element, GUIContent.none);
+                };
+
+            //
+
+            _excludeParamNamesPropertyList = new ReorderableList(
+                serializedObject,
+                _excludeParamNamesProperty,
+                true,
+                true,
+                true,
+                true
+            );
+
+            _excludeParamNamesPropertyList.drawHeaderCallback = rect =>
+            {
+                EditorGUI.LabelField(rect, "Exclude Parameters From Renaming", EditorStyles.boldLabel);
+            };
+
+            _excludeParamNamesPropertyList.drawElementCallback =
+                (rect, index, isActive, isFocused) =>
+                {
+                    var element = _excludeParamNamesPropertyList.serializedProperty.GetArrayElementAtIndex(index);
+                    rect.y += 2;
+
+                    element.stringValue = EditorGUI.TextField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), element.stringValue);
+                };
         }
 
         void AdditionalDrawHeader(Rect rect)
@@ -73,7 +137,7 @@ namespace GeoTetra.GTAvaCrypt
 
             if (GUILayout.Button(new GUIContent(HeaderTexture, "Vist my Discord for help!"), EditorStyles.label, GUILayout.Height(Screen.width / 8)))
             {
-                Application.OpenURL("https://discord.gg/nbzqtaVP9J");
+                Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
             
             AvaCryptV2Root avaCryptV2Root = target as AvaCryptV2Root;
@@ -87,10 +151,14 @@ namespace GeoTetra.GTAvaCrypt
                 avaCryptV2Root.EncryptAvatar();
             }
 
+            GUI.enabled = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("Encrypted"));
+
             if (GUILayout.Button(new GUIContent("Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
             {
                 avaCryptV2Root.WriteBitKeysToExpressions();
             }
+
+            GUI.enabled = true;
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
@@ -171,7 +239,7 @@ namespace GeoTetra.GTAvaCrypt
                 for (int i = 0; i < m_KeysProperty.arraySize/4; i++)
                 {
                     GUILayout.BeginHorizontal();
-                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, "BitKey" + i);
+                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((AvaCryptV2Root)target).GetBitKeyName(i));
                     GUILayout.EndHorizontal();
                     GUILayout.Space(5f);
                 }
@@ -181,7 +249,7 @@ namespace GeoTetra.GTAvaCrypt
                 for (int i = m_KeysProperty.arraySize / 4; i < m_KeysProperty.arraySize / 2; i++)
                 {
                     GUILayout.BeginHorizontal();
-                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, "BitKey" + i);
+                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((AvaCryptV2Root)target).GetBitKeyName(i));
                     GUILayout.EndHorizontal();
                     GUILayout.Space(5f);
                 }
@@ -191,7 +259,7 @@ namespace GeoTetra.GTAvaCrypt
                 for (int i = m_KeysProperty.arraySize / 2; i < (m_KeysProperty.arraySize / 4) * 3 ; i++)
                 {
                     GUILayout.BeginHorizontal();
-                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, "BitKey" + i);
+                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((AvaCryptV2Root)target).GetBitKeyName(i));
                     GUILayout.EndHorizontal();
                     GUILayout.Space(5f);
                 }
@@ -201,7 +269,7 @@ namespace GeoTetra.GTAvaCrypt
                 for (int i = (m_KeysProperty.arraySize / 4) * 3; i < m_KeysProperty.arraySize; i++)
                 {
                     GUILayout.BeginHorizontal();
-                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, "BitKey" + i);
+                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((AvaCryptV2Root)target).GetBitKeyName(i));
                     GUILayout.EndHorizontal();
                     GUILayout.Space(5f);
                 }
@@ -253,7 +321,107 @@ namespace GeoTetra.GTAvaCrypt
 
                 GUILayout.EndHorizontal();
             }
+            //serializedObject.ApplyModifiedProperties();
+
+            EditorGUILayout.Space();
+
+            EditorGUILayout.LabelField("Obfuscator Settings", EditorStyles.boldLabel);
+            EditorGUILayout.Space();
+
+            GUILayout.Label("Obfuscated Directory: " + (!string.IsNullOrWhiteSpace(_pathProperty?.stringValue) ? _pathProperty.stringValue : "None"));
+
+            GUI.enabled = !string.IsNullOrEmpty(_pathProperty?.stringValue);
+
+            EditorGUILayout.Space();
+
+            if (GUILayout.Button("Clean Up Obfuscated Files"))
+            {
+                ((AvaCryptV2Root)target).obfuscator.ClearObfuscatedFiles((AvaCryptV2Root)target);
+            }
+
+            EditorGUILayout.Space();
+
+            GUI.enabled = true;
+
+            if (_disableObjectNameObfuscationProperty != null)
+            {
+                var disableObjectNameToggle = !_disableObjectNameObfuscationProperty.boolValue;
+                _objectNameObfuscationFoldout = !FeatureToggleFoldout(!_objectNameObfuscationFoldout, "Object Name Obfuscation", ref disableObjectNameToggle);
+
+                if (!_objectNameObfuscationFoldout)
+                {
+                    _excludeObjectNamesPropertyList.DoLayoutList();
+                }
+
+                EditorGUILayout.Space();
+
+                _disableObjectNameObfuscationProperty.boolValue = !disableObjectNameToggle;
+            }
+
+            FeatureToggleFoldout(true, "Parameter Name Obfuscation");
+
+            _excludeParamNamesPropertyList.DoLayoutList();
+
+            EditorGUILayout.Space();
+
             serializedObject.ApplyModifiedProperties();
+        }
+
+        static bool FeatureToggleFoldout(bool display, string title)
+        {
+            var style = new GUIStyle("ShurikenModuleTitle");
+            style.font = new GUIStyle(EditorStyles.boldLabel).font;
+            style.border = new RectOffset(15, 7, 4, 4);
+            style.fixedHeight = 22;
+            style.contentOffset = new Vector2(21f, -2f);
+
+            var rect = GUILayoutUtility.GetRect(16f, 22f, style);
+            GUI.Box(rect, title, style);
+            var e = Event.current;
+
+            var toggleRect = new Rect(rect.x + 21f, rect.y + 2f, 13f, 13f);
+
+            var foldArrayRect = new Rect(rect.x + 4f, rect.y + 2f, 13f, 13f);
+            if (e.type == EventType.Repaint)
+            {
+                EditorStyles.foldout.Draw(foldArrayRect, false, false, display, false);
+            }
+            else if (e.type == EventType.MouseDown && rect.Contains(e.mousePosition))
+            {
+                display = !display;
+                e.Use();
+            }
+
+            return display;
+        }
+
+        static bool FeatureToggleFoldout(bool display, string title, ref bool toggle)
+        {
+            var style = new GUIStyle("ShurikenModuleTitle");
+            style.font = new GUIStyle(EditorStyles.boldLabel).font;
+            style.border = new RectOffset(15, 7, 4, 4);
+            style.fixedHeight = 22;
+            style.contentOffset = new Vector2(41f, -2f);
+
+            var rect = GUILayoutUtility.GetRect(16f, 22f, style);
+            GUI.Box(rect, title, style);
+            var e = Event.current;
+
+            var toggleRect = new Rect(rect.x + 21f, rect.y + 2f, 13f, 13f);
+            toggle = EditorGUI.Toggle(toggleRect, toggle);
+
+            var foldArrayRect = new Rect(rect.x + 4f, rect.y + 2f, 13f, 13f);
+            if (e.type == EventType.Repaint)
+            {
+                EditorStyles.foldout.Draw(foldArrayRect, false, false, display, false);
+            }
+            else if (e.type == EventType.MouseDown && rect.Contains(e.mousePosition))
+            {
+                display = !display;
+                e.Use();
+            }
+
+            return display;
         }
     }
 }
