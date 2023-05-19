@@ -6,13 +6,18 @@ using System.Diagnostics;
 using System.IO;
 
 using System.Linq;
+
 using GeoTetra.GTAvaCrypt;
+
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEditor.SceneManagement;
+
 using UnityEngine;
+
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
+
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
@@ -88,7 +93,6 @@ namespace GeoTetra.GTAvaCrypt
 
                 CreateFolder(root.path);
 
-                // 오브젝트 새로 생성
                 ProgressBar("Clone Avatar Object", 1);
                 var o = gobj;
                 var gameObjectName = o.name + "_Obfuscated";
@@ -97,27 +101,22 @@ namespace GeoTetra.GTAvaCrypt
                 obj.SetActive(true);
                 o.SetActive(false);
 
-                // Animator 의 animatorController 제거
                 ProgressBar("Remove animatorController of RootAnimator", 2);
                 var rootAnimator = obj.GetComponent<Animator>();
                 if (rootAnimator != null) rootAnimator.runtimeAnimatorController = null;
 
-                // AvatarDescriptor 가져오기
                 ProgressBar("Find AvatarDescriptor Component", 3);
-#if VRC_SDK_VRCSDK3
+
                 var avatar = obj.GetComponent<VRCAvatarDescriptor>();
 
                 ProgressBar("ExpressionParameters obfuscation", 4);
-                // ExpressionParameters가 있을경우 난독화
                 if (avatar.expressionParameters != null)
                     avatar.expressionParameters = ExpressionParametersObfuscator(avatar.expressionParameters, root);
 
                 ProgressBar("ExpressionsMenu obfuscation", 5);
-                // ExpressionsMenu 가 있을경우 난독화
                 if (avatar.expressionsMenu != null)
                     avatar.expressionsMenu = ExpressionsMenuObfuscator(avatar.expressionsMenu, root);
 
-                // baseAnimationLayer를 확인하고 애니메이션이 있을경우 난독화
                 ProgressBar("baseAnimationLayers animatorController obfuscation", 6);
                 var animationLayers = avatar.baseAnimationLayers;
                 for (var i = 0; i < animationLayers.Length; ++i)
@@ -139,16 +138,6 @@ namespace GeoTetra.GTAvaCrypt
                 }
 
                 avatar.specialAnimationLayers = specialAnimationLayers;
-#elif VRC_SDK_VRCSDK2
-                var avatar = obj.GetComponent<VRC_AvatarDescriptor>();
-
-                ProgressBar("CustomStandingAnims obfuscation", 4);
-                avatar.CustomStandingAnims = OverrideControllerObfuscator(avatar.CustomStandingAnims);
-
-                ProgressBar("CustomSittingAnims obfuscation", 5);
-                avatar.CustomSittingAnims = OverrideControllerObfuscator(avatar.CustomSittingAnims);
-#endif
-
 
                 ProgressBar("Another animatorController obfuscation", 8);
                 var otherAnimators = obj.GetComponentsInChildren<Animator>(true)
@@ -157,7 +146,6 @@ namespace GeoTetra.GTAvaCrypt
                     animator.runtimeAnimatorController =
                         AnimatorObfuscator((AnimatorController)animator.runtimeAnimatorController, root);
 
-                // 애니메이터에서 아바타 본을 가져옵니다.
                 ProgressBar("Get all bones from animator", 9);
                 var animators = obj.GetComponentsInChildren<Animator>(true);
                 var enumValues = Enum.GetValues(typeof(HumanBodyBones));
@@ -180,7 +168,6 @@ namespace GeoTetra.GTAvaCrypt
                         _excludeNameSet.Add(objectName.name);
                     }
 
-                    // 오브젝트 경로 난독화를 시작한다..
                     ProgressBar("Object name obfuscation", 10);
                     var children = obj.GetComponentsInChildren<Transform>(true).Where(t => t != obj.transform).ToList();
 
@@ -200,7 +187,6 @@ namespace GeoTetra.GTAvaCrypt
                         childObject.name = _objectNameDic[childObject.name];
                     }
 
-                    // 애니메이션 클립을 난독화하자!
                     ProgressBar("Update AnimationClips", 11);
                     foreach (var clip in _animClipList)
                     {
@@ -275,6 +261,7 @@ namespace GeoTetra.GTAvaCrypt
         private void AddNameFilter(Transform bone)
         {
             var gameObjectName = bone.gameObject.name;
+
             if (!_excludeNameSet.Contains(gameObjectName))
                 _excludeNameSet.Add(gameObjectName);
         }
@@ -323,7 +310,6 @@ namespace GeoTetra.GTAvaCrypt
                 expressionParameters.parameters = parameters.ToArray();
             }
 
-            // Bool 로 값 채우기
             while (128 - expressionParameters.CalcTotalCost() > 0)
             {
                 var newName = GUID.Generate().ToString();
@@ -340,7 +326,6 @@ namespace GeoTetra.GTAvaCrypt
                 expressionParameters.parameters = parameters.ToArray();
             }
 
-            // Shuffle
             parameters = parameters.OrderBy(a => Guid.NewGuid()).ToList();
             expressionParameters.parameters = parameters.ToArray();
             return expressionParameters;
@@ -563,40 +548,40 @@ namespace GeoTetra.GTAvaCrypt
             switch (motion)
             {
                 case AnimationClip clip:
-                {
-                    if (AssetDatabase.GetAssetPath(motion).StartsWith("Assets/VRCSDK/")) return motion;
-                    var animationClip = CopyAssetFile("anim", clip, root);
-                    animationClip.name = GetAssetName(animationClip);
-                    _animClipList.Add(animationClip);
-                    return animationClip;
-                }
-                case BlendTree tree:
-                {
-                    var blendTree = CopyAssetFile("asset", tree, root);
-                    blendTree.name = GetAssetName(blendTree);
-
-                    blendTree.children = blendTree.children.Select(child => new ChildMotion
                     {
-                        mirror = child.mirror,
-                        motion = MotionObfuscator(child.motion, root),
-                        position = child.position,
-                        threshold = child.threshold,
-                        cycleOffset = child.cycleOffset,
-                        timeScale = child.timeScale,
-                        directBlendParameter = _parameterDic.ContainsKey(child.directBlendParameter)
-                            ? _parameterDic[child.directBlendParameter]
-                            : child.directBlendParameter
-                    }).ToArray();
+                        if (AssetDatabase.GetAssetPath(motion).StartsWith("Assets/VRCSDK/")) return motion;
+                        var animationClip = CopyAssetFile("anim", clip, root);
+                        animationClip.name = GetAssetName(animationClip);
+                        _animClipList.Add(animationClip);
+                        return animationClip;
+                    }
+                case BlendTree tree:
+                    {
+                        var blendTree = CopyAssetFile("asset", tree, root);
+                        blendTree.name = GetAssetName(blendTree);
 
-                    blendTree.blendParameter = _parameterDic.ContainsKey(blendTree.blendParameter)
-                        ? _parameterDic[blendTree.blendParameter]
-                        : blendTree.blendParameter;
-                    blendTree.blendParameterY = _parameterDic.ContainsKey(blendTree.blendParameterY)
-                        ? _parameterDic[blendTree.blendParameterY]
-                        : blendTree.blendParameterY;
+                        blendTree.children = blendTree.children.Select(child => new ChildMotion
+                        {
+                            mirror = child.mirror,
+                            motion = MotionObfuscator(child.motion, root),
+                            position = child.position,
+                            threshold = child.threshold,
+                            cycleOffset = child.cycleOffset,
+                            timeScale = child.timeScale,
+                            directBlendParameter = _parameterDic.ContainsKey(child.directBlendParameter)
+                                ? _parameterDic[child.directBlendParameter]
+                                : child.directBlendParameter
+                        }).ToArray();
 
-                    return blendTree;
-                }
+                        blendTree.blendParameter = _parameterDic.ContainsKey(blendTree.blendParameter)
+                            ? _parameterDic[blendTree.blendParameter]
+                            : blendTree.blendParameter;
+                        blendTree.blendParameterY = _parameterDic.ContainsKey(blendTree.blendParameterY)
+                            ? _parameterDic[blendTree.blendParameterY]
+                            : blendTree.blendParameterY;
+
+                        return blendTree;
+                    }
                 default:
                     return motion;
             }
