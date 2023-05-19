@@ -1,10 +1,8 @@
-![](Textures/Titlebar.png)
-
 The official root repository for this project is here https://github.com/rygo6/GTAvaCrypt. Only download from a fork if you specifically trust that fork and creator!
 
 **This repository is from a direct co-developer of the official root repository who is maintaining the updates. It is up to you if you want to use this repo.**
 
-# GeoTetra AvaCrypt V2
+# Kanna AntiRip
 
 This is a rather invasive anti-avatar-ripping system to be used for VRChat. It will protect against your avatar being ripped, extracted and edited. It will also protect against your avatar being ripped and re-uploaded without edits.
 
