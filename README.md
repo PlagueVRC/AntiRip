@@ -7,9 +7,7 @@ This is the official repository for this project.
 
 This is a rather invasive anti-avatar-ripping system to be used for VRChat. It will protect against your avatar being ripped, extracted and edited. It will also protect against your avatar being ripped and re-uploaded without edits.
 
-This system will randomize all the vertices of your avatar's mesh, then write that to disk. Then rely on a custom shader with a 32 bit key to un-randomize the vertex positions in game. This is <b>not</b> done through blend shapes. Rather this will copy, and destructively edit, the 'Basis' layer of your mesh.
-
-Technically this is more like 'Avatar Obfuscation' but calling it 'AvaObfs' didn't really have the same ring to it. But maybe it will keep evolving to use some advanced GPU encryption techniques some day...
+This system will randomize all the vertices of your avatar's mesh, then write that to disk. Then rely on a custom shader with a 32 bit key to un-randomize the vertex positions in game. This is <b>not</b> done through blend shapes. Rather this will copy, and destructively edit, the 'Basis' layer of your mesh. It will also obfuscate pretty much everything else on your avatar to confusing as a extra middle finger for the ripper.
 
 1. [Caveats of this System](#caveats-of-this-system)
 
@@ -18,6 +16,8 @@ Technically this is more like 'Avatar Obfuscation' but calling it 'AvaObfs' didn
 3. [Features](#features)
 
 4. [How secure is this?](#how-secure-is-this)
+
+5. [Support](#support)
 
 ## Caveats of this System
 
@@ -33,7 +33,7 @@ Technically this is more like 'Avatar Obfuscation' but calling it 'AvaObfs' didn
 
 ### Backup your project before running these operations in case it doesn't work properly and causes difficult to fix, or impossible to fix, changes in your project.
 
-#### Really do it. Close Unity, all your programs, and make a full clean copy of your entire Unity Project folder. A small percentage of avatars did have odd things in their mesh that just wouldn't work, or could cause errors, and the script could leave some assets in the project in a rather messed up state.
+#### Really do it. Close Unity, and make a full clean copy of your entire Unity Project folder. A small percentage of avatars did have odd things in their mesh that just wouldn't work, or could cause errors, and the script could leave some assets in the project in a rather messed up state.
 
 #### Install Kanna Protecc and Poiyomi.
 
@@ -86,10 +86,11 @@ If you wish to see your avatar again as normal and not encrypted, unlock all of 
 
 If you do unlock any of the Poiyomi materials you will need to click the 'Encrypt Avatar' button again before uploaded, as it is during that process that it will inject itself into the locked Poiyomi shaders.
 
-
-If you have any more questions, or suggestions, feel free to join the AntiRip discord:
-https://discord.gg/SyZcuTPXZA
-
 ## How secure is this?
 
 I will keep transparent here without guiding rippers on how to attack your works. This is not foolproof, but close to the best you can get at this time. Rip wise, this cannot be currently ripped without a insane amount of work, as ripping compiled shadercode, reversing it back to unity compatible code and also getting hold of the keys would be hell. Hotswap wise, a dedicated enough ripper with experience with mods could hotswap your avatar. This is not immune to that. You can however put a watermark on your avatar to drive hotswappers into being banned which they wont be able to remove, as the meshes will be encrypted, regardless of hotswap. A hotswap done with the high amount of work i have mentioned here would only get the avatar working normally in game; not in unity.
+
+# Support
+
+If you have any more questions, or suggestions, feel free to join the AntiRip discord:
+https://discord.gg/SyZcuTPXZA
