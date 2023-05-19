@@ -1,7 +1,9 @@
+![](Textures/Titlebar.png)
+
 This project was previously owned by rygo6. It has been passed on for me to own and work on.
 This is the official repository for this project.
 
-# Kanna AntiRip
+# Kanna Protecc
 
 This is a rather invasive anti-avatar-ripping system to be used for VRChat. It will protect against your avatar being ripped, extracted and edited. It will also protect against your avatar being ripped and re-uploaded without edits.
 
