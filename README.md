@@ -1,6 +1,5 @@
-The official root repository for this project is here https://github.com/rygo6/GTAvaCrypt. Only download from a fork if you specifically trust that fork and creator!
-
-**This repository is from a direct co-developer of the official root repository who is maintaining the updates. It is up to you if you want to use this repo.**
+This project was previously owned by rygo6. It has been passed on for me to own and work on.
+This is the official repository for this project.
 
 # Kanna AntiRip
 
