@@ -147,22 +147,28 @@ namespace Kanna.Protecc
             var data = new KannaProteccData(_bitKeys.Length);
             var decodeShader = KannaProteccMaterial.GenerateDecodeShader(data, _bitKeys);
 
-            var meshFilters = encodedGameObject.GetComponentsInChildren<MeshFilter>(true);
-            var skinnedMeshRenderers = encodedGameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            var meshFilters = encodedGameObject.GetComponentsInChildren<MeshFilter>(true).Select(o => (o, o.gameObject.activeSelf));
+            var skinnedMeshRenderers = encodedGameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(o => (o, o.gameObject.activeSelf));
+
             var aggregateIgnoredMaterials = new List<Material>();
 
             // Gather all materials to ignore based on if they are shared in mesh
             foreach (var meshFilter in meshFilters)
             {
-                if (meshFilter.GetComponent<MeshRenderer>() != null)
+                if (meshFilter.o.GetComponent<MeshRenderer>() != null)
                 {
-                    var materials = meshFilter.GetComponent<MeshRenderer>().sharedMaterials;
+                    var materials = meshFilter.o.GetComponent<MeshRenderer>().sharedMaterials;
                     AddMaterialsToIgnoreList(materials, aggregateIgnoredMaterials);
                 }
+                else
+                {
+                    Debug.LogError("WTF? -> " + meshFilter.o.name);
+                }
             }
+
             foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
             {
-                var materials = skinnedMeshRenderer.sharedMaterials;
+                var materials = skinnedMeshRenderer.o.sharedMaterials;
                 AddMaterialsToIgnoreList(materials, aggregateIgnoredMaterials);
             }
             
@@ -171,37 +177,47 @@ namespace Kanna.Protecc
             // Do encrypting
             foreach (var meshFilter in meshFilters)
             {
-                if (meshFilter.GetComponent<MeshRenderer>() != null)
+                if (meshFilter.o.GetComponent<MeshRenderer>() != null)
                 {
-                    var materials = meshFilter.GetComponent<MeshRenderer>().sharedMaterials;
+                    meshFilter.o.gameObject.SetActive(true);
+                    var materials = meshFilter.o.GetComponent<MeshRenderer>().sharedMaterials;
                     if (EncryptMaterials(materials, decodeShader, aggregateIgnoredMaterials))
                     {
-                        meshFilter.sharedMesh = KannaProteccMesh.EncryptMesh(meshFilter.sharedMesh, _distortRatio, data);
+                        meshFilter.o.sharedMesh = KannaProteccMesh.EncryptMesh(meshFilter.o.sharedMesh, _distortRatio, data);
                     }
                     else
                     {
-                        Debug.Log($"Ignoring Encrypt on {meshFilter.gameObject} contains ignored material!");
+                        Debug.Log($"Ignoring Encrypt on {meshFilter.o.gameObject.name} contains ignored material!");
                     }
-                }
-            }
-            foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
-            {
-                if (skinnedMeshRenderer.GetComponent<Cloth>() == null)
-                {
-                    var materials = skinnedMeshRenderer.sharedMaterials;
-                    if (EncryptMaterials(materials, decodeShader, aggregateIgnoredMaterials))
-                    {
-                        skinnedMeshRenderer.sharedMesh =
-                            KannaProteccMesh.EncryptMesh(skinnedMeshRenderer.sharedMesh, _distortRatio, data);
-                    }
-                    else
-                    {
-                        Debug.Log($"Ignoring Encrypt on {skinnedMeshRenderer.gameObject} contains ignored material!");
-                    }
+
+                    meshFilter.o.gameObject.SetActive(meshFilter.activeSelf);
                 }
                 else
                 {
-                    Debug.Log($"Ignoring Encrypt on {skinnedMeshRenderer.gameObject} is a cloth material!");
+                    Debug.LogError("WTF? -> " + meshFilter.o.name);
+                }
+            }
+
+            foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
+            {
+                if (skinnedMeshRenderer.o.GetComponent<Cloth>() == null)
+                {
+                    skinnedMeshRenderer.o.gameObject.SetActive(true);
+                    var materials = skinnedMeshRenderer.o.sharedMaterials;
+                    if (EncryptMaterials(materials, decodeShader, aggregateIgnoredMaterials))
+                    {
+                        skinnedMeshRenderer.o.sharedMesh = KannaProteccMesh.EncryptMesh(skinnedMeshRenderer.o.sharedMesh, _distortRatio, data);
+                    }
+                    else
+                    {
+                        Debug.Log($"Ignoring Encrypt on {skinnedMeshRenderer.o.gameObject.name} contains ignored material!");
+                    }
+
+                    skinnedMeshRenderer.o.gameObject.SetActive(skinnedMeshRenderer.activeSelf);
+                }
+                else
+                {
+                    Debug.Log($"Ignoring Encrypt on {skinnedMeshRenderer.o.gameObject.name} is a cloth material!");
                 }
             }
 
@@ -230,7 +246,7 @@ namespace Kanna.Protecc
         {
             foreach (var material in materials)
             {
-                if (m_IgnoredMaterials.Contains(material))
+                if (m_IgnoredMaterials.Any(o => o.name == material.name && o.ComputeCRC() == material.ComputeCRC()))
                 {
                     aggregateIgnoredMaterials.AddRange(materials);
                     return;
@@ -244,7 +260,7 @@ namespace Kanna.Protecc
             var ignoredMats = false;
             foreach (var mat in materials)
             {
-                if (mat != null && mat.shader.name.Contains(".poiyomi/Poiyomi") && mat.shader.name.Contains("Pro"))
+                if (mat != null && mat.shader.name.Contains(".poiyomi/Poiyomi"))
                 {
                     if (!mat.shader.name.Contains("Hidden/Locked"))
                     {
