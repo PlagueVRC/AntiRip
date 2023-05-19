@@ -5,13 +5,13 @@ using UnityEditor;
 using UnityEngine;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
-namespace GeoTetra.GTAvaUtil
+namespace Kanna.Protecc
 {
     public class MenuUtilites
     {
         const string okText = "Ok";
         
-        [MenuItem("Tools/GeoTetra/GTAvaCrypt/Unlock All Poi Materials In Hierarchy...", false)]
+        [MenuItem("Tools/Kanna.Protecc/Unlock All Poi Materials In Hierarchy...", false)]
         public static void UnlockAllPoiMaterialsInHierarchy(MenuCommand command)
         {
             const string message = "Select a Root GameObject which has children with locked Poiyomi 8 materials.";
@@ -83,13 +83,13 @@ namespace GeoTetra.GTAvaUtil
             ShaderOptimizer.SetLockedForAllMaterials(poiMats, 0, true, false, false);
         }
         
-        [MenuItem("Tools/GeoTetra/GTAvaCrypt/Check for Update...", false)]
+        [MenuItem("Tools/Kanna.Protecc/Check for Update...", false)]
         static void CheckForUpdate()
         {
             var list = UnityEditor.PackageManager.Client.List();
             while (!list.IsCompleted)
             { }
-            PackageInfo package = list.Result.FirstOrDefault(q => q.name == "com.geotetra.gtavacrypt");
+            PackageInfo package = list.Result.FirstOrDefault(q => q.name == "com.Kanna.Protecc");
             if (package == null)
             {
                 EditorUtility.DisplayDialog("Not installed via UPM!",

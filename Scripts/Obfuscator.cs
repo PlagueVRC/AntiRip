@@ -7,7 +7,7 @@ using System.IO;
 
 using System.Linq;
 
-using GeoTetra.GTAvaCrypt;
+using Kanna.Protecc;
 
 using UnityEditor;
 using UnityEditor.Animations;
@@ -24,7 +24,7 @@ using Random = UnityEngine.Random;
 
 // A huge thank you to kamyu! This module would not be possible without them!
 
-namespace GeoTetra.GTAvaCrypt
+namespace Kanna.Protecc
 {
     public class Obfuscator
     {
@@ -76,7 +76,7 @@ namespace GeoTetra.GTAvaCrypt
         private readonly HashSet<string> _excludeNameSet = new HashSet<string>();
         private uint _tempIndex;
 
-        public void Obfuscate(GameObject gobj, AvaCryptV2Root root)
+        public void Obfuscate(GameObject gobj, KannaProteccRoot root)
         {
             _parameterDic.Clear();
             _objectNameDic.Clear();
@@ -267,7 +267,7 @@ namespace GeoTetra.GTAvaCrypt
         }
 
 #if VRC_SDK_VRCSDK3
-        private VRCExpressionParameters ExpressionParametersObfuscator(VRCExpressionParameters oldEp, AvaCryptV2Root root)
+        private VRCExpressionParameters ExpressionParametersObfuscator(VRCExpressionParameters oldEp, KannaProteccRoot root)
         {
             root.ParameterRenamedValues.Clear();
 
@@ -288,7 +288,14 @@ namespace GeoTetra.GTAvaCrypt
                 _parameterDic.Add(parameter.name, newName);
                 if (parameter.name.StartsWith("BitKey"))
                 {
-                    root.ParameterRenamedValues[parameter.name] = newName;
+                    if (root.ParameterRenamedValues.FindIndex(o => o.Key == parameter.name) is var index && index != -1)
+                    {
+                        root.ParameterRenamedValues[index] = new KeyValuePair<string, string>(parameter.name, newName);
+                    }
+                    else
+                    {
+                        root.ParameterRenamedValues.Add(new KeyValuePair<string, string>(parameter.name, newName));
+                    }
                 }
                 parameter.name = newName;
             }
@@ -331,7 +338,7 @@ namespace GeoTetra.GTAvaCrypt
             return expressionParameters;
         }
 
-        private VRCExpressionsMenu ExpressionsMenuObfuscator(VRCExpressionsMenu menu, AvaCryptV2Root root)
+        private VRCExpressionsMenu ExpressionsMenuObfuscator(VRCExpressionsMenu menu, KannaProteccRoot root)
         {
             var expressionsMenu = CopyAssetFile("asset", menu, root);
             foreach (var control in expressionsMenu.controls)
@@ -352,7 +359,7 @@ namespace GeoTetra.GTAvaCrypt
         }
 #endif
 
-        private AnimatorController AnimatorObfuscator(AnimatorController controller, AvaCryptV2Root root)
+        private AnimatorController AnimatorObfuscator(AnimatorController controller, KannaProteccRoot root)
         {
             if (controller == null) return null;
             var animator = CopyAssetFile("controller", controller, root);
@@ -390,7 +397,7 @@ namespace GeoTetra.GTAvaCrypt
             return animator;
         }
 
-        private ChildAnimatorStateMachine ChildStateMachineObfuscator(ChildAnimatorStateMachine stateMachine, AvaCryptV2Root root)
+        private ChildAnimatorStateMachine ChildStateMachineObfuscator(ChildAnimatorStateMachine stateMachine, KannaProteccRoot root)
         {
             var newName = GUID.Generate().ToString() + _tempIndex;
             _tempIndex++;
@@ -402,7 +409,7 @@ namespace GeoTetra.GTAvaCrypt
             ;
         }
 
-        private AnimatorStateMachine StateMachineObfuscator(string stateMachineName, AnimatorStateMachine stateMachine, AvaCryptV2Root root)
+        private AnimatorStateMachine StateMachineObfuscator(string stateMachineName, AnimatorStateMachine stateMachine, KannaProteccRoot root)
         {
             stateMachine.name = stateMachineName;
 
@@ -481,7 +488,7 @@ namespace GeoTetra.GTAvaCrypt
             return stateMachine;
         }
 
-        private AnimatorState AnimatorStateObfuscator(AnimatorState state, AvaCryptV2Root root)
+        private AnimatorState AnimatorStateObfuscator(AnimatorState state, KannaProteccRoot root)
         {
             state.name = GUID.Generate() + "_" + _tempIndex;
             _tempIndex++;
@@ -541,7 +548,7 @@ namespace GeoTetra.GTAvaCrypt
             return state;
         }
 
-        private Motion MotionObfuscator(Motion motion, AvaCryptV2Root root)
+        private Motion MotionObfuscator(Motion motion, KannaProteccRoot root)
         {
             if (motion == null) return motion;
 
@@ -602,7 +609,7 @@ namespace GeoTetra.GTAvaCrypt
             }
         }
 
-        private T CopyAssetFile<T>(string ext, T original, AvaCryptV2Root root) where T : Object
+        private T CopyAssetFile<T>(string ext, T original, KannaProteccRoot root) where T : Object
         {
             var originalPath = AssetDatabase.GetAssetPath(original);
             if (string.IsNullOrEmpty(originalPath) || AssetDatabase.IsSubAsset(original) ||
@@ -642,7 +649,7 @@ namespace GeoTetra.GTAvaCrypt
             return fileName;
         }
 
-        public void ClearObfuscatedFiles(AvaCryptV2Root root)
+        public void ClearObfuscatedFiles(KannaProteccRoot root)
         {
             if (string.IsNullOrEmpty(root.path)) return;
 
@@ -653,7 +660,7 @@ namespace GeoTetra.GTAvaCrypt
             EditorSceneManager.SaveOpenScenes();
         }
 
-        public void ClearAllObfuscatedFiles(AvaCryptV2Root root)
+        public void ClearAllObfuscatedFiles(KannaProteccRoot root)
         {
             FileUtil.DeleteFileOrDirectory(root.pathPrefix);
             root.path = "";

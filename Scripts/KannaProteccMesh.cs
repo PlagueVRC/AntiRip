@@ -4,11 +4,11 @@ using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace GeoTetra.GTAvaCrypt
+namespace Kanna.Protecc
 {
-    public static class AvaCryptMesh
+    public static class KannaProteccMesh
     {
-        public static Mesh EncryptMesh(Mesh mesh, float distortRatio, AvaCryptData data)
+        public static Mesh EncryptMesh(Mesh mesh, float distortRatio, KannaProteccData data)
         {
             if (mesh == null) return null;
 

@@ -16,9 +16,9 @@ using VRC.Core;
 using VRC.SDK3.Avatars.Components;
 #endif
 
-namespace GeoTetra.GTAvaCrypt
+namespace Kanna.Protecc
 {
-    public class AvaCryptV2Root : MonoBehaviour
+    public class KannaProteccRoot : MonoBehaviour
     {
 #if UNITY_EDITOR
         public Obfuscator obfuscator = new Obfuscator();
@@ -59,35 +59,35 @@ namespace GeoTetra.GTAvaCrypt
         public List<string> excludeParamNames = new List<string>();
 
         [SerializeField]
-        public Dictionary<string, string> ParameterRenamedValues = new Dictionary<string, string>();
+        public List<KeyValuePair<string, string>> ParameterRenamedValues = new List<KeyValuePair<string, string>>();
 
-        public string GetBitKeyName(int id)
+        public string GetBitKeyName(int id, int LimitRenameLength = -1)
         {
-            return ParameterRenamedValues.ContainsKey($"BitKey{id}") ? ParameterRenamedValues[$"BitKey{id}"] : $"BitKey{id}";
+            return ParameterRenamedValues.Any(o => o.Key == $"BitKey{id}") ? (LimitRenameLength == -1 ? ParameterRenamedValues.First(o => o.Key == $"BitKey{id}").Value : ParameterRenamedValues.First(o => o.Key == $"BitKey{id}").Value.Substring(0, LimitRenameLength)) : $"BitKey{id}";
         }
 
         StringBuilder _sb = new StringBuilder();
 
 #if UNITY_EDITOR
-        readonly AvaCryptController _avaCryptController = new AvaCryptController();
+        readonly KannaProteccController _KannaProteccController = new KannaProteccController();
 
         public void ValidateAnimatorController()
         {
             var controller = GetAnimatorController();
 
-            _avaCryptController.InitializeCount(_bitKeys.Length);
-            _avaCryptController.ValidateLayers(controller);
-            _avaCryptController.ValidateAnimations(gameObject, controller);
-            _avaCryptController.ValidateParameters(controller);
-            _avaCryptController.ValidateBitKeySwitches(controller);
+            _KannaProteccController.InitializeCount(_bitKeys.Length);
+            _KannaProteccController.ValidateLayers(controller);
+            _KannaProteccController.ValidateAnimations(gameObject, controller);
+            _KannaProteccController.ValidateParameters(controller);
+            _KannaProteccController.ValidateBitKeySwitches(controller);
         }
 
         AnimatorController GetAnimatorController()
         {
             if (transform.parent != null)
             {
-                EditorUtility.DisplayDialog("AvaCryptRoot component not on a Root GameObject.", 
-                    "The GameObject which the AvaCryptRoot component is placed on must not be the child of any other GameObject.", 
+                EditorUtility.DisplayDialog("KannaProteccRoot component not on a Root GameObject.", 
+                    "The GameObject which the KannaProteccRoot component is placed on must not be the child of any other GameObject.", 
                     "Ok");
                 return null;
             }
@@ -140,8 +140,8 @@ namespace GeoTetra.GTAvaCrypt
             encodedGameObject.name = newName;
             encodedGameObject.SetActive(true);
             
-            var data = new AvaCryptData(_bitKeys.Length);
-            var decodeShader = AvaCryptMaterial.GenerateDecodeShader(data, _bitKeys);
+            var data = new KannaProteccData(_bitKeys.Length);
+            var decodeShader = KannaProteccMaterial.GenerateDecodeShader(data, _bitKeys);
 
             var meshFilters = encodedGameObject.GetComponentsInChildren<MeshFilter>(true);
             var skinnedMeshRenderers = encodedGameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true);
@@ -172,7 +172,7 @@ namespace GeoTetra.GTAvaCrypt
                     var materials = meshFilter.GetComponent<MeshRenderer>().sharedMaterials;
                     if (EncryptMaterials(materials, decodeShader, aggregateIgnoredMaterials))
                     {
-                        meshFilter.sharedMesh = AvaCryptMesh.EncryptMesh(meshFilter.sharedMesh, _distortRatio, data);
+                        meshFilter.sharedMesh = KannaProteccMesh.EncryptMesh(meshFilter.sharedMesh, _distortRatio, data);
                     }
                     else
                     {
@@ -188,7 +188,7 @@ namespace GeoTetra.GTAvaCrypt
                     if (EncryptMaterials(materials, decodeShader, aggregateIgnoredMaterials))
                     {
                         skinnedMeshRenderer.sharedMesh =
-                            AvaCryptMesh.EncryptMesh(skinnedMeshRenderer.sharedMesh, _distortRatio, data);
+                            KannaProteccMesh.EncryptMesh(skinnedMeshRenderer.sharedMesh, _distortRatio, data);
                     }
                     else
                     {
@@ -201,10 +201,10 @@ namespace GeoTetra.GTAvaCrypt
                 }
             }
 
-            var avaCryptRoots = encodedGameObject.GetComponentsInChildren<AvaCryptV2Root>(true);
-            foreach (var avaCryptRoot in avaCryptRoots)
+            var KannaProteccRoots = encodedGameObject.GetComponentsInChildren<KannaProteccRoot>(true);
+            foreach (var KannaProteccRoot in KannaProteccRoots)
             {
-                DestroyImmediate(avaCryptRoot);
+                DestroyImmediate(KannaProteccRoot);
             }
             
             // Disable old for convienence.
@@ -264,20 +264,20 @@ namespace GeoTetra.GTAvaCrypt
 ;                   File.WriteAllText(decodeShaderPath, decodeShader);
 
                     var shaderText = File.ReadAllText(shaderPath);
-                    if (!shaderText.Contains("//AvaCrypt Injected"))
+                    if (!shaderText.Contains("//KannaProtecc Injected"))
                     {
                         _sb.Clear();
-                        _sb.AppendLine("//AvaCrypt Injected");
+                        _sb.AppendLine("//KannaProtecc Injected");
                         _sb.Append(shaderText);
-                        _sb.ReplaceOrLog(AvaCryptMaterial.DefaultPoiUV, AvaCryptMaterial.AlteredPoiUV);
-                        // _sb.ReplaceOrLog(AvaCryptMaterial.DefaultPoiUVArray, AvaCryptMaterial.AlteredPoiUVArray);
-                        if (!_sb.ReplaceOrLog(AvaCryptMaterial.DefaultPoiVert, AvaCryptMaterial.AlteredPoiVert))
+                        _sb.ReplaceOrLog(KannaProteccMaterial.DefaultPoiUV, KannaProteccMaterial.AlteredPoiUV);
+                        // _sb.ReplaceOrLog(KannaProteccMaterial.DefaultPoiUVArray, KannaProteccMaterial.AlteredPoiUVArray);
+                        if (!_sb.ReplaceOrLog(KannaProteccMaterial.DefaultPoiVert, KannaProteccMaterial.AlteredPoiVert))
                         {
-                            _sb.ReplaceOrLog(AvaCryptMaterial.NewDefaultPoiVert, AvaCryptMaterial.NewAlteredPoiVert);
+                            _sb.ReplaceOrLog(KannaProteccMaterial.NewDefaultPoiVert, KannaProteccMaterial.NewAlteredPoiVert);
                         }
-                        _sb.ReplaceOrLog(AvaCryptMaterial.DefaultVertSetup, AvaCryptMaterial.AlteredVertSetup);
-                        // _sb.ReplaceOrLog(AvaCryptMaterial.DefaultUvTransfer, AvaCryptMaterial.AlteredUvTransfer);
-                        _sb.ReplaceOrLog(AvaCryptMaterial.DefaultFallback, AvaCryptMaterial.AlteredFallback);
+                        _sb.ReplaceOrLog(KannaProteccMaterial.DefaultVertSetup, KannaProteccMaterial.AlteredVertSetup);
+                        // _sb.ReplaceOrLog(KannaProteccMaterial.DefaultUvTransfer, KannaProteccMaterial.AlteredUvTransfer);
+                        _sb.ReplaceOrLog(KannaProteccMaterial.DefaultFallback, KannaProteccMaterial.AlteredFallback);
                         File.WriteAllText(shaderPath, _sb.ToString());
                     }
 
@@ -289,20 +289,20 @@ namespace GeoTetra.GTAvaCrypt
                         }
 
                         var includeText = File.ReadAllText(include);
-                        if (!includeText.Contains("//AvaCrypt Injected"))
+                        if (!includeText.Contains("//KannaProtecc Injected"))
                         {
                             _sb.Clear();
-                            _sb.AppendLine("//AvaCrypt Injected");
+                            _sb.AppendLine("//KannaProtecc Injected");
                             _sb.Append(includeText);
-                            _sb.ReplaceOrLog(AvaCryptMaterial.DefaultPoiUV, AvaCryptMaterial.AlteredPoiUV);
-                            // _sb.ReplaceOrLog(AvaCryptMaterial.DefaultPoiUVArray, AvaCryptMaterial.AlteredPoiUVArray);
-                            if (!_sb.ReplaceOrLog(AvaCryptMaterial.DefaultPoiVert, AvaCryptMaterial.AlteredPoiVert))
+                            _sb.ReplaceOrLog(KannaProteccMaterial.DefaultPoiUV, KannaProteccMaterial.AlteredPoiUV);
+                            // _sb.ReplaceOrLog(KannaProteccMaterial.DefaultPoiUVArray, KannaProteccMaterial.AlteredPoiUVArray);
+                            if (!_sb.ReplaceOrLog(KannaProteccMaterial.DefaultPoiVert, KannaProteccMaterial.AlteredPoiVert))
                             {
-                                _sb.ReplaceOrLog(AvaCryptMaterial.NewDefaultPoiVert, AvaCryptMaterial.NewAlteredPoiVert);
+                                _sb.ReplaceOrLog(KannaProteccMaterial.NewDefaultPoiVert, KannaProteccMaterial.NewAlteredPoiVert);
                             }
-                            _sb.ReplaceOrLog(AvaCryptMaterial.DefaultVertSetup, AvaCryptMaterial.AlteredVertSetup);
-                            // _sb.ReplaceOrLog(AvaCryptMaterial.DefaultUvTransfer, AvaCryptMaterial.AlteredUvTransfer);
-                            _sb.ReplaceOrLog(AvaCryptMaterial.DefaultFallback, AvaCryptMaterial.AlteredFallback);
+                            _sb.ReplaceOrLog(KannaProteccMaterial.DefaultVertSetup, KannaProteccMaterial.AlteredVertSetup);
+                            // _sb.ReplaceOrLog(KannaProteccMaterial.DefaultUvTransfer, KannaProteccMaterial.AlteredUvTransfer);
+                            _sb.ReplaceOrLog(KannaProteccMaterial.DefaultFallback, KannaProteccMaterial.AlteredFallback);
                             File.WriteAllText(include, _sb.ToString());
                         }
                     }
@@ -320,8 +320,8 @@ namespace GeoTetra.GTAvaCrypt
             var descriptor = GetComponent<VRCAvatarDescriptor>();
             if (descriptor == null)
             {
-                Debug.LogError("Keys not written! Couldn't find VRCAvatarDescriptor next to GTAvaCryptRoot");
-                EditorUtility.DisplayDialog("Keys not written! Missing PipelineManager!", "Put AvaCryptRoot next to VRCAvatarDescriptor and run Write Keys again.", "Okay");
+                Debug.LogError("Keys not written! Couldn't find VRCAvatarDescriptor next to GTKannaProteccRoot");
+                EditorUtility.DisplayDialog("Keys not written! Missing PipelineManager!", "Put KannaProteccRoot next to VRCAvatarDescriptor and run Write Keys again.", "Okay");
                 return;
             }
 
@@ -349,8 +349,8 @@ namespace GeoTetra.GTAvaCrypt
             var pipelineManager = GetComponent<PipelineManager>();
             if (pipelineManager == null)
             {
-                Debug.LogError("Keys not written! Couldn't find PipelineManager next to GTAvaCryptRoot");
-                EditorUtility.DisplayDialog("Keys not written! Couldn't find PipelineManager next to GTAvaCryptRoot", "Put AvaCryptRoot next to PipelineManager and run Write Keys again.", "Okay");
+                Debug.LogError("Keys not written! Couldn't find PipelineManager next to GTKannaProteccRoot");
+                EditorUtility.DisplayDialog("Keys not written! Couldn't find PipelineManager next to GTKannaProteccRoot", "Put KannaProteccRoot next to PipelineManager and run Write Keys again.", "Okay");
                 return;
             }
 
@@ -515,11 +515,11 @@ namespace GeoTetra.GTAvaCrypt
         }
 #endif
 
-        [ContextMenu("Delete AvaCrypt Objects From Controller")]
-        public void DeleteAvaCryptObjectsFromController()
+        [ContextMenu("Delete KannaProtecc Objects From Controller")]
+        public void DeleteKannaProteccObjectsFromController()
         {
-            _avaCryptController.InitializeCount(_bitKeys.Length);
-            _avaCryptController.DeleteAvaCryptObjectsFromController(GetAnimatorController());
+            _KannaProteccController.InitializeCount(_bitKeys.Length);
+            _KannaProteccController.DeleteKannaProteccObjectsFromController(GetAnimatorController());
         }
 #endif
     }

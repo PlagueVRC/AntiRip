@@ -3,14 +3,13 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEditorInternal;
-using GeoTetra.GTAvaUtil;
 using UnityEngine.SceneManagement;
 
-namespace GeoTetra.GTAvaCrypt
+namespace Kanna.Protecc
 {
-    [CustomEditor(typeof(AvaCryptV2Root))]
+    [CustomEditor(typeof(KannaProteccRoot))]
     [CanEditMultipleObjects]
-    public class AvaCryptRootEditor : Editor
+    public class KannaProteccRootEditor : Editor
     {
         SerializedProperty m_IgnoredMaterialsProperty;
         SerializedProperty m_AdditionalMaterialsProperty;
@@ -111,7 +110,7 @@ namespace GeoTetra.GTAvaCrypt
 
         void AdditionalDrawHeader(Rect rect)
         {
-            EditorGUI.LabelField(rect, "Additional Materials");
+            EditorGUI.LabelField(rect, new GUIContent("Additional Materials", "This lets you specify additional materials to have the AvaCrypt code injected into when you click 'EncryptAvatar'. This will let you encrypt materials used in material swaps."));
         }
 
         void AdditionalDrawListItems(Rect rect, int index, bool isActive, bool isFocused)
@@ -122,7 +121,7 @@ namespace GeoTetra.GTAvaCrypt
 
         void IgnoreDrawHeader(Rect rect)
         {
-            EditorGUI.LabelField(rect, "Ignored Materials");
+            EditorGUI.LabelField(rect, new GUIContent("Ignored Materials", "These materials will be ignored by Avacrypt. If a mesh contains other materials that are not ignored it will still be encrypted."));
         }
 
         void IgnoreDrawListItems(Rect rect, int index, bool isActive, bool isFocused)
@@ -140,7 +139,7 @@ namespace GeoTetra.GTAvaCrypt
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
             
-            AvaCryptV2Root avaCryptV2Root = target as AvaCryptV2Root;
+            KannaProteccRoot KannaProteccRoot = target as KannaProteccRoot;
             
             //Do the big important buttons
             EditorGUILayout.Space();
@@ -148,14 +147,14 @@ namespace GeoTetra.GTAvaCrypt
             GUILayout.FlexibleSpace();
             if (GUILayout.Button(new GUIContent("Encrypt Avatar", "Validate the AnimatorController, then create encrypted avatar."), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
             {
-                avaCryptV2Root.EncryptAvatar();
+                KannaProteccRoot.EncryptAvatar();
             }
 
             GUI.enabled = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("Encrypted"));
 
             if (GUILayout.Button(new GUIContent("Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
             {
-                avaCryptV2Root.WriteBitKeysToExpressions();
+                KannaProteccRoot.WriteBitKeysToExpressions();
             }
 
             GUI.enabled = true;
@@ -189,10 +188,8 @@ namespace GeoTetra.GTAvaCrypt
             GUILayout.Label(new GUIContent("Materials", "By default Avacrypt will inject its code into any Poiyomi 8 materials on this avatar. Here you can adjust that behaviour to include or remove some materials."), EditorStyles.boldLabel);
             using (new GUILayout.VerticalScope(EditorStyles.helpBox))
             {
-                GUILayout.Label(new GUIContent("Additional Materials", "This lets you specify additional materials to have the AvaCrypt code injected into when you click 'EncryptAvatar'. This will let you encrypt materials used in material swaps."));
                 m_AdditionalList.DoLayoutList();
                 EditorGUILayout.Space();
-                GUILayout.Label(new GUIContent("Ignored Materials", "These materials will be ignored by Avacrypt. If a mesh contains other materials that are not ignored it will still be encrypted."));
                 m_IgnoreList.DoLayoutList();
                 EditorGUILayout.Space();
                 EditorGUILayout.Separator();
@@ -239,7 +236,7 @@ namespace GeoTetra.GTAvaCrypt
                 for (int i = 0; i < m_KeysProperty.arraySize/4; i++)
                 {
                     GUILayout.BeginHorizontal();
-                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((AvaCryptV2Root)target).GetBitKeyName(i));
+                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
                     GUILayout.EndHorizontal();
                     GUILayout.Space(5f);
                 }
@@ -249,7 +246,7 @@ namespace GeoTetra.GTAvaCrypt
                 for (int i = m_KeysProperty.arraySize / 4; i < m_KeysProperty.arraySize / 2; i++)
                 {
                     GUILayout.BeginHorizontal();
-                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((AvaCryptV2Root)target).GetBitKeyName(i));
+                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
                     GUILayout.EndHorizontal();
                     GUILayout.Space(5f);
                 }
@@ -259,7 +256,7 @@ namespace GeoTetra.GTAvaCrypt
                 for (int i = m_KeysProperty.arraySize / 2; i < (m_KeysProperty.arraySize / 4) * 3 ; i++)
                 {
                     GUILayout.BeginHorizontal();
-                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((AvaCryptV2Root)target).GetBitKeyName(i));
+                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
                     GUILayout.EndHorizontal();
                     GUILayout.Space(5f);
                 }
@@ -269,7 +266,7 @@ namespace GeoTetra.GTAvaCrypt
                 for (int i = (m_KeysProperty.arraySize / 4) * 3; i < m_KeysProperty.arraySize; i++)
                 {
                     GUILayout.BeginHorizontal();
-                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((AvaCryptV2Root)target).GetBitKeyName(i));
+                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
                     GUILayout.EndHorizontal();
                     GUILayout.Space(5f);
                 }
@@ -281,7 +278,7 @@ namespace GeoTetra.GTAvaCrypt
                 EditorGUILayout.Space();
                 if (GUILayout.Button(new GUIContent("Generate new Keys", "Generate new key overriding old one. Will need to write keys again!")))
                 {
-                    avaCryptV2Root.GenerateNewKey();
+                    KannaProteccRoot.GenerateNewKey();
                 }
                 EditorGUI.EndDisabledGroup();
             }
@@ -297,12 +294,12 @@ namespace GeoTetra.GTAvaCrypt
                 GUILayout.FlexibleSpace();
                 if (GUILayout.Button(new GUIContent("Validate Animator Controller", "Validate all parameters, layers and animations are correct in this avatar's AnimatorController."), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
                 {
-                    avaCryptV2Root.ValidateAnimatorController();
+                    KannaProteccRoot.ValidateAnimatorController();
                 }
 
                 if (GUILayout.Button(new GUIContent("Delete AvaCrypt Objects From Controller", "Deletes all the objects AvaCrypt wrote to your controller. Try running this if something gets weird with encrypting"), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
                 {
-                    avaCryptV2Root.DeleteAvaCryptObjectsFromController();
+                    KannaProteccRoot.DeleteKannaProteccObjectsFromController();
                 }
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
@@ -312,11 +309,11 @@ namespace GeoTetra.GTAvaCrypt
 
                 EditorGUILayout.LabelField("bitKeys Length:");
 
-                var keycount = EditorGUILayout.IntField(((AvaCryptV2Root)target)._bitKeys.Length);
+                var keycount = EditorGUILayout.IntField(((KannaProteccRoot)target)._bitKeys.Length);
 
-                if (keycount != ((AvaCryptV2Root)target)._bitKeys.Length) // Changed
+                if (keycount != ((KannaProteccRoot)target)._bitKeys.Length) // Changed
                 {
-                    ((AvaCryptV2Root)target)._bitKeys = new bool[keycount];
+                    ((KannaProteccRoot)target)._bitKeys = new bool[keycount];
                 }
 
                 GUILayout.EndHorizontal();
@@ -336,7 +333,7 @@ namespace GeoTetra.GTAvaCrypt
 
             if (GUILayout.Button("Clean Up Obfuscated Files"))
             {
-                ((AvaCryptV2Root)target).obfuscator.ClearObfuscatedFiles((AvaCryptV2Root)target);
+                ((KannaProteccRoot)target).obfuscator.ClearObfuscatedFiles((KannaProteccRoot)target);
             }
 
             EditorGUILayout.Space();

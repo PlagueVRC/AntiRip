@@ -8,11 +8,11 @@ using System.Threading;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace GeoTetra.GTAvaCrypt
+namespace Kanna.Protecc
 {
-    public static class AvaCryptMaterial
+    public static class KannaProteccMaterial
     {
-        public static string GenerateDecodeShader(AvaCryptData data, bool[] keys)
+        public static string GenerateDecodeShader(KannaProteccData data, bool[] keys)
         {
             // Set this because someone from russia was getting ,'s in their decimals instead of .'s
             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-GB");
@@ -24,11 +24,11 @@ namespace GeoTetra.GTAvaCrypt
                 ModelShaderDecodeFirst += $"float _BitKey{i};\r\n";
             }
 
-            ModelShaderDecodeFirst += "\r\nfloat4 modelDecode(float4 vertex, float3 normal, float2 uv0, float2 uv1)\r\n{\r\n    // AvaCrypt Randomly Generated Begin\r\n"; // Finish Off First Part
+            ModelShaderDecodeFirst += "\r\nfloat4 modelDecode(float4 vertex, float3 normal, float2 uv0, float2 uv1)\r\n{\r\n    // KannaProtecc Randomly Generated Begin\r\n"; // Finish Off First Part
 
             // Make ModelShaderDecodeSecond dynamic too, and make the comKey{i} based on a ideal count. Context: this is for ShaderLab.
 
-            ModelShaderDecodeSecond = "    // AvaCrypt Randomly Generated End\r\n\r\n";
+            ModelShaderDecodeSecond = "    // KannaProtecc Randomly Generated End\r\n\r\n";
 
             var isY = false;
 
@@ -54,10 +54,10 @@ namespace GeoTetra.GTAvaCrypt
             
             for (int i = 0; i < data.DividedCount; ++i)
             {
-                decodeKeys[i] = (Convert.ToSingle(keys[i*AvaCryptData.CountDivisor]) + data.RandomKeyMultiplier[i*AvaCryptData.CountDivisor]) *
-                                (Convert.ToSingle(keys[i*AvaCryptData.CountDivisor+1]) + data.RandomKeyMultiplier[i*AvaCryptData.CountDivisor+1]) *
-                                (Convert.ToSingle(keys[i*AvaCryptData.CountDivisor+2]) + data.RandomKeyMultiplier[i*AvaCryptData.CountDivisor+2]) *
-                                (Convert.ToSingle(keys[i*AvaCryptData.CountDivisor+3]) + data.RandomKeyMultiplier[i*AvaCryptData.CountDivisor+3]);
+                decodeKeys[i] = (Convert.ToSingle(keys[i*KannaProteccData.CountDivisor]) + data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor]) *
+                                (Convert.ToSingle(keys[i*KannaProteccData.CountDivisor+1]) + data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+1]) *
+                                (Convert.ToSingle(keys[i*KannaProteccData.CountDivisor+2]) + data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+2]) *
+                                (Convert.ToSingle(keys[i*KannaProteccData.CountDivisor+3]) + data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+3]);
                 Debug.Log("decodeKey: " + decodeKeys[i]);
             }
 
@@ -66,13 +66,13 @@ namespace GeoTetra.GTAvaCrypt
             for (int i = 0; i < data.DividedCount; ++i)
             {
                 float firstAdd = data.KeySign0[i] > 0
-                    ? decodeKeys[data.RandomKeyIndex[i*AvaCryptData.CountDivisor]] - decodeKeys[data.RandomKeyIndex[i*AvaCryptData.CountDivisor+1]]
-                    : decodeKeys[data.RandomKeyIndex[i*AvaCryptData.CountDivisor]] + decodeKeys[data.RandomKeyIndex[i*AvaCryptData.CountDivisor+1]];
+                    ? decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor]] - decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor+1]]
+                    : decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor]] + decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor+1]];
                 float firstSign = data.Sign0[i] > 0 ? Mathf.Sin(firstAdd) : Mathf.Cos(firstAdd);
 
                 float secondAdd = data.KeySign1[i] > 0
-                    ? decodeKeys[data.RandomKeyIndex[i*AvaCryptData.CountDivisor+2]] - decodeKeys[data.RandomKeyIndex[i*AvaCryptData.CountDivisor+3]]
-                    : decodeKeys[data.RandomKeyIndex[i*AvaCryptData.CountDivisor+2]] + decodeKeys[data.RandomKeyIndex[i*AvaCryptData.CountDivisor+3]];
+                    ? decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor+2]] - decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor+3]]
+                    : decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor+2]] + decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor+3]];
                 float secondSign = data.Sign1[i] > 0 ? Mathf.Sin(secondAdd) : Mathf.Cos(secondAdd);
 
                 data.ComKey[i] = firstSign * data.RandomDivideMultiplier[i] * secondSign;
@@ -82,9 +82,9 @@ namespace GeoTetra.GTAvaCrypt
                 string secondAddStr = data.KeySign1[i] > 0 ? "-" : "+";
                 string secondSignStr = data.Sign1[i] > 0 ? "sin" : "cos";
 
-                sb0.AppendLine($"    float decodeKey{i} = (_BitKey{i*AvaCryptData.CountDivisor} + {data.RandomKeyMultiplier[i*AvaCryptData.CountDivisor]}) * (_BitKey{i*AvaCryptData.CountDivisor+1} + {data.RandomKeyMultiplier[i*AvaCryptData.CountDivisor+1]}) * (_BitKey{i*AvaCryptData.CountDivisor+2} + {data.RandomKeyMultiplier[i*AvaCryptData.CountDivisor+2]}) * (_BitKey{i*AvaCryptData.CountDivisor+3} + {data.RandomKeyMultiplier[i*AvaCryptData.CountDivisor+3]});");
+                sb0.AppendLine($"    float decodeKey{i} = (_BitKey{i*KannaProteccData.CountDivisor} + {data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor]}) * (_BitKey{i*KannaProteccData.CountDivisor+1} + {data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+1]}) * (_BitKey{i*KannaProteccData.CountDivisor+2} + {data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+2]}) * (_BitKey{i*KannaProteccData.CountDivisor+3} + {data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+3]});");
 
-                sb1.AppendLine($"    float comKey{i} = {firstSignStr}(decodeKey{data.RandomKeyIndex[i*AvaCryptData.CountDivisor]} {firstAddStr} decodeKey{data.RandomKeyIndex[i*AvaCryptData.CountDivisor+1]}) * {data.RandomDivideMultiplier[i]} * {secondSignStr}(decodeKey{data.RandomKeyIndex[i*AvaCryptData.CountDivisor+2]} {secondAddStr} decodeKey{data.RandomKeyIndex[i*AvaCryptData.CountDivisor+3]});");
+                sb1.AppendLine($"    float comKey{i} = {firstSignStr}(decodeKey{data.RandomKeyIndex[i*KannaProteccData.CountDivisor]} {firstAddStr} decodeKey{data.RandomKeyIndex[i*KannaProteccData.CountDivisor+1]}) * {data.RandomDivideMultiplier[i]} * {secondSignStr}(decodeKey{data.RandomKeyIndex[i*KannaProteccData.CountDivisor+2]} {secondAddStr} decodeKey{data.RandomKeyIndex[i*KannaProteccData.CountDivisor+3]});");
             }
 
             string decodeShader = $"{ModelDecodeIfndef}{ModelShaderDecodeFirst}{sb0}\r\n{sb1}{ModelShaderDecodeSecond}{ModelDecodeEndif}";
@@ -166,13 +166,13 @@ float _BitKey31;
 
 float4 modelDecode(float4 vertex, float3 normal, float2 uv0, float2 uv1)
 {
-    // AvaCrypt Randomly Generated Begin
+    // KannaProtecc Randomly Generated Begin
 ";
 
         // 1/2 divided length to each uv, total comKey count is 
         static string ModelShaderDecodeSecond =
 @" 
-    // AvaCrypt Randomly Generated End
+    // KannaProtecc Randomly Generated End
 
     vertex.xyz -= normal * (uv0.x * comKey0);
     vertex.xyz -= normal * (uv0.y * comKey1);
@@ -188,7 +188,7 @@ float4 modelDecode(float4 vertex, float3 normal, float2 uv0, float2 uv1)
 }";
     }
 
-    public class AvaCryptData
+    public class KannaProteccData
     {
         public const int CountDivisor = 4;
 
@@ -219,7 +219,7 @@ float4 modelDecode(float4 vertex, float3 normal, float2 uv0, float2 uv1)
             }
         }
         
-        public AvaCryptData(int count)
+        public KannaProteccData(int count)
         {
             DividedCount = count / CountDivisor;
             Sign0 = new int[DividedCount];

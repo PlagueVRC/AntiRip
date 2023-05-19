@@ -9,18 +9,18 @@ using AnimatorController = UnityEditor.Animations.AnimatorController;
 using AnimatorControllerLayer = UnityEditor.Animations.AnimatorControllerLayer;
 using Object = UnityEngine.Object;
 
-namespace GeoTetra.GTAvaCrypt
+namespace Kanna.Protecc
 {
-    public class AvaCryptController
+    public class KannaProteccController
     {
-        string[] _avaCryptKeyNames;
+        string[] _KannaProteccKeyNames;
         AnimationClip[] _clipsFalse;
         AnimationClip[] _clipsTrue;
 
-        const string StateMachineName = "AvaCryptKey{0} State Machine";
-        const string BlendTreeName = "AvaCryptKey{0} Blend Tree";
-        const string BitKeySwitchName = "AvaCryptKey{0}{1} BitKey Switch";
-        const string BitKeySwitchTransitionName = "AvaCryptKey{0}{1} BitKey Switch Transition";
+        const string StateMachineName = "KannaProteccKey{0} State Machine";
+        const string BlendTreeName = "KannaProteccKey{0} Blend Tree";
+        const string BitKeySwitchName = "KannaProteccKey{0}{1} BitKey Switch";
+        const string BitKeySwitchTransitionName = "KannaProteccKey{0}{1} BitKey Switch Transition";
         const string TrueLabel = "True";
         const string FalseLabel = "False";
         
@@ -28,16 +28,16 @@ namespace GeoTetra.GTAvaCrypt
         {
             _clipsFalse = new AnimationClip[count];
             _clipsTrue = new AnimationClip[count];
-            _avaCryptKeyNames = new string[count];
-            for (int i = 0; i < _avaCryptKeyNames.Length; ++i)
+            _KannaProteccKeyNames = new string[count];
+            for (int i = 0; i < _KannaProteccKeyNames.Length; ++i)
             {
-                _avaCryptKeyNames[i] = $"BitKey{i}";
+                _KannaProteccKeyNames[i] = $"BitKey{i}";
             }
         }
         
         public void ValidateAnimations(GameObject gameObject, AnimatorController controller)
         {
-            for (int i = 0; i < _avaCryptKeyNames.Length; ++i)
+            for (int i = 0; i < _KannaProteccKeyNames.Length; ++i)
             {
                 ValidateClip(gameObject, controller, i);
             }
@@ -72,7 +72,7 @@ namespace GeoTetra.GTAvaCrypt
             string controllerPath = AssetDatabase.GetAssetPath(controller);
             string controllerFileName = System.IO.Path.GetFileName(controllerPath);
             
-            string clipName = $"{gameObject.name}_{_avaCryptKeyNames[index]}";
+            string clipName = $"{gameObject.name}_{_KannaProteccKeyNames[index]}";
             string clipNameFalse = $"{clipName}_False";
             string clipNameFalseFile = $"{clipNameFalse}.anim";
             string clipNameTrue = $"{clipName}_True";
@@ -118,7 +118,7 @@ namespace GeoTetra.GTAvaCrypt
 
         public void ValidateParameters(AnimatorController controller)
         {
-            foreach (string keyName in _avaCryptKeyNames)
+            foreach (string keyName in _KannaProteccKeyNames)
             {
                 if (controller.parameters.All(parameter => parameter.name != keyName))
                 {
@@ -135,16 +135,16 @@ namespace GeoTetra.GTAvaCrypt
 
         public void ValidateLayers(AnimatorController controller)
         {
-            for (int i = 0; i < _avaCryptKeyNames.Length; ++i)
+            for (int i = 0; i < _KannaProteccKeyNames.Length; ++i)
             {
-                if (controller.layers.All(l => l?.name != _avaCryptKeyNames[i]))
+                if (controller.layers.All(l => l?.name != _KannaProteccKeyNames[i]))
                 {
                     CreateLayer(i, controller);
                 }
                 else
                 {
                     var layerList = controller.layers.ToList();
-                    List<AnimatorControllerLayer> layers = layerList.FindAll(l => l.name == _avaCryptKeyNames[i]);
+                    List<AnimatorControllerLayer> layers = layerList.FindAll(l => l.name == _KannaProteccKeyNames[i]);
                     if (layers.Count > 1)
                     {
                         // Debug.Log("Duplicate layers flushing!");
@@ -175,9 +175,9 @@ namespace GeoTetra.GTAvaCrypt
         
         public void ValidateBitKeySwitches(AnimatorController controller)
         {
-            for (int i = 0; i < _avaCryptKeyNames.Length; ++i)
+            for (int i = 0; i < _KannaProteccKeyNames.Length; ++i)
             {
-                AnimatorControllerLayer layer = controller.layers.FirstOrDefault(l => l.name == _avaCryptKeyNames[i]);
+                AnimatorControllerLayer layer = controller.layers.FirstOrDefault(l => l.name == _KannaProteccKeyNames[i]);
                 ValidateBitKeySwitch(i, layer, controller);
             }
         }
@@ -212,13 +212,13 @@ namespace GeoTetra.GTAvaCrypt
 
         void CreateLayer(int index, AnimatorController controller)
         {
-            // Debug.Log($"Creating layer: {_avaCryptKeyNames[index]}");
+            // Debug.Log($"Creating layer: {_KannaProteccKeyNames[index]}");
             
             string controllerPath = AssetDatabase.GetAssetPath(controller);
 
             AnimatorControllerLayer layer = new AnimatorControllerLayer
             {
-                name = _avaCryptKeyNames[index],
+                name = _KannaProteccKeyNames[index],
                 defaultWeight = 1,
                 stateMachine = new AnimatorStateMachine
                 {
@@ -258,7 +258,7 @@ namespace GeoTetra.GTAvaCrypt
                 AnimatorCondition falseCondition = new AnimatorCondition
                 {
                     mode = switchState ? AnimatorConditionMode.If : AnimatorConditionMode.IfNot,
-                    parameter = _avaCryptKeyNames[index],
+                    parameter = _KannaProteccKeyNames[index],
                     threshold = 0
                 };
                 transition.conditions = new[] {falseCondition};
@@ -267,7 +267,7 @@ namespace GeoTetra.GTAvaCrypt
             {
                 AnimatorCondition condition = transition.conditions[0];
                 condition.mode = switchState ? AnimatorConditionMode.If : AnimatorConditionMode.IfNot;
-                condition.parameter = _avaCryptKeyNames[index];
+                condition.parameter = _KannaProteccKeyNames[index];
                 condition.threshold = 0;
             }
 
@@ -286,7 +286,7 @@ namespace GeoTetra.GTAvaCrypt
             AnimatorCondition condition = new AnimatorCondition
             {
                 mode = switchState ?  AnimatorConditionMode.If : AnimatorConditionMode.IfNot,
-                parameter = _avaCryptKeyNames[index],
+                parameter = _KannaProteccKeyNames[index],
                 threshold = 0
             };
 
@@ -301,19 +301,19 @@ namespace GeoTetra.GTAvaCrypt
 
         string StateLabel(bool state) => state ? TrueLabel : FalseLabel;
 
-        public void DeleteAvaCryptObjectsFromController(AnimatorController controller)
+        public void DeleteKannaProteccObjectsFromController(AnimatorController controller)
         {
             string controllerPath = AssetDatabase.GetAssetPath(controller);
             foreach (Object subObject in AssetDatabase.LoadAllAssetsAtPath(controllerPath))
             {
-                if (subObject != null && subObject.name.Contains("AvaCrypt"))
+                if (subObject != null && subObject.name.Contains("KannaProtecc"))
                 {
                     AssetDatabase.RemoveObjectFromAsset(subObject);
                 }
             }
             AssetDatabase.SaveAssets();
             
-            foreach (string keyName in _avaCryptKeyNames)
+            foreach (string keyName in _KannaProteccKeyNames)
             {
                 var layerList = controller.layers.ToList();
                 layerList.RemoveAll(l => l.name == keyName);
