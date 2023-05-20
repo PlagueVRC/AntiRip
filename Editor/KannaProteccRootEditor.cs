@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEditorInternal;
 using UnityEngine.SceneManagement;
+using VRC.SDK3.Avatars.Components;
 
 namespace Kanna.Protecc
 {
@@ -112,7 +113,7 @@ namespace Kanna.Protecc
 
         void AdditionalDrawHeader(Rect rect)
         {
-            EditorGUI.LabelField(rect, new GUIContent("Additional Materials", "This lets you specify additional materials to have the AvaCrypt code injected into when you click 'EncryptAvatar'. This will let you encrypt materials used in material swaps."));
+            EditorGUI.LabelField(rect, new GUIContent("Additional Materials", "This lets you specify additional materials to have the Kanna Protecc code injected into when you click 'EncryptAvatar'. This will let you encrypt materials used in material swaps."));
         }
 
         void AdditionalDrawListItems(Rect rect, int index, bool isActive, bool isFocused)
@@ -123,7 +124,7 @@ namespace Kanna.Protecc
 
         void IgnoreDrawHeader(Rect rect)
         {
-            EditorGUI.LabelField(rect, new GUIContent("Ignored Materials", "These materials will be ignored by Avacrypt. If a mesh contains other materials that are not ignored it will still be encrypted."));
+            EditorGUI.LabelField(rect, new GUIContent("Ignored Materials", "These materials will be ignored by Kanna Protecc. If a mesh contains other materials that are not ignored it will still be encrypted."));
         }
 
         void IgnoreDrawListItems(Rect rect, int index, bool isActive, bool isFocused)
@@ -147,6 +148,9 @@ namespace Kanna.Protecc
             EditorGUILayout.Space();
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
+
+            GUI.enabled = !KannaProteccRoot.IsProtected;
+
             if (GUILayout.Button(new GUIContent("Encrypt Avatar", "Validate the AnimatorController, then create encrypted avatar."), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
             {
                 KannaProteccRoot.EncryptAvatar();
@@ -156,7 +160,7 @@ namespace Kanna.Protecc
 
             if (GUILayout.Button(new GUIContent("Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
             {
-                KannaProteccRoot.WriteBitKeysToExpressions();
+                KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name + "_Encrypted_Obfuscated").GetComponent<VRCAvatarDescriptor>().expressionParameters, true);
             }
 
             GUI.enabled = true;
@@ -173,7 +177,7 @@ namespace Kanna.Protecc
             GUILayout.FlexibleSpace();
             EditorGUILayout.FloatField(m_DistortRatioProperty.floatValue);
             GUILayout.EndHorizontal();
-            GUILayout.Label("Set high enough so your encrypted mesh is visuall. Default = .4", EditorStyles.wordWrappedLabel);
+            GUILayout.Label("Set high enough so your encrypted mesh is visually wrecked. Default = .4", EditorStyles.wordWrappedLabel);
             GUILayout.EndVertical();
 
             GUILayout.FlexibleSpace();
@@ -187,7 +191,7 @@ namespace Kanna.Protecc
             GUILayout.Space(5f);
 
             //draw additional and ignored material lists here
-            GUILayout.Label(new GUIContent("Materials", "By default Avacrypt will inject its code into any Poiyomi 8 materials on this avatar. Here you can adjust that behaviour to include or remove some materials."), EditorStyles.boldLabel);
+            GUILayout.Label(new GUIContent("Materials", "By default Kanna Protecc will inject its code into any Supported materials on this avatar. Here you can adjust that behaviour to include or remove some materials."), EditorStyles.boldLabel);
             using (new GUILayout.VerticalScope(EditorStyles.helpBox))
             {
                 m_AdditionalList.DoLayoutList();
@@ -200,7 +204,7 @@ namespace Kanna.Protecc
 
             //buttons for poi mats and key lock
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button(new GUIContent("Unlock Poi mats", "Unlock All Poi Materials In Hierarchy")))
+            if (GUILayout.Button(new GUIContent("Unlock materials", "Unlock All Materials In Hierarchy")))
             {
                 MenuUtilites.UnlockAllPoiMaterialsInHierarchy(null);
             }
@@ -299,7 +303,7 @@ namespace Kanna.Protecc
                     KannaProteccRoot.ValidateAnimatorController();
                 }
 
-                if (GUILayout.Button(new GUIContent("Delete AvaCrypt Objects From Controller", "Deletes all the objects AvaCrypt wrote to your controller. Try running this if something gets weird with encrypting"), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
+                if (GUILayout.Button(new GUIContent("Delete Kanna Protecc Objects From Controller", "Deletes all the objects Kanna Protecc wrote to your controller. Try running this if something gets weird with encrypting"), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
                 {
                     KannaProteccRoot.DeleteKannaProteccObjectsFromController();
                 }

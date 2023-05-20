@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -10,6 +11,24 @@ using Random = UnityEngine.Random;
 
 namespace Kanna.Protecc
 {
+    public class KannaDynamicShaderData
+    {
+        public class KannaReplaceText
+        {
+            public string TextToFind;
+            public string TextToReplaceWith;
+            public bool ApplyToIncludes;
+            public string[] ExcludeIncludes = {};
+        }
+
+        public string ShaderName_StartsWith;
+        public bool SupportsLocking;
+
+        public KannaReplaceText UV;
+        public KannaReplaceText Vert;
+        public KannaReplaceText VertexSetup;
+    }
+
     public static class KannaProteccMaterial
     {
         public static string GenerateDecodeShader(KannaProteccData data, bool[] keys)
@@ -90,30 +109,117 @@ namespace Kanna.Protecc
             string decodeShader = $"{ModelDecodeIfndef}{ModelShaderDecodeFirst}{sb0}\r\n{sb1}{ModelShaderDecodeSecond}{ModelDecodeEndif}";
             return decodeShader;
         }
-        
-        public const string DefaultFallback = "\"VRCFallback\" = \"Standard\"";
-        
-        public const string AlteredFallback = "\"VRCFallback\" = \"Hidden\"";
 
-        public const string DefaultPoiUV = "float2 uv3 : TEXCOORD3;";
+        public static List<KannaDynamicShaderData> Shaders = new List<KannaDynamicShaderData>
+        {
+            new KannaDynamicShaderData
+            {
+                ShaderName_StartsWith = ".poiyomi/Poiyomi 7.3",
+                SupportsLocking = true,
+
+                UV = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = "float2 uv3 : TEXCOORD3;",
+                    TextToReplaceWith = "float2 uv3 : TEXCOORD3;\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
+                    ApplyToIncludes = true,
+                },
+
+                Vert = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = "v2f vert(",
+                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\nv2f vert(",
+                    ApplyToIncludes = true,
+                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
+                },
+
+                VertexSetup = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = "UNITY_SETUP_INSTANCE_ID(v);",
+                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\nUNITY_SETUP_INSTANCE_ID(v);",
+                    ApplyToIncludes = true,
+                }
+            },
+
+            new KannaDynamicShaderData
+            {
+                ShaderName_StartsWith = ".poiyomi/Poiyomi 8.0",
+                SupportsLocking = true,
+
+                UV = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = "float2 uv3 : TEXCOORD3;",
+                    TextToReplaceWith = "float2 uv3 : TEXCOORD3;\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
+                    ApplyToIncludes = true,
+                },
+
+                Vert = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = "v2f vert(",
+                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\nv2f vert(",
+                    ApplyToIncludes = true,
+                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
+                },
+
+                VertexSetup = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = "UNITY_SETUP_INSTANCE_ID(v);",
+                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\nUNITY_SETUP_INSTANCE_ID(v);",
+                    ApplyToIncludes = true,
+                }
+            },
+
+            new KannaDynamicShaderData
+            {
+                ShaderName_StartsWith = ".poiyomi/Poiyomi 8.1",
+                SupportsLocking = true,
+
+                UV = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = "float2 uv3 : TEXCOORD3;",
+                    TextToReplaceWith = "float2 uv3 : TEXCOORD3;\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
+                    ApplyToIncludes = true,
+                },
+
+                Vert = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = "VertexOut vert(",
+                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\nVertexOut vert(",
+                    ApplyToIncludes = true,
+                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
+                },
+
+                VertexSetup = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = "UNITY_SETUP_INSTANCE_ID(v);",
+                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\nUNITY_SETUP_INSTANCE_ID(v);",
+                    ApplyToIncludes = true,
+                }
+            }
+        };
+
+        //public const string DefaultFallback = "\"VRCFallback\" = \"Standard\"";
         
-        public const string AlteredPoiUV = "float2 uv3 : TEXCOORD3; float3 uv6: TEXCOORD6; float3 uv7: TEXCOORD7;";
+        //public const string AlteredFallback = "\"VRCFallback\" = \"Hidden\""; // material.SetOverrideTag("VRCFallback", "Hidden");
+
+        //public const string DefaultPoiUV = "float2 uv3 : TEXCOORD3;";
+        
+        //public const string AlteredPoiUV = "float2 uv3 : TEXCOORD3; float3 uv6: TEXCOORD6; float3 uv7: TEXCOORD7;";
 
         // public const string DefaultPoiUVArray = "float2 uv[4] : TEXCOORD0;";
         //
         // public const string AlteredPoiUVArray = "float2 uv[4] : TEXCOORD0; float2 avUv6 : AVAUV0; float2 avUv7 : AVAUV1;";
         
-        public const string DefaultPoiVert = "v2f vert(";
+        //public const string DefaultPoiVert = "v2f vert(";
 
-        public const string NewDefaultPoiVert = "VertexOut vert(";
+        //public const string NewDefaultPoiVert = "VertexOut vert(";
 
-        public const string AlteredPoiVert = "#include \"KannaModelDecode.cginc\"\nv2f vert(";
+        //public const string AlteredPoiVert = "#include \"KannaModelDecode.cginc\"\nv2f vert(";
 
-        public const string NewAlteredPoiVert = "#include \"KannaModelDecode.cginc\"\nVertexOut vert(";
+        //public const string NewAlteredPoiVert = "#include \"KannaModelDecode.cginc\"\nVertexOut vert(";
 
-        public const string DefaultVertSetup = "UNITY_SETUP_INSTANCE_ID(v);";
+        //public const string DefaultVertSetup = "UNITY_SETUP_INSTANCE_ID(v);";
         
-        public const string AlteredVertSetup = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7); UNITY_SETUP_INSTANCE_ID(v);";
+        //public const string AlteredVertSetup = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7); UNITY_SETUP_INSTANCE_ID(v);";
 
         // public const string DefaultUvTransfer = "o.uv[3] = v.uv3;";
         //

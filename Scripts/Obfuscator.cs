@@ -91,7 +91,12 @@ namespace Kanna.Protecc
             try
             {
                 if (string.IsNullOrEmpty(root.path))
-                    root.path = root.pathPrefix + DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                    root.path = root.pathPrefix + root.gameObject.name;
+
+                if (AssetDatabase.IsValidFolder(root.path))
+                {
+                    FileUtil.DeleteFileOrDirectory(root.path);
+                }
 
                 CreateFolder(root.path);
 

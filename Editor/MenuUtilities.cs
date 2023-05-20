@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Thry;
 using UnityEditor;
@@ -11,10 +12,12 @@ namespace Kanna.Protecc
     {
         const string okText = "Ok";
         
-        [MenuItem("Tools/Kanna.Protecc/Unlock All Poi Materials In Hierarchy...", false)]
+        [MenuItem("Tools/Kanna.Protecc/Unlock All Materials In Hierarchy...", false)]
         public static void UnlockAllPoiMaterialsInHierarchy(MenuCommand command)
         {
-            const string message = "Select a Root GameObject which has children with locked Poiyomi materials.";
+            KannaProteccRoot.Instance.IsProtected = false;
+
+            const string message = "Select a Root GameObject which has children with locked materials.";
             
             void ErrorDialogue()
             {
@@ -54,7 +57,19 @@ namespace Kanna.Protecc
             {
                 foreach (var material in renderer.sharedMaterials)
                 {
-                    if (material != null && material.shader.name.Contains("Locked") && material.shader.name.Contains("Poiyomi"))
+                    if (material == null)
+                    {
+                        continue;
+                    }
+
+                    var path = AssetDatabase.GetAssetPath(material.shader);
+
+                    if (path.Contains("_Protected.shader") && File.Exists(path.Replace("_Protected.shader", ".shader")))
+                    {
+                        material.shader = AssetDatabase.LoadAssetAtPath<Shader>(AssetDatabase.GetAssetPath(material.shader).Replace("_Protected.shader", ".shader"));
+                    }
+
+                    if (KannaProteccMaterial.Shaders.FirstOrDefault(o => material.shader.name.Replace("Hidden/Locked/", "").StartsWith(o.ShaderName_StartsWith)) is var shaderMatch && shaderMatch != null && shaderMatch.SupportsLocking && material.shader.name.Contains("Locked"))
                     {
                         poiMats.Add(material);
                     }
@@ -65,7 +80,19 @@ namespace Kanna.Protecc
             {
                 foreach (var material in renderer.sharedMaterials)
                 {
-                    if (material != null && material.shader.name.Contains("Locked") && material.shader.name.Contains("Poiyomi"))
+                    if (material == null)
+                    {
+                        continue;
+                    }
+
+                    var path = AssetDatabase.GetAssetPath(material.shader);
+
+                    if (path.Contains("_Protected.shader") && File.Exists(path.Replace("_Protected.shader", ".shader")))
+                    {
+                        material.shader = AssetDatabase.LoadAssetAtPath<Shader>(AssetDatabase.GetAssetPath(material.shader).Replace("_Protected.shader", ".shader"));
+                    }
+
+                    if (KannaProteccMaterial.Shaders.FirstOrDefault(o => material.shader.name.Replace("Hidden/Locked/", "").StartsWith(o.ShaderName_StartsWith)) is var shaderMatch && shaderMatch != null && shaderMatch.SupportsLocking && material.shader.name.Contains("Locked"))
                     {
                         poiMats.Add(material);
                     }
@@ -74,7 +101,7 @@ namespace Kanna.Protecc
             
             if (poiMats.Count == 0)
             {
-                EditorUtility.DisplayDialog("All Poiyomi materials already unlocked in hiearchy!",
+                EditorUtility.DisplayDialog("All materials already unlocked in hiearchy!",
                     message,
                     okText);
                 return;

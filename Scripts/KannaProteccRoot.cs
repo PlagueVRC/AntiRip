@@ -28,6 +28,9 @@ namespace Kanna.Protecc
         public Obfuscator obfuscator = new Obfuscator();
 #endif
 
+        [SerializeField]
+        public bool IsProtected;
+
         [Header("Set high enough so your encrypted mesh is visuall. Default = .1")]
         [Range(.1f, .4f)]
         [SerializeField] 
@@ -234,7 +237,7 @@ namespace Kanna.Protecc
             AssetDatabase.Refresh();
 
             // Do Obfuscation
-            obfuscator.Obfuscate(encodedGameObject, this);
+            var newobj = obfuscator.Obfuscate(encodedGameObject, this);
             
             encodedGameObject.SetActive(false); // Temp
 
@@ -243,6 +246,10 @@ namespace Kanna.Protecc
 
             // Force unity to import things
             AssetDatabase.Refresh();
+
+            WriteBitKeysToExpressions(newobj.GetComponent<VRCAvatarDescriptor>().expressionParameters, true);
+
+            IsProtected = true;
         }
 
         void AddMaterialsToIgnoreList(Material[] materials, List<Material> aggregateIgnoredMaterials)
@@ -263,19 +270,19 @@ namespace Kanna.Protecc
             var ignoredMats = false;
             foreach (var mat in materials)
             {
-                if (mat != null && mat.shader.name.Contains(".poiyomi/Poiyomi"))
+                if (mat != null && KannaProteccMaterial.Shaders.FirstOrDefault(o => mat.shader.name.Replace("Hidden/Locked/", "").StartsWith(o.ShaderName_StartsWith)) is var shaderMatch && shaderMatch != null)
                 {
-                    if (!mat.shader.name.Contains("Hidden/Locked"))
+                    if (shaderMatch.SupportsLocking && !mat.shader.name.Contains("Locked"))
                     {
                         ShaderOptimizer.SetLockedForAllMaterials(new []{mat}, 1, true, false, false);
                     }
                     
-                    if (!mat.shader.name.Contains("Hidden/Locked"))
+                    if (shaderMatch.SupportsLocking && !mat.shader.name.Contains("Locked"))
                     {
                         Debug.LogError($"{mat.name} {mat.shader.name} Trying to Inject not-locked shader?!");
                         continue;
                     }
-
+                    
                     if (aggregateIgnoredMaterials.Contains(mat))
                     {
                         ignoredMats = true;
@@ -285,7 +292,7 @@ namespace Kanna.Protecc
                     var shaderPath = AssetDatabase.GetAssetPath(mat.shader);
                     var path = Path.GetDirectoryName(shaderPath);
                     var decodeShaderPath = Path.Combine(path, "KannaModelDecode.cginc");
-;                   File.WriteAllText(decodeShaderPath, decodeShader);
+                    File.WriteAllText(decodeShaderPath, decodeShader);
 
                     var shaderText = File.ReadAllText(shaderPath);
                     if (!shaderText.Contains("//KannaProtecc Injected"))
@@ -293,43 +300,58 @@ namespace Kanna.Protecc
                         _sb.Clear();
                         _sb.AppendLine("//KannaProtecc Injected");
                         _sb.Append(shaderText);
-                        _sb.ReplaceOrLog(KannaProteccMaterial.DefaultPoiUV, KannaProteccMaterial.AlteredPoiUV);
-                        // _sb.ReplaceOrLog(KannaProteccMaterial.DefaultPoiUVArray, KannaProteccMaterial.AlteredPoiUVArray);
-                        if (!_sb.ReplaceOrLog(KannaProteccMaterial.DefaultPoiVert, KannaProteccMaterial.AlteredPoiVert))
-                        {
-                            _sb.ReplaceOrLog(KannaProteccMaterial.NewDefaultPoiVert, KannaProteccMaterial.NewAlteredPoiVert);
-                        }
-                        _sb.ReplaceOrLog(KannaProteccMaterial.DefaultVertSetup, KannaProteccMaterial.AlteredVertSetup);
-                        // _sb.ReplaceOrLog(KannaProteccMaterial.DefaultUvTransfer, KannaProteccMaterial.AlteredUvTransfer);
-                        _sb.ReplaceOrLog(KannaProteccMaterial.DefaultFallback, KannaProteccMaterial.AlteredFallback);
-                        File.WriteAllText(shaderPath, _sb.ToString());
+
+                        _sb.ReplaceOrLog(shaderMatch.UV.TextToFind, shaderMatch.UV.TextToReplaceWith);
+
+                        _sb.ReplaceOrLog(shaderMatch.Vert.TextToFind, shaderMatch.Vert.TextToReplaceWith);
+
+                        _sb.ReplaceOrLog(shaderMatch.VertexSetup.TextToFind, shaderMatch.VertexSetup.TextToReplaceWith);
+
+                        File.WriteAllText(shaderPath.Replace(Path.GetExtension(shaderPath), "") + "_Protected.shader", _sb.ToString());
+
+                        AssetDatabase.Refresh();
+
+                        mat.shader = AssetDatabase.LoadAssetAtPath<Shader>(shaderPath.Replace(Path.GetExtension(shaderPath), "") + "_Protected.shader");
+                        shaderPath = shaderPath.Replace(Path.GetExtension(shaderPath), "") + "_Protected.shader";
+
+                        mat.SetOverrideTag("VRCFallback", "Hidden");
                     }
 
-                    foreach (var include in Directory.GetFiles(path, "*.cginc"))
-                    {
-                        if (include.Contains("ShadowVert")) // Bodged Fix
-                        {
-                            continue;
-                        }
+                    var IncludeFileNames = new List<string>();
 
+                    foreach (var include in Directory.GetFiles(path, "*.cginc", SearchOption.AllDirectories).Where(o => !o.Contains("KannaModelDecode.cginc")))
+                    {
                         var includeText = File.ReadAllText(include);
+
                         if (!includeText.Contains("//KannaProtecc Injected"))
                         {
                             _sb.Clear();
-                            _sb.AppendLine("//KannaProtecc Injected");
+                            _sb.AppendLine("//KannaProtecc Injected\r\n");
                             _sb.Append(includeText);
-                            _sb.ReplaceOrLog(KannaProteccMaterial.DefaultPoiUV, KannaProteccMaterial.AlteredPoiUV);
-                            // _sb.ReplaceOrLog(KannaProteccMaterial.DefaultPoiUVArray, KannaProteccMaterial.AlteredPoiUVArray);
-                            if (!_sb.ReplaceOrLog(KannaProteccMaterial.DefaultPoiVert, KannaProteccMaterial.AlteredPoiVert))
-                            {
-                                _sb.ReplaceOrLog(KannaProteccMaterial.NewDefaultPoiVert, KannaProteccMaterial.NewAlteredPoiVert);
-                            }
-                            _sb.ReplaceOrLog(KannaProteccMaterial.DefaultVertSetup, KannaProteccMaterial.AlteredVertSetup);
-                            // _sb.ReplaceOrLog(KannaProteccMaterial.DefaultUvTransfer, KannaProteccMaterial.AlteredUvTransfer);
-                            _sb.ReplaceOrLog(KannaProteccMaterial.DefaultFallback, KannaProteccMaterial.AlteredFallback);
-                            File.WriteAllText(include, _sb.ToString());
+
+                            if (shaderMatch.UV.ApplyToIncludes && shaderMatch.UV.ExcludeIncludes.All(o => !include.Contains(o)))
+                                _sb.ReplaceOrLog(shaderMatch.UV.TextToFind, shaderMatch.UV.TextToReplaceWith);
+
+                            if (shaderMatch.Vert.ApplyToIncludes && shaderMatch.Vert.ExcludeIncludes.All(o => !include.Contains(o)))
+                                _sb.ReplaceOrLog(shaderMatch.Vert.TextToFind, shaderMatch.Vert.TextToReplaceWith);
+
+                            if (shaderMatch.VertexSetup.ApplyToIncludes && shaderMatch.VertexSetup.ExcludeIncludes.All(o => !include.Contains(o)))
+                                _sb.ReplaceOrLog(shaderMatch.VertexSetup.TextToFind, shaderMatch.VertexSetup.TextToReplaceWith);
+
+                            var newFileName = include.Replace(".cginc", "") + "_Protected.cginc";
+                            IncludeFileNames.Add(Path.GetFileName(newFileName));
+                            File.WriteAllText(newFileName, _sb.ToString());
                         }
                     }
+
+                    var FileText = File.ReadAllText(shaderPath);
+
+                    foreach (var newName in IncludeFileNames)
+                    {
+                        FileText = FileText.Replace(newName.Replace("_Protected", ""), newName);
+                    }
+
+                    File.WriteAllText(shaderPath, FileText);
 
                     materialEncrypted = true;
                 }
@@ -431,7 +453,7 @@ namespace Kanna.Protecc
                 System.IO.File.WriteAllText(filePath, JsonUtility.ToJson(paramFile));
             }
             
-            EditorUtility.DisplayDialog("Successfully Wrote Keys!", "Your avatar should now just work in VRChat. If you accidentally hit 'Reset Avatar' in VRC 3.0 menu, you need to run this again.","Okay");
+            EditorUtility.DisplayDialog("Successfully Wrote Keys!", "Your avatar should now just work in VRChat. If you accidentally hit 'Reset Avatar' in VRC 3.0 menu, you need to click Write Keys again.","Okay");
             
 #else
             Debug.LogError("Can't find VRC SDK?");
@@ -562,7 +584,7 @@ namespace Kanna.Protecc
             }
             else
             {
-                //Debug.LogError($"{text} Does Not Contain {textToReplace}!");
+                Debug.LogError($"{text} Does Not Contain {textToReplace}!");
             }
 
             return false;
