@@ -32,7 +32,7 @@ namespace Kanna.Protecc
                 return;
             }
 
-            GameObject gameObject = (Selection.objects[0] as GameObject);
+            var gameObject = (Selection.objects[0] as GameObject);
             
             if (gameObject == null)
             {
@@ -40,8 +40,8 @@ namespace Kanna.Protecc
                 return;
             }
 
-            SkinnedMeshRenderer[] skinnedMeshRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true);
-            MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer>(true);
+            var skinnedMeshRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            var renderers = gameObject.GetComponentsInChildren<MeshRenderer>(true);
 
             if (skinnedMeshRenderers.Length == 0 && renderers.Length == 0)
             {
@@ -51,7 +51,7 @@ namespace Kanna.Protecc
                 return;
             }
 
-            List<Material> poiMats = new List<Material>();
+            var poiMats = new List<Material>();
             
             foreach (var renderer in skinnedMeshRenderers)
             {

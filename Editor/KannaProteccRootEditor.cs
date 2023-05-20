@@ -118,7 +118,7 @@ namespace Kanna.Protecc
 
         void AdditionalDrawListItems(Rect rect, int index, bool isActive, bool isFocused)
         {
-            SerializedProperty element = m_AdditionalList.serializedProperty.GetArrayElementAtIndex(index);
+            var element = m_AdditionalList.serializedProperty.GetArrayElementAtIndex(index);
             EditorGUI.PropertyField(rect, element);
         }
 
@@ -129,7 +129,7 @@ namespace Kanna.Protecc
 
         void IgnoreDrawListItems(Rect rect, int index, bool isActive, bool isFocused)
         {
-            SerializedProperty element = m_IgnoreList.serializedProperty.GetArrayElementAtIndex(index);
+            var element = m_IgnoreList.serializedProperty.GetArrayElementAtIndex(index);
             EditorGUI.PropertyField(rect, element);
         }
 
@@ -142,7 +142,7 @@ namespace Kanna.Protecc
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
             
-            KannaProteccRoot KannaProteccRoot = target as KannaProteccRoot;
+            var KannaProteccRoot = target as KannaProteccRoot;
             
             //Do the big important buttons
             EditorGUILayout.Space();
@@ -239,7 +239,7 @@ namespace Kanna.Protecc
                 GUILayout.BeginVertical();
 
                 //Display in 4 columns
-                for (int i = 0; i < m_KeysProperty.arraySize/4; i++)
+                for (var i = 0; i < m_KeysProperty.arraySize/4; i++)
                 {
                     GUILayout.BeginHorizontal();
                     m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
@@ -249,7 +249,7 @@ namespace Kanna.Protecc
                 GUILayout.EndVertical();
                 GUILayout.FlexibleSpace();
                 GUILayout.BeginVertical();
-                for (int i = m_KeysProperty.arraySize / 4; i < m_KeysProperty.arraySize / 2; i++)
+                for (var i = m_KeysProperty.arraySize / 4; i < m_KeysProperty.arraySize / 2; i++)
                 {
                     GUILayout.BeginHorizontal();
                     m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
@@ -259,7 +259,7 @@ namespace Kanna.Protecc
                 GUILayout.EndVertical();
                 GUILayout.FlexibleSpace();
                 GUILayout.BeginVertical();
-                for (int i = m_KeysProperty.arraySize / 2; i < (m_KeysProperty.arraySize / 4) * 3 ; i++)
+                for (var i = m_KeysProperty.arraySize / 2; i < (m_KeysProperty.arraySize / 4) * 3 ; i++)
                 {
                     GUILayout.BeginHorizontal();
                     m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
@@ -269,7 +269,7 @@ namespace Kanna.Protecc
                 GUILayout.EndVertical();
                 GUILayout.FlexibleSpace();
                 GUILayout.BeginVertical();
-                for (int i = (m_KeysProperty.arraySize / 4) * 3; i < m_KeysProperty.arraySize; i++)
+                for (var i = (m_KeysProperty.arraySize / 4) * 3; i < m_KeysProperty.arraySize; i++)
                 {
                     GUILayout.BeginHorizontal();
                     m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));

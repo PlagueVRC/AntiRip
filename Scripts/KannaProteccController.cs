@@ -29,7 +29,7 @@ namespace Kanna.Protecc
             _clipsFalse = new AnimationClip[count];
             _clipsTrue = new AnimationClip[count];
             _KannaProteccKeyNames = new string[count];
-            for (int i = 0; i < _KannaProteccKeyNames.Length; ++i)
+            for (var i = 0; i < _KannaProteccKeyNames.Length; ++i)
             {
                 _KannaProteccKeyNames[i] = $"BitKey{i}";
             }
@@ -37,28 +37,28 @@ namespace Kanna.Protecc
         
         public void ValidateAnimations(GameObject gameObject, AnimatorController controller)
         {
-            for (int i = 0; i < _KannaProteccKeyNames.Length; ++i)
+            for (var i = 0; i < _KannaProteccKeyNames.Length; ++i)
             {
                 ValidateClip(gameObject, controller, i);
             }
 
-            MeshRenderer[] meshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>(true).Where(o => o.materials.Any(a => KannaProteccMaterial.IsShaderSupported(a.shader, out _))).ToArray();
-            foreach (MeshRenderer meshRenderer in meshRenderers)
+            var meshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>(true).Where(o => o.materials.Any(a => KannaProteccMaterial.IsShaderSupported(a.shader, out _))).ToArray();
+            foreach (var meshRenderer in meshRenderers)
             {
-                for (int i = 0; i < _clipsFalse.Length; ++i)
+                for (var i = 0; i < _clipsFalse.Length; ++i)
                 {
-                    string transformPath = AnimationUtility.CalculateTransformPath(meshRenderer.transform, gameObject.transform);
+                    var transformPath = AnimationUtility.CalculateTransformPath(meshRenderer.transform, gameObject.transform);
                     _clipsFalse[i].SetCurve(transformPath, typeof(MeshRenderer), $"material._BitKey{i}", new AnimationCurve(new Keyframe(0, 0)));
                     _clipsTrue[i].SetCurve(transformPath, typeof(MeshRenderer), $"material._BitKey{i}", new AnimationCurve(new Keyframe(0, 1)));
                 }
             }
 
-            SkinnedMeshRenderer[] skinnedMeshRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(o => o.materials.Any(a => KannaProteccMaterial.IsShaderSupported(a.shader, out _))).ToArray();
-            foreach (SkinnedMeshRenderer skinnedMeshRenderer in skinnedMeshRenderers)
+            var skinnedMeshRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(o => o.materials.Any(a => KannaProteccMaterial.IsShaderSupported(a.shader, out _))).ToArray();
+            foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
             {
-                for (int i = 0; i < _clipsFalse.Length; ++i)
+                for (var i = 0; i < _clipsFalse.Length; ++i)
                 {
-                    string transformPath = AnimationUtility.CalculateTransformPath(skinnedMeshRenderer.transform,gameObject.transform);
+                    var transformPath = AnimationUtility.CalculateTransformPath(skinnedMeshRenderer.transform,gameObject.transform);
                     _clipsFalse[i].SetCurve(transformPath, typeof(SkinnedMeshRenderer), $"material._BitKey{i}", new AnimationCurve(new Keyframe(0, 0)));
                     _clipsTrue[i].SetCurve(transformPath, typeof(SkinnedMeshRenderer), $"material._BitKey{i}", new AnimationCurve(new Keyframe(0, 1)));
                 }
@@ -69,15 +69,15 @@ namespace Kanna.Protecc
 
         private void ValidateClip(GameObject gameObject, AnimatorController controller, int index)
         {
-            string controllerPath = AssetDatabase.GetAssetPath(controller);
-            string controllerFileName = System.IO.Path.GetFileName(controllerPath);
+            var controllerPath = AssetDatabase.GetAssetPath(controller);
+            var controllerFileName = System.IO.Path.GetFileName(controllerPath);
             
-            string clipName = $"{gameObject.name}_{_KannaProteccKeyNames[index]}";
-            string clipNameFalse = $"{clipName}_False";
-            string clipNameFalseFile = $"{clipNameFalse}.anim";
-            string clipNameTrue = $"{clipName}_True";
-            string clipNameTrueFile = $"{clipNameTrue}.anim";
-            string folderPath = controllerPath.Replace(controllerFileName, $"BitKeyClips");
+            var clipName = $"{gameObject.name}_{_KannaProteccKeyNames[index]}";
+            var clipNameFalse = $"{clipName}_False";
+            var clipNameFalseFile = $"{clipNameFalse}.anim";
+            var clipNameTrue = $"{clipName}_True";
+            var clipNameTrueFile = $"{clipNameTrue}.anim";
+            var folderPath = controllerPath.Replace(controllerFileName, $"BitKeyClips");
             
             if (controller.animationClips.All(c => c.name != clipNameFalse))
             {
@@ -85,7 +85,7 @@ namespace Kanna.Protecc
                 {
                     name = clipNameFalse
                 };
-                string clip0Path = controllerPath.Replace(controllerFileName, $"BitKeyClips/{clipNameFalseFile}");
+                var clip0Path = controllerPath.Replace(controllerFileName, $"BitKeyClips/{clipNameFalseFile}");
                 if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
                 AssetDatabase.CreateAsset(_clipsFalse[index], clip0Path);
                 AssetDatabase.SaveAssets();
@@ -103,7 +103,7 @@ namespace Kanna.Protecc
                 {
                     name = clipNameTrue
                 };
-                string clip100Path = controllerPath.Replace(controllerFileName, $"BitKeyClips/{clipNameTrueFile}");
+                var clip100Path = controllerPath.Replace(controllerFileName, $"BitKeyClips/{clipNameTrueFile}");
                 if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
                 AssetDatabase.CreateAsset(_clipsTrue[index], clip100Path);
                 AssetDatabase.SaveAssets();
@@ -118,7 +118,7 @@ namespace Kanna.Protecc
 
         public void ValidateParameters(AnimatorController controller)
         {
-            foreach (string keyName in _KannaProteccKeyNames)
+            foreach (var keyName in _KannaProteccKeyNames)
             {
                 if (controller.parameters.All(parameter => parameter.name != keyName))
                 {
@@ -135,7 +135,7 @@ namespace Kanna.Protecc
 
         public void ValidateLayers(AnimatorController controller)
         {
-            for (int i = 0; i < _KannaProteccKeyNames.Length; ++i)
+            for (var i = 0; i < _KannaProteccKeyNames.Length; ++i)
             {
                 if (controller.layers.All(l => l?.name != _KannaProteccKeyNames[i]))
                 {
@@ -144,14 +144,14 @@ namespace Kanna.Protecc
                 else
                 {
                     var layerList = controller.layers.ToList();
-                    List<AnimatorControllerLayer> layers = layerList.FindAll(l => l.name == _KannaProteccKeyNames[i]);
+                    var layers = layerList.FindAll(l => l.name == _KannaProteccKeyNames[i]);
                     if (layers.Count > 1)
                     {
                         // Debug.Log("Duplicate layers flushing!");
                         // Somehow it added multiple layers so flush all duplicates and remake
-                        for (int l = layers.Count - 1; l > -1; --l)
+                        for (var l = layers.Count - 1; l > -1; --l)
                         {
-                            int layerIndex = layerList.IndexOf(layers[l]);
+                            var layerIndex = layerList.IndexOf(layers[l]);
                             if (layerIndex != -1)
                                 controller.RemoveLayer(layerIndex);
                         }
@@ -165,7 +165,7 @@ namespace Kanna.Protecc
                     else if (layers[0].stateMachine == null)
                     {
                         // Debug.Log("Layer missing stateMachine!");
-                        int layerIndex = layerList.IndexOf(layers[0]);
+                        var layerIndex = layerList.IndexOf(layers[0]);
                         controller.RemoveLayer(layerIndex);
                         CreateLayer(i, controller);
                     }
@@ -175,17 +175,17 @@ namespace Kanna.Protecc
         
         public void ValidateBitKeySwitches(AnimatorController controller)
         {
-            for (int i = 0; i < _KannaProteccKeyNames.Length; ++i)
+            for (var i = 0; i < _KannaProteccKeyNames.Length; ++i)
             {
-                AnimatorControllerLayer layer = controller.layers.FirstOrDefault(l => l.name == _KannaProteccKeyNames[i]);
+                var layer = controller.layers.FirstOrDefault(l => l.name == _KannaProteccKeyNames[i]);
                 ValidateBitKeySwitch(i, layer, controller);
             }
         }
         
         private void ValidateBitKeySwitch(int index, AnimatorControllerLayer layer, AnimatorController controller)
         {
-            string trueSwitchName = string.Format(BitKeySwitchName, "True", index);
-            string falseSwitchName = string.Format(BitKeySwitchName, "False", index);
+            var trueSwitchName = string.Format(BitKeySwitchName, "True", index);
+            var falseSwitchName = string.Format(BitKeySwitchName, "False", index);
             
             if (layer.stateMachine.states.All(s => s.state.name != trueSwitchName))
             {
@@ -214,9 +214,9 @@ namespace Kanna.Protecc
         {
             // Debug.Log($"Creating layer: {_KannaProteccKeyNames[index]}");
             
-            string controllerPath = AssetDatabase.GetAssetPath(controller);
+            var controllerPath = AssetDatabase.GetAssetPath(controller);
 
-            AnimatorControllerLayer layer = new AnimatorControllerLayer
+            var layer = new AnimatorControllerLayer
             {
                 name = _KannaProteccKeyNames[index],
                 defaultWeight = 1,
@@ -233,14 +233,14 @@ namespace Kanna.Protecc
         
         void ValidateBitKeySwitchState(int index, AnimatorControllerLayer layer, AnimatorController controller, bool switchState)
         {
-            string switchName = string.Format(BitKeySwitchName, StateLabel(switchState), index);
-            string switchTransitionName = string.Format(BitKeySwitchTransitionName, StateLabel(switchState), index);
+            var switchName = string.Format(BitKeySwitchName, StateLabel(switchState), index);
+            var switchTransitionName = string.Format(BitKeySwitchTransitionName, StateLabel(switchState), index);
 
-            AnimatorState state = layer.stateMachine.states.First(s => s.state.name == switchName).state;
+            var state = layer.stateMachine.states.First(s => s.state.name == switchName).state;
             state.motion = switchState ? _clipsTrue[index] : _clipsFalse[index];
             state.speed = 1;
             
-            AnimatorStateTransition transition = layer.stateMachine.anyStateTransitions.First(t => t.destinationState == state);
+            var transition = layer.stateMachine.anyStateTransitions.First(t => t.destinationState == state);
 
             if (transition == null)
             {
@@ -255,7 +255,7 @@ namespace Kanna.Protecc
                 transition.conditions.Length == 0 ||
                 transition.conditions.Length > 1)
             {
-                AnimatorCondition falseCondition = new AnimatorCondition
+                var falseCondition = new AnimatorCondition
                 {
                     mode = switchState ? AnimatorConditionMode.If : AnimatorConditionMode.IfNot,
                     parameter = _KannaProteccKeyNames[index],
@@ -265,7 +265,7 @@ namespace Kanna.Protecc
             }
             else
             {
-                AnimatorCondition condition = transition.conditions[0];
+                var condition = transition.conditions[0];
                 condition.mode = switchState ? AnimatorConditionMode.If : AnimatorConditionMode.IfNot;
                 condition.parameter = _KannaProteccKeyNames[index];
                 condition.threshold = 0;
@@ -276,21 +276,21 @@ namespace Kanna.Protecc
         
         void AddBitKeySwitchState(int index, AnimatorControllerLayer layer, AnimatorController controller, bool switchState)
         {
-            string switchName = string.Format(BitKeySwitchName, StateLabel(switchState), index);
-            string switchTransitionName = string.Format(BitKeySwitchTransitionName, StateLabel(switchState), index);
+            var switchName = string.Format(BitKeySwitchName, StateLabel(switchState), index);
+            var switchTransitionName = string.Format(BitKeySwitchTransitionName, StateLabel(switchState), index);
             
-            AnimatorState state = layer.stateMachine.AddState(switchName);
+            var state = layer.stateMachine.AddState(switchName);
             state.motion = switchState ? _clipsTrue[index] : _clipsFalse[index];
             state.speed = 1;
             
-            AnimatorCondition condition = new AnimatorCondition
+            var condition = new AnimatorCondition
             {
                 mode = switchState ?  AnimatorConditionMode.If : AnimatorConditionMode.IfNot,
                 parameter = _KannaProteccKeyNames[index],
                 threshold = 0
             };
 
-            AnimatorStateTransition transition = layer.stateMachine.AddAnyStateTransition(state);
+            var transition = layer.stateMachine.AddAnyStateTransition(state);
             transition.name = switchTransitionName;
             transition.canTransitionToSelf = false;
             transition.duration = 0;
@@ -303,8 +303,8 @@ namespace Kanna.Protecc
 
         public void DeleteKannaProteccObjectsFromController(AnimatorController controller)
         {
-            string controllerPath = AssetDatabase.GetAssetPath(controller);
-            foreach (Object subObject in AssetDatabase.LoadAllAssetsAtPath(controllerPath))
+            var controllerPath = AssetDatabase.GetAssetPath(controller);
+            foreach (var subObject in AssetDatabase.LoadAllAssetsAtPath(controllerPath))
             {
                 if (subObject != null && subObject.name.Contains("KannaProtecc"))
                 {
@@ -313,7 +313,7 @@ namespace Kanna.Protecc
             }
             AssetDatabase.SaveAssets();
             
-            foreach (string keyName in _KannaProteccKeyNames)
+            foreach (var keyName in _KannaProteccKeyNames)
             {
                 var layerList = controller.layers.ToList();
                 layerList.RemoveAll(l => l.name == keyName);

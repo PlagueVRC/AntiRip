@@ -12,14 +12,14 @@ namespace Kanna.Protecc
         {
             if (mesh == null) return null;
 
-            Vector3[] newVertices = mesh.vertices;
-            Vector3[] normals = mesh.normals;
-            Vector2[] uv7Offsets = new Vector2[mesh.vertexCount];
-            Vector2[] uv8Offsets = new Vector2[mesh.vertexCount];
+            var newVertices = mesh.vertices;
+            var normals = mesh.normals;
+            var uv7Offsets = new Vector2[mesh.vertexCount];
+            var uv8Offsets = new Vector2[mesh.vertexCount];
 
-            float maxDistance = mesh.bounds.max.magnitude - mesh.bounds.min.magnitude;
+            var maxDistance = mesh.bounds.max.magnitude - mesh.bounds.min.magnitude;
 
-            float minRange = maxDistance * -distortRatio;
+            var minRange = maxDistance * -distortRatio;
             const float maxRange = 0;
 
             for (var v = 0; v < newVertices.Length; v++)
@@ -105,16 +105,16 @@ namespace Kanna.Protecc
             }
 
             // transfer blend shapes
-            for (int shapeIndex = 0; shapeIndex < mesh.blendShapeCount; shapeIndex++)
+            for (var shapeIndex = 0; shapeIndex < mesh.blendShapeCount; shapeIndex++)
             {
                 for (var frameIndex = 0; frameIndex < mesh.GetBlendShapeFrameCount(shapeIndex); frameIndex++)
                 {
-                    Vector3[] deltaVertices = new Vector3[newVertices.Length];
-                    Vector3[] deltaNormals = new Vector3[newVertices.Length];
-                    Vector3[] deltaTangents = new Vector3[newVertices.Length];
+                    var deltaVertices = new Vector3[newVertices.Length];
+                    var deltaNormals = new Vector3[newVertices.Length];
+                    var deltaTangents = new Vector3[newVertices.Length];
                     mesh.GetBlendShapeFrameVertices(shapeIndex, frameIndex, deltaVertices, deltaNormals, deltaTangents);
-                    float weight = mesh.GetBlendShapeFrameWeight(shapeIndex, frameIndex);
-                    string shapeName = mesh.GetBlendShapeName(shapeIndex);
+                    var weight = mesh.GetBlendShapeFrameWeight(shapeIndex, frameIndex);
+                    var shapeName = mesh.GetBlendShapeName(shapeIndex);
                     newMesh.AddBlendShapeFrame(shapeName, weight, deltaVertices, deltaNormals, deltaTangents);
                 }
             }

@@ -71,9 +71,9 @@ namespace Kanna.Protecc
 
             ModelShaderDecodeSecond += "\r\n    return vertex;\r\n}\r\n";
 
-            float[] decodeKeys = new float[data.DividedCount];
+            var decodeKeys = new float[data.DividedCount];
             
-            for (int i = 0; i < data.DividedCount; ++i)
+            for (var i = 0; i < data.DividedCount; ++i)
             {
                 decodeKeys[i] = (Convert.ToSingle(keys[i*KannaProteccData.CountDivisor]) + data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor]) *
                                 (Convert.ToSingle(keys[i*KannaProteccData.CountDivisor+1]) + data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+1]) *
@@ -82,33 +82,33 @@ namespace Kanna.Protecc
                 Debug.Log("decodeKey: " + decodeKeys[i]);
             }
 
-            StringBuilder sb0 = new StringBuilder();
-            StringBuilder sb1 = new StringBuilder();
-            for (int i = 0; i < data.DividedCount; ++i)
+            var sb0 = new StringBuilder();
+            var sb1 = new StringBuilder();
+            for (var i = 0; i < data.DividedCount; ++i)
             {
-                float firstAdd = data.KeySign0[i] > 0
+                var firstAdd = data.KeySign0[i] > 0
                     ? decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor]] - decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor+1]]
                     : decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor]] + decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor+1]];
-                float firstSign = data.Sign0[i] > 0 ? Mathf.Sin(firstAdd) : Mathf.Cos(firstAdd);
+                var firstSign = data.Sign0[i] > 0 ? Mathf.Sin(firstAdd) : Mathf.Cos(firstAdd);
 
-                float secondAdd = data.KeySign1[i] > 0
+                var secondAdd = data.KeySign1[i] > 0
                     ? decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor+2]] - decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor+3]]
                     : decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor+2]] + decodeKeys[data.RandomKeyIndex[i*KannaProteccData.CountDivisor+3]];
-                float secondSign = data.Sign1[i] > 0 ? Mathf.Sin(secondAdd) : Mathf.Cos(secondAdd);
+                var secondSign = data.Sign1[i] > 0 ? Mathf.Sin(secondAdd) : Mathf.Cos(secondAdd);
 
                 data.ComKey[i] = firstSign * data.RandomDivideMultiplier[i] * secondSign;
 
-                string firstAddStr = data.KeySign0[i] > 0 ? "-" : "+";
-                string firstSignStr = data.Sign0[i] > 0 ? "sin" : "cos";
-                string secondAddStr = data.KeySign1[i] > 0 ? "-" : "+";
-                string secondSignStr = data.Sign1[i] > 0 ? "sin" : "cos";
+                var firstAddStr = data.KeySign0[i] > 0 ? "-" : "+";
+                var firstSignStr = data.Sign0[i] > 0 ? "sin" : "cos";
+                var secondAddStr = data.KeySign1[i] > 0 ? "-" : "+";
+                var secondSignStr = data.Sign1[i] > 0 ? "sin" : "cos";
 
                 sb0.AppendLine($"    float decodeKey{i} = (_BitKey{i*KannaProteccData.CountDivisor} + {data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor]}) * (_BitKey{i*KannaProteccData.CountDivisor+1} + {data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+1]}) * (_BitKey{i*KannaProteccData.CountDivisor+2} + {data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+2]}) * (_BitKey{i*KannaProteccData.CountDivisor+3} + {data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+3]});");
 
                 sb1.AppendLine($"    float comKey{i} = {firstSignStr}(decodeKey{data.RandomKeyIndex[i*KannaProteccData.CountDivisor]} {firstAddStr} decodeKey{data.RandomKeyIndex[i*KannaProteccData.CountDivisor+1]}) * {data.RandomDivideMultiplier[i]} * {secondSignStr}(decodeKey{data.RandomKeyIndex[i*KannaProteccData.CountDivisor+2]} {secondAddStr} decodeKey{data.RandomKeyIndex[i*KannaProteccData.CountDivisor+3]});");
             }
 
-            string decodeShader = $"{ModelDecodeIfndef}{ModelShaderDecodeFirst}{sb0}\r\n{sb1}{ModelShaderDecodeSecond}{ModelDecodeEndif}";
+            var decodeShader = $"{ModelDecodeIfndef}{ModelShaderDecodeFirst}{sb0}\r\n{sb1}{ModelShaderDecodeSecond}{ModelDecodeEndif}";
             return decodeShader;
         }
 
@@ -319,16 +319,16 @@ float4 modelDecode(float4 vertex, float3 normal, float2 uv0, float2 uv1)
 
         void Shuffle<T>(IList<T> list)
         {
-            RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider();
-            int n = list.Count;
+            var provider = new RNGCryptoServiceProvider();
+            var n = list.Count;
             while (n > 1)
             {
-                byte[] box = new byte[1];
+                var box = new byte[1];
                 do provider.GetBytes(box);
                 while (!(box[0] < n * (Byte.MaxValue / n)));
-                int k = (box[0] % n);
+                var k = (box[0] % n);
                 n--;
-                T value = list[k];
+                var value = list[k];
                 list[k] = list[n];
                 list[n] = value;
             }
@@ -339,7 +339,7 @@ float4 modelDecode(float4 vertex, float3 normal, float2 uv0, float2 uv1)
             DividedCount = count / CountDivisor;
             Sign0 = new int[DividedCount];
 
-            List<int>  randomKeyIndexList = new List<int>();
+            var  randomKeyIndexList = new List<int>();
             
             KeySign0 = new int[DividedCount];
             Sign1 = new int[DividedCount];
@@ -348,7 +348,7 @@ float4 modelDecode(float4 vertex, float3 normal, float2 uv0, float2 uv1)
             RandomKeyMultiplier = new float[count];
             ComKey = new float[DividedCount];
 
-            for (int i = 0; i < DividedCount; ++i)
+            for (var i = 0; i < DividedCount; ++i)
             {
                 Sign0[i] = Random.Range(0, 2);
                 KeySign0[i] = Random.Range(0, 2);
@@ -366,7 +366,7 @@ float4 modelDecode(float4 vertex, float3 normal, float2 uv0, float2 uv1)
             Shuffle(randomKeyIndexList);
             RandomKeyIndex = randomKeyIndexList.ToArray();
 
-            for (int i = 0; i < count; ++i)
+            for (var i = 0; i < count; ++i)
             {
                 RandomKeyMultiplier[i] = Random.Range(0f, 2f);
             }
