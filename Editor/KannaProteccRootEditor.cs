@@ -202,7 +202,7 @@ namespace Kanna.Protecc
             }
             GUILayout.Space(5f);
 
-            //buttons for poi mats and key lock
+            //buttons for mats and key lock
             GUILayout.BeginHorizontal();
             if (GUILayout.Button(new GUIContent("Unlock materials", "Unlock All Materials In Hierarchy")))
             {

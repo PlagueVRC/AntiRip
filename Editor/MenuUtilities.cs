@@ -51,7 +51,7 @@ namespace Kanna.Protecc
                 return;
             }
 
-            var poiMats = new List<Material>();
+            var Mats = new List<Material>();
             
             foreach (var renderer in skinnedMeshRenderers)
             {
@@ -71,7 +71,7 @@ namespace Kanna.Protecc
 
                     if (KannaProteccMaterial.IsShaderSupported(material.shader, out var shaderMatch) && shaderMatch.SupportsLocking && material.shader.name.Contains("Locked"))
                     {
-                        poiMats.Add(material);
+                        Mats.Add(material);
                     }
                 }
             }
@@ -94,12 +94,12 @@ namespace Kanna.Protecc
 
                     if (KannaProteccMaterial.IsShaderSupported(material.shader, out var shaderMatch) && shaderMatch.SupportsLocking && material.shader.name.Contains("Locked"))
                     {
-                        poiMats.Add(material);
+                        Mats.Add(material);
                     }
                 }
             }
             
-            if (poiMats.Count == 0)
+            if (Mats.Count == 0)
             {
                 EditorUtility.DisplayDialog("All materials already unlocked in hiearchy!",
                     message,
@@ -107,7 +107,7 @@ namespace Kanna.Protecc
                 return;
             }
             
-            ShaderOptimizer.SetLockedForAllMaterials(poiMats, 0, true, false, false);
+            ShaderOptimizer.SetLockedForAllMaterials(Mats, 0, true, false, false);
         }
         
         //[MenuItem("Tools/Kanna Protecc/Check for Update...", false)]
