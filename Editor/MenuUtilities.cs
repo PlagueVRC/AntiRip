@@ -14,7 +14,7 @@ namespace Kanna.Protecc
         [MenuItem("Tools/Kanna.Protecc/Unlock All Poi Materials In Hierarchy...", false)]
         public static void UnlockAllPoiMaterialsInHierarchy(MenuCommand command)
         {
-            const string message = "Select a Root GameObject which has children with locked Poiyomi 8 materials.";
+            const string message = "Select a Root GameObject which has children with locked Poiyomi materials.";
             
             void ErrorDialogue()
             {
@@ -54,7 +54,7 @@ namespace Kanna.Protecc
             {
                 foreach (var material in renderer.sharedMaterials)
                 {
-                    if (material != null && material.shader.name.Contains("Hidden/Locked/.poiyomi/Poiyomi"))
+                    if (material != null && material.shader.name.Contains("Locked") && material.shader.name.Contains("Poiyomi"))
                     {
                         poiMats.Add(material);
                     }
@@ -65,7 +65,7 @@ namespace Kanna.Protecc
             {
                 foreach (var material in renderer.sharedMaterials)
                 {
-                    if (material != null && material.shader.name.Contains("Hidden/Locked/.poiyomi/Poiyomi"))
+                    if (material != null && material.shader.name.Contains("Locked") && material.shader.name.Contains("Poiyomi"))
                     {
                         poiMats.Add(material);
                     }
@@ -74,7 +74,7 @@ namespace Kanna.Protecc
             
             if (poiMats.Count == 0)
             {
-                EditorUtility.DisplayDialog("All Poiyomi 8 materials already unlocked in hiearchy!",
+                EditorUtility.DisplayDialog("All Poiyomi materials already unlocked in hiearchy!",
                     message,
                     okText);
                 return;
