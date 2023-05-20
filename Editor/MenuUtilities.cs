@@ -69,7 +69,7 @@ namespace Kanna.Protecc
                         material.shader = AssetDatabase.LoadAssetAtPath<Shader>(AssetDatabase.GetAssetPath(material.shader).Replace("_Protected.shader", ".shader"));
                     }
 
-                    if (KannaProteccMaterial.Shaders.FirstOrDefault(o => material.shader.name.Replace("Hidden/Locked/", "").StartsWith(o.ShaderName_StartsWith)) is var shaderMatch && shaderMatch != null && shaderMatch.SupportsLocking && material.shader.name.Contains("Locked"))
+                    if (KannaProteccMaterial.IsShaderSupported(material.shader, out var shaderMatch) && shaderMatch.SupportsLocking && material.shader.name.Contains("Locked"))
                     {
                         poiMats.Add(material);
                     }
@@ -92,7 +92,7 @@ namespace Kanna.Protecc
                         material.shader = AssetDatabase.LoadAssetAtPath<Shader>(AssetDatabase.GetAssetPath(material.shader).Replace("_Protected.shader", ".shader"));
                     }
 
-                    if (KannaProteccMaterial.Shaders.FirstOrDefault(o => material.shader.name.Replace("Hidden/Locked/", "").StartsWith(o.ShaderName_StartsWith)) is var shaderMatch && shaderMatch != null && shaderMatch.SupportsLocking && material.shader.name.Contains("Locked"))
+                    if (KannaProteccMaterial.IsShaderSupported(material.shader, out var shaderMatch) && shaderMatch.SupportsLocking && material.shader.name.Contains("Locked"))
                     {
                         poiMats.Add(material);
                     }

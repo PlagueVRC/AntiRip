@@ -270,7 +270,7 @@ namespace Kanna.Protecc
             var ignoredMats = false;
             foreach (var mat in materials)
             {
-                if (mat != null && KannaProteccMaterial.Shaders.FirstOrDefault(o => mat.shader.name.Replace("Hidden/Locked/", "").StartsWith(o.ShaderName_StartsWith)) is var shaderMatch && shaderMatch != null)
+                if (mat != null && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderMatch))
                 {
                     if (shaderMatch.SupportsLocking && !mat.shader.name.Contains("Locked"))
                     {

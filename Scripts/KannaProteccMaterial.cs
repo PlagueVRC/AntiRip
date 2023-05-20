@@ -1,4 +1,6 @@
 ﻿#if UNITY_EDITOR
+using Codice.Client.BaseCommands;
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -108,6 +110,13 @@ namespace Kanna.Protecc
 
             string decodeShader = $"{ModelDecodeIfndef}{ModelShaderDecodeFirst}{sb0}\r\n{sb1}{ModelShaderDecodeSecond}{ModelDecodeEndif}";
             return decodeShader;
+        }
+
+        public static bool IsShaderSupported(Shader shader, out KannaDynamicShaderData shaderData)
+        {
+            shaderData = Shaders.FirstOrDefault(o => shader.name.Replace("Hidden/Locked/", "").StartsWith(o.ShaderName_StartsWith));
+
+            return shaderData != null;
         }
 
         public static List<KannaDynamicShaderData> Shaders = new List<KannaDynamicShaderData>
