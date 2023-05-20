@@ -534,7 +534,7 @@ namespace Kanna.Protecc
             
             parameters.parameters = paramList.ToArray();
             
-            var remainingCost = VRCExpressionParameters.MAX_PARAMETER_COST - parameters.CalcTotalCost();;
+            var remainingCost = VRCExpressionParameters.MAX_PARAMETER_COST - parameters.CalcTotalCost();
             Debug.Log(remainingCost);
             if (remainingCost < 0)
             {
@@ -584,7 +584,7 @@ namespace Kanna.Protecc
             }
             else
             {
-                Debug.LogError($"{text} Does Not Contain {textToReplace}!");
+                //Debug.LogError($"{text} Does Not Contain {textToReplace}!");
             }
 
             return false;
