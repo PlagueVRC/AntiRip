@@ -313,31 +313,49 @@ namespace Kanna.Protecc
             }
 
             parameters = expressionParameters.parameters.ToList();
-            while (120 - expressionParameters.CalcTotalCost() > 0)
+            //while (120 - expressionParameters.CalcTotalCost() > 0)
+            //{
+            //    var newName = GUID.Generate().ToString();
+            //    while (_parameterDic.ContainsKey(newName)) newName = GUID.Generate().ToString();
+
+            //    parameters.Add(new VRCExpressionParameters.Parameter
+            //    {
+            //        name = newName,
+            //        saved = Random.Range(0, 2) == 0,
+            //        valueType = VRCExpressionParameters.ValueType.Float,
+            //        defaultValue = (float)(Math.Truncate((double)Random.Range(0f, 1f) * 100) / 100)
+            //    });
+
+            //    expressionParameters.parameters = parameters.ToArray();
+            //}
+
+            //while (128 - expressionParameters.CalcTotalCost() > 0)
+            //{
+            //    var newName = GUID.Generate().ToString();
+            //    while (_parameterDic.ContainsKey(newName)) newName = GUID.Generate().ToString();
+
+            //    parameters.Add(new VRCExpressionParameters.Parameter
+            //    {
+            //        name = newName,
+            //        saved = Random.Range(0, 2) == 0,
+            //        valueType = VRCExpressionParameters.ValueType.Bool,
+            //        defaultValue = Random.Range(0, 2) == 0 ? 1 : 0
+            //    });
+
+            //    expressionParameters.parameters = parameters.ToArray();
+            //}
+
+            while ((VRCExpressionParameters.MAX_PARAMETER_COST - expressionParameters.CalcTotalCost()) > 0)
             {
                 var newName = GUID.Generate().ToString();
-                while (_parameterDic.ContainsKey(newName)) newName = GUID.Generate().ToString();
+
+                while (_parameterDic.ContainsKey(newName))
+                    newName = GUID.Generate().ToString();
 
                 parameters.Add(new VRCExpressionParameters.Parameter
                 {
                     name = newName,
-                    saved = Random.Range(0, 2) == 0,
-                    valueType = VRCExpressionParameters.ValueType.Float,
-                    defaultValue = (float)(Math.Truncate((double)Random.Range(0f, 1f) * 100) / 100)
-                });
-
-                expressionParameters.parameters = parameters.ToArray();
-            }
-
-            while (128 - expressionParameters.CalcTotalCost() > 0)
-            {
-                var newName = GUID.Generate().ToString();
-                while (_parameterDic.ContainsKey(newName)) newName = GUID.Generate().ToString();
-
-                parameters.Add(new VRCExpressionParameters.Parameter
-                {
-                    name = newName,
-                    saved = Random.Range(0, 2) == 0,
+                    saved = true,
                     valueType = VRCExpressionParameters.ValueType.Bool,
                     defaultValue = Random.Range(0, 2) == 0 ? 1 : 0
                 });
