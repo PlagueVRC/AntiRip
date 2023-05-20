@@ -415,7 +415,7 @@ namespace Kanna.Protecc
             _tempIndex++;
             return new ChildAnimatorStateMachine
             {
-                position = Vector3.zero,
+                position = new Vector3(float.NaN, float.NaN, float.NaN),
                 stateMachine = StateMachineObfuscator(newName, stateMachine.stateMachine, root),
             };
             ;
@@ -436,17 +436,17 @@ namespace Kanna.Protecc
             stateMachine.behaviours = behaviours.ToArray();
 #endif
 
-            stateMachine.anyStatePosition = Vector3.zero;
-            stateMachine.exitPosition = Vector3.zero;
-            stateMachine.parentStateMachinePosition = Vector3.zero;
-            stateMachine.entryPosition = Vector3.zero;
+            stateMachine.anyStatePosition = new Vector3(float.NaN, float.NaN, float.NaN);
+            stateMachine.exitPosition = new Vector3(float.NaN, float.NaN, float.NaN);
+            stateMachine.parentStateMachinePosition = new Vector3(float.NaN, float.NaN, float.NaN);
+            stateMachine.entryPosition = new Vector3(float.NaN, float.NaN, float.NaN);
 
             var childStates = new List<ChildAnimatorState>();
             foreach (var t in stateMachine.states)
                 childStates.Add(
                     new ChildAnimatorState
                     {
-                        position = Vector3.zero,
+                        position = new Vector3(float.NaN, float.NaN, float.NaN),
                         state = AnimatorStateObfuscator(t.state, root)
                     }
                 );
