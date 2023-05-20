@@ -1,4 +1,4 @@
-﻿Shader "GeoTetra/UnlitHideWhenShown"
+﻿Shader "UnlitHideWhenShown"
 {
     Properties
     {
