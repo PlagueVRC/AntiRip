@@ -42,7 +42,7 @@ namespace Kanna.Protecc
                 ValidateClip(gameObject, controller, i);
             }
 
-            MeshRenderer[] meshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>();
+            MeshRenderer[] meshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>(true);
             foreach (MeshRenderer meshRenderer in meshRenderers)
             {
                 for (int i = 0; i < _clipsFalse.Length; ++i)
@@ -53,7 +53,7 @@ namespace Kanna.Protecc
                 }
             }
 
-            SkinnedMeshRenderer[] skinnedMeshRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
+            SkinnedMeshRenderer[] skinnedMeshRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true);
             foreach (SkinnedMeshRenderer skinnedMeshRenderer in skinnedMeshRenderers)
             {
                 for (int i = 0; i < _clipsFalse.Length; ++i)

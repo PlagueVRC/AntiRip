@@ -12,7 +12,7 @@ namespace Kanna.Protecc
     {
         const string okText = "Ok";
         
-        [MenuItem("Tools/Kanna.Protecc/Unlock All Materials In Hierarchy...", false)]
+        [MenuItem("Tools/Kanna Protecc/Unlock All Materials In Hierarchy...", false)]
         public static void UnlockAllPoiMaterialsInHierarchy(MenuCommand command)
         {
             KannaProteccRoot.Instance.IsProtected = false;
@@ -110,7 +110,7 @@ namespace Kanna.Protecc
             ShaderOptimizer.SetLockedForAllMaterials(poiMats, 0, true, false, false);
         }
         
-        //[MenuItem("Tools/Kanna.Protecc/Check for Update...", false)]
+        //[MenuItem("Tools/Kanna Protecc/Check for Update...", false)]
         //static void CheckForUpdate()
         //{
         //    var list = UnityEditor.PackageManager.Client.List();
