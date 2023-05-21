@@ -1,7 +1,8 @@
-<div align=“center” style=“text-align: center;”>
-<img src="Textures/Titlebar.png" />
-
-[![I wish i could fucking center this but github is a fucking cunt](https://github.com/PlagueVRC/AntiRip/blob/main/Textures/Discord%20Button.png)](https://discord.gg/SyZcuTPXZA)
+<div align="center">
+  <img src="Textures/Titlebar.png" />
+  <a href="https://discord.gg/SyZcuTPXZA">
+    <img src="Textures/Discord%20Button.png" alt="Discord Link"/>
+  </a>
 </div>
 
 This project was previously owned by rygo6. It has been passed on for me to own and work on.
