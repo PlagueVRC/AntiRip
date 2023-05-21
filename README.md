@@ -1,6 +1,6 @@
 <div align="center">
   <img src="Textures/Titlebar.png" />
-  <a href="https://discord.gg/SyZcuTPXZA">
+  <a target="_blank" href="https://discord.gg/SyZcuTPXZA">
     <img src="Textures/Discord%20Button.png" alt="Discord Link"/>
   </a>
 </div>
