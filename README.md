@@ -1,4 +1,8 @@
-![](Textures/Titlebar.png)
+<div align=“center” style=“text-align: center;”>
+<img src="Textures/Titlebar.png" />
+
+[![Discord Link](https://github.com/PlagueVRC/AntiRip/blob/main/Textures/Discord%20Button.png)](https://discord.gg/SyZcuTPXZA)
+</div>
 
 This project was previously owned by rygo6. It has been passed on for me to own and work on.
 This is the official repository for this project.
@@ -82,7 +86,7 @@ If you wish to see your avatar again as normal and not encrypted, click on your 
 
 ## How secure is this?
 
-I will keep transparent here without guiding rippers on how to attack your works. This is not foolproof, but close to the best you can get at this time. Rip wise, this cannot be currently ripped without a insane amount of work, as ripping compiled shadercode, reversing it back to unity compatible code and also getting hold of the keys would be hell. Hotswap wise, a dedicated enough ripper with experience with mods could hotswap your avatar. This is not immune to that. You can however put a watermark on your avatar to drive hotswappers into being banned which they wont be able to remove, as the meshes will be encrypted, regardless of hotswap. A hotswap done with the high amount of work i have mentioned here would only get the avatar working normally in game; not in unity.
+I will keep transparent here without guiding rippers on how to attack your works. This is not foolproof, but the best you can get at this time. Rip wise, this cannot be currently ripped without a insane amount of work, as ripping compiled shadercode, reversing it back to unity compatible code and also getting hold of the keys would be hell. Hotswap wise, a dedicated enough ripper with experience with mods could hotswap your avatar. This is not immune to that. (Soon to be countered with trap params making even that extremely harder to do) You can however put a watermark on your avatar to drive hotswappers into being banned which they wont be able to remove, as the meshes will be encrypted, regardless of hotswap. A hotswap done with the high amount of work i have mentioned here would only get the avatar working normally in game; not in unity.
 
 ## Support
 
