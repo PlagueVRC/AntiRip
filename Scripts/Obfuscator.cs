@@ -18,6 +18,8 @@ using UnityEngine;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
 
+using static Thry.AnimationParser;
+
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
@@ -425,6 +427,47 @@ namespace Kanna.Protecc
             animator.layers = layers.ToArray();
 
             return animator;
+        }
+
+        public void ObfuscateLayer(AnimatorControllerLayer layer, AnimatorController controller, KannaProteccRoot root)
+        {
+            if (layer == null || controller == null) return;
+
+            var parameters = controller.parameters.ToList();
+            foreach (var t in parameters)
+            {
+                if (_parameterDic.ContainsKey(t.name))
+                {
+                    t.name = _parameterDic[t.name];
+                }
+                else if (t.name.Contains("BitKey"))
+                {
+                    var newName = root.ParameterRenamedValues[t.name];
+
+                    _parameterDic.Add(t.name, newName);
+
+                    t.name = newName;
+                }
+            }
+
+            parameters = parameters.OrderBy(a => Guid.NewGuid()).ToList();
+            controller.parameters = parameters.ToArray();
+
+            var layers = controller.layers.ToList();
+
+            var newLayerName = GUID.Generate().ToString() + _tempIndex;
+            _tempIndex++;
+
+            var index = layers.FindIndex(o => o.name == layer.name);
+
+            layer.name = newLayerName;
+            layer.stateMachine = StateMachineObfuscator(layer.name, layer.stateMachine, root);
+
+            layers[index] = layer;
+
+            controller.layers = layers.ToArray();
+
+            AssetDatabase.SaveAssets();
         }
 
         private ChildAnimatorStateMachine ChildStateMachineObfuscator(ChildAnimatorStateMachine stateMachine, KannaProteccRoot root)

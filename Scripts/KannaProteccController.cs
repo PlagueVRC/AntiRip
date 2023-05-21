@@ -13,22 +13,21 @@ namespace Kanna.Protecc
 {
     public class KannaProteccController
     {
+        private DBT_API.DBT_Instance DBT;
+
         string[] _KannaProteccKeyNames;
         AnimationClip[] _clipsFalse;
         AnimationClip[] _clipsTrue;
 
-        const string StateMachineName = "KannaProteccKey{0} State Machine";
-        const string BlendTreeName = "KannaProteccKey{0} Blend Tree";
-        const string BitKeySwitchName = "KannaProteccKey{0}{1} BitKey Switch";
-        const string BitKeySwitchTransitionName = "KannaProteccKey{0}{1} BitKey Switch Transition";
-        const string TrueLabel = "True";
-        const string FalseLabel = "False";
-        
+       public static string LayerName = "KannaProtecc";
+
         public void InitializeCount(int count)
         {
             _clipsFalse = new AnimationClip[count];
             _clipsTrue = new AnimationClip[count];
+
             _KannaProteccKeyNames = new string[count];
+
             for (var i = 0; i < _KannaProteccKeyNames.Length; ++i)
             {
                 _KannaProteccKeyNames[i] = $"BitKey{i}";
@@ -122,7 +121,7 @@ namespace Kanna.Protecc
             {
                 if (controller.parameters.All(parameter => parameter.name != keyName))
                 {
-                    controller.AddParameter(keyName, AnimatorControllerParameterType.Bool);
+                    controller.AddParameter(keyName, AnimatorControllerParameterType.Float);
                     AssetDatabase.SaveAssets();
                     // Debug.Log($"Adding parameter: {keyName}");
                 }
@@ -135,175 +134,33 @@ namespace Kanna.Protecc
 
         public void ValidateLayers(AnimatorController controller)
         {
-            for (var i = 0; i < _KannaProteccKeyNames.Length; ++i)
+            if (controller.layers.All(l => l?.name != LayerName))
             {
-                if (controller.layers.All(l => l?.name != _KannaProteccKeyNames[i]))
-                {
-                    CreateLayer(i, controller);
-                }
-                else
-                {
-                    var layerList = controller.layers.ToList();
-                    var layers = layerList.FindAll(l => l.name == _KannaProteccKeyNames[i]);
-                    if (layers.Count > 1)
-                    {
-                        // Debug.Log("Duplicate layers flushing!");
-                        // Somehow it added multiple layers so flush all duplicates and remake
-                        for (var l = layers.Count - 1; l > -1; --l)
-                        {
-                            var layerIndex = layerList.IndexOf(layers[l]);
-                            if (layerIndex != -1)
-                                controller.RemoveLayer(layerIndex);
-                        }
-                        CreateLayer(i, controller);
-                    }
-                    else if (layers.Count == 0)
-                    {
-                        // Debug.Log("Layer missing!");
-                        CreateLayer(i, controller);
-                    }
-                    else if (layers[0].stateMachine == null)
-                    {
-                        // Debug.Log("Layer missing stateMachine!");
-                        var layerIndex = layerList.IndexOf(layers[0]);
-                        controller.RemoveLayer(layerIndex);
-                        CreateLayer(i, controller);
-                    }
-                }
+                CreateLayer(LayerName, controller);
+            }
+        }
+
+        void CreateLayer(string Name, AnimatorController controller)
+        {
+            DBT = new DBT_API.DBT_Instance(controller, Name);
+
+            for (var i = 0; i < _KannaProteccKeyNames.Length; i++)
+            {
+                AddBitKeyState(i);
             }
         }
         
-        public void ValidateBitKeySwitches(AnimatorController controller)
+        void AddBitKeyState(int index)
         {
-            for (var i = 0; i < _KannaProteccKeyNames.Length; ++i)
-            {
-                var layer = controller.layers.FirstOrDefault(l => l.name == _KannaProteccKeyNames[i]);
-                ValidateBitKeySwitch(i, layer, controller);
-            }
-        }
-        
-        private void ValidateBitKeySwitch(int index, AnimatorControllerLayer layer, AnimatorController controller)
-        {
-            var trueSwitchName = string.Format(BitKeySwitchName, "True", index);
-            var falseSwitchName = string.Format(BitKeySwitchName, "False", index);
-            
-            if (layer.stateMachine.states.All(s => s.state.name != trueSwitchName))
-            {
-                // Debug.Log($"Layer missing BitKeySwtich. {trueSwitchName}");
-                AddBitKeySwitchState(index, layer, controller, true);
-            }
-            else
-            {
-                // Debug.Log($"Layer BitKey Switch Validated {trueSwitchName}.");
-                ValidateBitKeySwitchState(index, layer, controller, true);
-            }
-            
-            if (layer.stateMachine.states.All(s => s.state.name != falseSwitchName))
-            {
-                // Debug.Log($"Layer missing BitKeySwtich. {falseSwitchName}");
-                AddBitKeySwitchState(index, layer, controller, false);
-            }
-            else
-            {
-                // Debug.Log($"Layer BitKey Switch Validated {falseSwitchName}.");
-                ValidateBitKeySwitchState(index, layer, controller, false);
-            }
-        }
-
-        void CreateLayer(int index, AnimatorController controller)
-        {
-            // Debug.Log($"Creating layer: {_KannaProteccKeyNames[index]}");
-            
-            var controllerPath = AssetDatabase.GetAssetPath(controller);
-
-            var layer = new AnimatorControllerLayer
-            {
-                name = _KannaProteccKeyNames[index],
-                defaultWeight = 1,
-                stateMachine = new AnimatorStateMachine
-                {
-                    name = string.Format(StateMachineName, index)
-                },
-            };
-
-            controller.AddLayer(layer);
-            AssetDatabase.AddObjectToAsset(layer.stateMachine, controllerPath);
-            AssetDatabase.SaveAssets();
-        }
-        
-        void ValidateBitKeySwitchState(int index, AnimatorControllerLayer layer, AnimatorController controller, bool switchState)
-        {
-            var switchName = string.Format(BitKeySwitchName, StateLabel(switchState), index);
-            var switchTransitionName = string.Format(BitKeySwitchTransitionName, StateLabel(switchState), index);
-
-            var state = layer.stateMachine.states.First(s => s.state.name == switchName).state;
-            state.motion = switchState ? _clipsTrue[index] : _clipsFalse[index];
-            state.speed = 1;
-            
-            var transition = layer.stateMachine.anyStateTransitions.First(t => t.destinationState == state);
-
-            if (transition == null)
-            {
-                transition = layer.stateMachine.AddAnyStateTransition(state);
-            }
-            
-            transition.name = switchTransitionName;
-            transition.canTransitionToSelf = false;
-            transition.duration = 0;
-
-            if (transition.conditions == null || 
-                transition.conditions.Length == 0 ||
-                transition.conditions.Length > 1)
-            {
-                var falseCondition = new AnimatorCondition
-                {
-                    mode = switchState ? AnimatorConditionMode.If : AnimatorConditionMode.IfNot,
-                    parameter = _KannaProteccKeyNames[index],
-                    threshold = 0
-                };
-                transition.conditions = new[] {falseCondition};
-            }
-            else
-            {
-                var condition = transition.conditions[0];
-                condition.mode = switchState ? AnimatorConditionMode.If : AnimatorConditionMode.IfNot;
-                condition.parameter = _KannaProteccKeyNames[index];
-                condition.threshold = 0;
-            }
+            DBT.masterTree.Trees.Add(new DBT_API.DBT_Instance.BlendState(DBT.masterTree, DBT.controller.parameters.First(o => o.name == _KannaProteccKeyNames[index]), _clipsFalse[index], _clipsTrue[index], $"BitKey{index}"));
 
             AssetDatabase.SaveAssets();
         }
-        
-        void AddBitKeySwitchState(int index, AnimatorControllerLayer layer, AnimatorController controller, bool switchState)
-        {
-            var switchName = string.Format(BitKeySwitchName, StateLabel(switchState), index);
-            var switchTransitionName = string.Format(BitKeySwitchTransitionName, StateLabel(switchState), index);
-            
-            var state = layer.stateMachine.AddState(switchName);
-            state.motion = switchState ? _clipsTrue[index] : _clipsFalse[index];
-            state.speed = 1;
-            
-            var condition = new AnimatorCondition
-            {
-                mode = switchState ?  AnimatorConditionMode.If : AnimatorConditionMode.IfNot,
-                parameter = _KannaProteccKeyNames[index],
-                threshold = 0
-            };
-
-            var transition = layer.stateMachine.AddAnyStateTransition(state);
-            transition.name = switchTransitionName;
-            transition.canTransitionToSelf = false;
-            transition.duration = 0;
-            transition.conditions = new[] {condition};
-            
-            AssetDatabase.SaveAssets();
-        }
-
-        string StateLabel(bool state) => state ? TrueLabel : FalseLabel;
 
         public void DeleteKannaProteccObjectsFromController(AnimatorController controller)
         {
             var controllerPath = AssetDatabase.GetAssetPath(controller);
+
             foreach (var subObject in AssetDatabase.LoadAllAssetsAtPath(controllerPath))
             {
                 if (subObject != null && subObject.name.Contains("KannaProtecc"))
@@ -311,18 +168,140 @@ namespace Kanna.Protecc
                     AssetDatabase.RemoveObjectFromAsset(subObject);
                 }
             }
+
             AssetDatabase.SaveAssets();
-            
+
+            var layerList = controller.layers.ToList();
+            var parametersList = controller.parameters.ToList();
+
+            layerList.RemoveAll(l => l.name == LayerName);
+
             foreach (var keyName in _KannaProteccKeyNames)
             {
-                var layerList = controller.layers.ToList();
                 layerList.RemoveAll(l => l.name == keyName);
-                controller.layers = layerList.ToArray();
-                
-                var parametersList = controller.parameters.ToList();
+
                 parametersList.RemoveAll(l => l.name == keyName);
-                controller.parameters = parametersList.ToArray();
             }
+
+            controller.layers = layerList.ToArray();
+            controller.parameters = parametersList.ToArray();
+        }
+    }
+}
+
+public class DBT_API
+{
+    public class DBT_Instance
+    {
+        public class BlendState
+        {
+            public AnimatorControllerParameter parameter;
+            public BlendTree Tree;
+
+            public BlendState(MasterTree Master, AnimatorControllerParameter parameter, AnimationClip OffClip, AnimationClip OnClip, string Name)
+            {
+                Tree = Master.Master.CreateBlendTreeChild(1);
+                Tree.name = Name;
+                
+                Master.ReLinkChildren();
+
+                Tree.blendType = BlendTreeType.Simple1D;
+                Tree.blendParameter = parameter.name;
+                Tree.AddChild(OffClip, 0f); // Add Motion
+                Tree.AddChild(OnClip, 1f); // Add Motion
+            }
+        }
+
+        public class MasterTree
+        {
+            public MasterTree(AnimatorController controller, AnimatorState State, string Name)
+            {
+                Master = CreateBlendTree(controller, State, Name);
+                Master.blendType = BlendTreeType.Direct;
+
+                DummyParameter = new AnimatorControllerParameter
+                {
+                    name = $"{Name}_DummyFloat",
+                    type = AnimatorControllerParameterType.Float,
+                    defaultFloat = 1f
+                };
+
+                var parameters = controller.parameters.ToList();
+                parameters.Add(DummyParameter);
+                controller.parameters = parameters.ToArray();
+            }
+
+            public void ReLinkChildren()
+            {
+                // Re-Link All Child Trees To Master
+                var ChildTrees = Master.children;
+                for (var i = 0; i < ChildTrees.Length; i++)
+                {
+                    ChildTrees[i].directBlendParameter = DummyParameter.name;
+                }
+                Master.children = ChildTrees;
+            }
+
+            public BlendTree Master;
+
+            public AnimatorControllerParameter DummyParameter;
+
+            public List<BlendState> Trees = new List<BlendState>();
+        }
+
+        public AnimatorController controller;
+        public AnimatorControllerLayer layer;
+        public MasterTree masterTree;
+
+        public DBT_Instance(AnimatorController controller, string LayerName)
+        {
+            var controllerPath = AssetDatabase.GetAssetPath(controller);
+
+            var layer = new AnimatorControllerLayer
+            {
+                name = LayerName,
+                defaultWeight = 1,
+                stateMachine = new AnimatorStateMachine
+                {
+                    name = LayerName + " State Machine"
+                },
+            };
+
+            controller.AddLayer(layer);
+
+            AssetDatabase.AddObjectToAsset(layer.stateMachine, controllerPath);
+            AssetDatabase.SaveAssets();
+
+            this.layer = layer;
+
+            this.controller = controller;
+
+            var state = CreateState(layer, $"{LayerName}_BlendRootState");
+
+            masterTree = new MasterTree(controller, state, $"{LayerName} Master Tree");
+        }
+
+        public static AnimatorState CreateState(AnimatorControllerLayer layer, string Name, Vector3? position = null)
+        {
+            var state = position == null ? layer.stateMachine.AddState(Name) : layer.stateMachine.AddState(Name, position.Value);
+            state.writeDefaultValues = true;
+
+            return state;
+        }
+
+        public static BlendTree CreateBlendTree(AnimatorController controller, AnimatorState State, string Name)
+        {
+            var tree = new BlendTree
+            {
+                name = Name,
+                hideFlags = HideFlags.HideInHierarchy
+            };
+
+            AssetDatabase.AddObjectToAsset(tree, controller);
+
+            State.motion = tree;
+
+            return tree;
         }
     }
 }

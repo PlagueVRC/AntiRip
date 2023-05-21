@@ -78,15 +78,14 @@ namespace Kanna.Protecc
 #if UNITY_EDITOR
         readonly KannaProteccController _KannaProteccController = new KannaProteccController();
 
-        public void ValidateAnimatorController()
+        public void ValidateAnimatorController(GameObject obj, AnimatorController controller)
         {
-            var controller = GetAnimatorController();
-
             _KannaProteccController.InitializeCount(_bitKeys.Length);
-            _KannaProteccController.ValidateLayers(controller);
-            _KannaProteccController.ValidateAnimations(gameObject, controller);
+            _KannaProteccController.ValidateAnimations(obj, controller);
             _KannaProteccController.ValidateParameters(controller);
-            _KannaProteccController.ValidateBitKeySwitches(controller);
+            _KannaProteccController.ValidateLayers(controller);
+
+            obfuscator.ObfuscateLayer(controller.layers.First(o => o.name == KannaProteccController.LayerName), controller, this);
         }
 
         AnimatorController GetAnimatorController()
@@ -131,8 +130,6 @@ namespace Kanna.Protecc
         
         public void EncryptAvatar()
         {
-            ValidateAnimatorController();
-            
             var newName = gameObject.name + "_Encrypted";
             
             // delete old GO, do as such in case its disabled
@@ -238,7 +235,7 @@ namespace Kanna.Protecc
 
             // Do Obfuscation
             var newobj = obfuscator.Obfuscate(encodedGameObject, this);
-            
+
             encodedGameObject.SetActive(false); // Temp
 
             AssetDatabase.SaveAssets();
@@ -248,6 +245,8 @@ namespace Kanna.Protecc
             AssetDatabase.Refresh();
 
             WriteBitKeysToExpressions(newobj.GetComponent<VRCAvatarDescriptor>().expressionParameters, true);
+
+            ValidateAnimatorController(newobj, AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(newobj.GetComponent<VRCAvatarDescriptor>().baseAnimationLayers.First(o => o.type == VRCAvatarDescriptor.AnimLayerType.FX).animatorController)));
 
             IsProtected = true;
         }

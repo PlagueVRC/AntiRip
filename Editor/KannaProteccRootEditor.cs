@@ -296,19 +296,19 @@ namespace Kanna.Protecc
             if (_debugFoldout)
             {
                 EditorGUILayout.Space();
-                GUILayout.BeginHorizontal();
-                GUILayout.FlexibleSpace();
-                if (GUILayout.Button(new GUIContent("Validate Animator Controller", "Validate all parameters, layers and animations are correct in this avatar's AnimatorController."), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
-                {
-                    KannaProteccRoot.ValidateAnimatorController();
-                }
+                //GUILayout.BeginHorizontal();
+                //GUILayout.FlexibleSpace();
+                //if (GUILayout.Button(new GUIContent("Validate Animator Controller", "Validate all parameters, layers and animations are correct in this avatar's AnimatorController."), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
+                //{
+                //    KannaProteccRoot.ValidateAnimatorController();
+                //}
 
-                if (GUILayout.Button(new GUIContent("Delete Kanna Protecc Objects From Controller", "Deletes all the objects Kanna Protecc wrote to your controller. Try running this if something gets weird with encrypting"), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
+                if (GUILayout.Button(new GUIContent("Delete Kanna Protecc Objects From Controller", "Deletes all the objects Kanna Protecc wrote to your controller. Try running this if something gets weird with encrypting")))
                 {
                     KannaProteccRoot.DeleteKannaProteccObjectsFromController();
                 }
-                GUILayout.FlexibleSpace();
-                GUILayout.EndHorizontal();
+                //GUILayout.FlexibleSpace();
+                //GUILayout.EndHorizontal();
 
                 EditorGUILayout.Space();
                 GUILayout.BeginHorizontal();
