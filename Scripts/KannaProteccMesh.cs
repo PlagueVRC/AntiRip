@@ -69,10 +69,15 @@ namespace Kanna.Protecc
 
             //Do Not Care What File Type The Mesh Is, Attempt Anyway.
             //The Inline If Statement Is A Fallback Check, It Gets The Path Combined With The Filename Without Extension With Our Own Extension, If The Path Is Null, It Would Then Use Enviroment.CurrentDirectory Via Inheritance As The Path.
+            //var encryptedMeshPath = Path.GetDirectoryName(existingMeshPath) != null
+            //    ? (Path.Combine(Path.GetDirectoryName(existingMeshPath),
+            //        Path.GetFileNameWithoutExtension(existingMeshPath)) + $"_{mesh.name}_Encrypted.asset")
+            //    : (Path.GetFileNameWithoutExtension(existingMeshPath) + $"_{mesh.name}_Encrypted.asset");
+
             var encryptedMeshPath = Path.GetDirectoryName(existingMeshPath) != null
                 ? (Path.Combine(Path.GetDirectoryName(existingMeshPath),
-                    Path.GetFileNameWithoutExtension(existingMeshPath)) + $"_{mesh.name}_Encrypted.asset")
-                : (Path.GetFileNameWithoutExtension(existingMeshPath) + $"_{mesh.name}_Encrypted.asset");
+                    $"{GUID.Generate()}.asset"))
+                : $"{GUID.Generate()}.asset";
 
             Debug.Log($"Encrypted Mesh Path {encryptedMeshPath}");
 

@@ -249,6 +249,8 @@ namespace Kanna.Protecc
             ValidateAnimatorController(newobj, AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(newobj.GetComponent<VRCAvatarDescriptor>().baseAnimationLayers.First(o => o.type == VRCAvatarDescriptor.AnimLayerType.FX).animatorController)));
 
             IsProtected = true;
+
+            EditorUtility.DisplayDialog("Successfully Encrypted!", "Keys were automatically written. Your avatar should be ready to upload!", "Okay");
         }
 
         void AddMaterialsToIgnoreList(Material[] materials, List<Material> aggregateIgnoredMaterials)
@@ -359,7 +361,7 @@ namespace Kanna.Protecc
             return materialEncrypted && !ignoredMats;
         }
 
-        public void WriteBitKeysToExpressions(VRCExpressionParameters ExtraParams = null, bool WriteOnlyToExtra = false)
+        public void WriteBitKeysToExpressions(VRCExpressionParameters ExtraParams = null, bool WriteOnlyToExtra = false, bool DoLog = false)
         {
 #if VRC_SDK_VRCSDK3
             var descriptor = GetComponent<VRCAvatarDescriptor>();
@@ -367,6 +369,11 @@ namespace Kanna.Protecc
             {
                 Debug.LogError("Keys not written! Couldn't find VRCAvatarDescriptor next to KannaProteccRoot");
                 EditorUtility.DisplayDialog("Keys not written! Missing PipelineManager!", "Put KannaProteccRoot next to VRCAvatarDescriptor and run Write Keys again.", "Okay");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId))
+            {
                 return;
             }
 
@@ -379,7 +386,7 @@ namespace Kanna.Protecc
 
             if ((WriteOnlyToExtra || AddBitKeys(descriptor.expressionParameters, this)) && (ExtraParams == null || AddBitKeys(ExtraParams, this, false)))
             {
-                WriteKeysToSaveFile();
+                WriteKeysToSaveFile(DoLog);
             }
 
 #else
@@ -388,7 +395,7 @@ namespace Kanna.Protecc
 #endif
         }
 
-        public void WriteKeysToSaveFile()
+        public void WriteKeysToSaveFile(bool DoLog = false)
         {
 #if VRC_SDK_VRCSDK3
             var pipelineManager = GetComponent<PipelineManager>();
@@ -423,6 +430,11 @@ namespace Kanna.Protecc
                     Debug.Log($"Avatar param file already exists, loading and editing.");
                     var json = File.ReadAllText(filePath);
                     paramFile = JsonUtility.FromJson<ParamFile>(json);
+
+                    if (paramFile.animationParameters.Any(o => o.name.Length == 32 && o.name.All(a => !char.IsUpper(a))))
+                    {
+                        paramFile.animationParameters.Clear(); // Has Obfuscated Params, So We Can't Tell. Let's Not Make Chonky Params Files.
+                    }
                 }
 
                 if (paramFile == null)
@@ -449,10 +461,11 @@ namespace Kanna.Protecc
                     }
                 }
                 
-                System.IO.File.WriteAllText(filePath, JsonUtility.ToJson(paramFile));
+                File.WriteAllText(filePath, JsonUtility.ToJson(paramFile));
             }
             
-            EditorUtility.DisplayDialog("Successfully Wrote Keys!", "Your avatar should now just work in VRChat. If you accidentally hit 'Reset Avatar' in VRC 3.0 menu, you need to click Write Keys again.","Okay");
+            if (DoLog)
+                EditorUtility.DisplayDialog("Successfully Wrote Keys!", "Your avatar should now just work in VRChat. If you accidentally hit 'Reset Avatar' in VRC 3.0 menu, you need to click Write Keys again.","Okay");
             
 #else
             Debug.LogError("Can't find VRC SDK?");
