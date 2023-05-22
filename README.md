@@ -22,7 +22,7 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 3. [How secure is this?](#how-secure-is-this)
 
-5. [Support](#supported-shaders)
+5. [Supported Shaders](#supported-shaders)
 
 6. [Support](#support)
 
