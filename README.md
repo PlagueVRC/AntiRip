@@ -22,7 +22,9 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 3. [How secure is this?](#how-secure-is-this)
 
-4. [Support](#support)
+5. [Support](#supported-shaders)
+
+6. [Support](#support)
 
 ## Caveats of this System
 
@@ -90,6 +92,12 @@ If you wish to see your avatar again as normal and not encrypted, click on your 
 ## How secure is this?
 
 I will keep transparent here without guiding rippers on how to attack your works. This is not foolproof, but the best you can get at this time. Rip wise, this cannot be currently ripped without a insane amount of work, as ripping compiled shadercode, reversing it back to unity compatible code and also getting hold of the keys would be hell. Hotswap wise, a dedicated enough ripper with experience with mods could hotswap your avatar. This is not immune to that. (Soon to be countered with trap params making even that extremely harder to do) You can however put a watermark on your avatar to drive hotswappers into being banned which they wont be able to remove, as the meshes will be encrypted, regardless of hotswap. A hotswap done with the high amount of work i have mentioned here would only get the avatar working normally in game; not in unity.
+
+## Supported Shaders
+
+| Supported Shader Name  | Download |
+| ------------- | ------------- |
+| Poiyomi | https://github.com/poiyomi/PoiyomiToonShader |
 
 ## Support
 
