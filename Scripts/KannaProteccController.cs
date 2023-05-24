@@ -41,7 +41,7 @@ namespace Kanna.Protecc
                 ValidateClip(gameObject, controller, i);
             }
 
-            var meshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>(true).Where(o => o.sharedMaterials.Any(a => KannaProteccMaterial.IsShaderSupported(a.shader, out _))).ToArray();
+            var meshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>(true).Where(o => o?.sharedMaterials != null && o.sharedMaterials.Any(a => KannaProteccMaterial.IsShaderSupported(a.shader, out _))).ToArray();
             foreach (var meshRenderer in meshRenderers)
             {
                 for (var i = 0; i < _clipsFalse.Length; ++i)
@@ -52,7 +52,7 @@ namespace Kanna.Protecc
                 }
             }
 
-            var skinnedMeshRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(o => o.sharedMaterials.Any(a => KannaProteccMaterial.IsShaderSupported(a.shader, out _))).ToArray();
+            var skinnedMeshRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(o => o?.sharedMaterials != null && o.sharedMaterials.Any(a => KannaProteccMaterial.IsShaderSupported(a.shader, out _))).ToArray();
             foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
             {
                 for (var i = 0; i < _clipsFalse.Length; ++i)
