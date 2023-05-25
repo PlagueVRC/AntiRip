@@ -28,7 +28,7 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 ## Caveats of this System
 
-1. For a user to see your avatar properly in VRChat, they must have your avatar fully shown. Shaders, animations and all. So this system is only ideal for avatars you use in worlds where most people are your friends.
+1. For a user to see your avatar properly in VRChat, they must have your avatar fully shown. Shaders, animations and all.
 
 2. This synchronizes the key with Avatar 3.0 parameters and does take up 32 bits. So this system can only work with avatars that use the VRChat Avatar 3.0 SDK.
 
