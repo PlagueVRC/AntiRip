@@ -103,3 +103,8 @@ I will keep transparent here without guiding rippers on how to attack your works
 
 If you have any more questions, or suggestions, feel free to join the Kanna Protecc discord:
 https://discord.gg/SyZcuTPXZA
+
+## Roadmap
+
+This will let you keep up to date with major features that will take time to implement. This does not act as a changelog, nor will it have every upcoming feature listed. Only time-consuming ones.
+https://trello.com/b/k88bNBvd/kanna-protecc
