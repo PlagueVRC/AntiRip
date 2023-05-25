@@ -44,7 +44,7 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 1. Ensure you are using latest VRC SDK.
 2. Download the Poiyomi 8/8.1 package from https://github.com/poiyomi/PoiyomiToonShader or Poiyomi's patreon discord if you bought, and import it into your Unity project.
-3. Click on Code -> download zip on this repo. Once downloaded, extract it. Once you have the folder, put that into your assets folder of your unity project.
+3. Click on Code -> download (or [Download](https://github.com/PlagueVRC/AntiRip/archive/refs/heads/main.zip)) zip on this repo. Once downloaded, extract it. Once you have the folder, put that into your assets folder of your unity project.
 
 #### Setup VRC Components.
 
