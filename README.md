@@ -32,7 +32,7 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 2. This synchronizes the key with Avatar 3.0 parameters and does take up 32 bits. So this system can only work with avatars that use the VRChat Avatar 3.0 SDK.
 
-3. Support for a specific shader must be manually added in a update. Currently only Poiyomi is supported, version 7.3 and newer. To request another shader to be supported, feel free to ask in the discussions tab here, or in the discord, seen in the [Support](#support) section here.
+3. Only a shader from [Supported Shaders](#supported-shaders) will work with this. To request another shader to be supported, feel free to ask in the discussions tab here, or in the discord, seen in the [Support](#support) section.
 
 ## Supported Shaders
 
@@ -49,10 +49,10 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 #### Really do it. Close Unity, and make a full clean copy of your entire Unity Project folder. A small percentage of avatars did have odd things in their mesh that just wouldn't work, or could cause errors, and the script could leave some assets in the project in a rather messed up state.
 
-#### Install Kanna Protecc and Poiyomi (Or another supported shader)
+#### Install Kanna Protecc and a supported shader
 
 1. Ensure you are using latest VRC SDK.
-2. Download the Poiyomi 8/8.1 package from https://github.com/poiyomi/PoiyomiToonShader or Poiyomi's patreon discord if you bought, and import it into your Unity project.
+2. Download the supported shader of your choice from [Supported Shaders](#supported-shaders), and import it into your Unity project.
 3. Click ([Download](https://github.com/PlagueVRC/AntiRip/archive/refs/heads/main.zip)). Once downloaded, extract it. Once you have the folder, put that into your assets folder of your unity project.
 
 #### Setup VRC Components.
