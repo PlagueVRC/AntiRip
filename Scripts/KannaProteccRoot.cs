@@ -318,7 +318,6 @@ namespace Kanna.Protecc
                         mat.SetOverrideTag("VRCFallback", "Hidden");
                     }
 
-                    var IncludeFileNames = new List<string>();
                     var IncludeFileDirs = new List<string>();
 
                     foreach (var include in Directory.GetFiles(path, "*.cginc", SearchOption.AllDirectories).Concat(Directory.GetFiles(path, "*.hlsl", SearchOption.AllDirectories)).Where(o => !o.Contains("KannaModelDecode.cginc")))
@@ -341,7 +340,6 @@ namespace Kanna.Protecc
                                 _sb.ReplaceOrLog(shaderMatch.VertexSetup.TextToFind, shaderMatch.VertexSetup.TextToReplaceWith);
 
                             var newFileName = include.Replace(".cginc", "") + "_Protected.cginc";
-                            IncludeFileNames.Add(Path.GetFileName(newFileName));
                             IncludeFileDirs.Add(newFileName);
                             File.WriteAllText(newFileName, _sb.ToString());
                         }
@@ -349,8 +347,10 @@ namespace Kanna.Protecc
 
                     var FileText = File.ReadAllText(shaderPath);
 
-                    foreach (var newName in IncludeFileNames)
+                    foreach (var dir in IncludeFileDirs)
                     {
+                        var newName = Path.GetFileName(dir);
+
                         FileText = FileText.Replace(newName.Replace("_Protected", ""), newName);
                     }
 
