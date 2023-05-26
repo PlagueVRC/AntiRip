@@ -339,7 +339,7 @@ namespace Kanna.Protecc
                             if (shaderMatch.VertexSetup.ApplyToIncludes && shaderMatch.VertexSetup.ExcludeIncludes.All(o => !include.Contains(o)))
                                 _sb.ReplaceOrLog(shaderMatch.VertexSetup.TextToFind, shaderMatch.VertexSetup.TextToReplaceWith);
 
-                            var newFileName = include.Replace(".cginc", "") + "_Protected.cginc";
+                            var newFileName = include.Replace(Path.GetExtension(include), "") + $"_Protected{Path.GetExtension(include)}";
                             IncludeFileDirs.Add(newFileName);
                             File.WriteAllText(newFileName, _sb.ToString());
                         }
