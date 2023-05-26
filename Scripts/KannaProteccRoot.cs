@@ -610,7 +610,7 @@ namespace Kanna.Protecc
                 {
                     text.Replace(tofind, replaceWith.Replace("{OrigText}", tofind));
 
-                    return true;
+                    AnyFound = true;
                 }
                 else
                 {
@@ -618,7 +618,7 @@ namespace Kanna.Protecc
                 }
             }
 
-            return false;
+            return AnyFound;
         }
     }
 
