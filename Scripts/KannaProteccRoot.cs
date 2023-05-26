@@ -8,6 +8,7 @@ using VRC.SDK3.Avatars.ScriptableObjects;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
 using System.Collections;
+using Object = UnityEngine.Object;
 
 #if UNITY_EDITOR
 using Thry;
@@ -60,7 +61,7 @@ namespace Kanna.Protecc
         public bool disableObjectNameObfuscation = false;
 
         [SerializeField]
-        public List<Transform> excludeObjectNames = new List<Transform>();
+        public List<Object> excludeObjectNames = new List<Object>();
 
         [SerializeField]
         public List<string> excludeParamNames = new List<string>();
