@@ -319,6 +319,7 @@ namespace Kanna.Protecc
                     }
 
                     var IncludeFileNames = new List<string>();
+                    var IncludeFileDirs = new List<string>();
 
                     foreach (var include in Directory.GetFiles(path, "*.cginc", SearchOption.AllDirectories).Concat(Directory.GetFiles(path, "*.hlsl", SearchOption.AllDirectories)).Where(o => !o.Contains("KannaModelDecode.cginc")))
                     {
@@ -341,6 +342,7 @@ namespace Kanna.Protecc
 
                             var newFileName = include.Replace(".cginc", "") + "_Protected.cginc";
                             IncludeFileNames.Add(Path.GetFileName(newFileName));
+                            IncludeFileDirs.Add(newFileName);
                             File.WriteAllText(newFileName, _sb.ToString());
                         }
                     }
@@ -350,6 +352,16 @@ namespace Kanna.Protecc
                     foreach (var newName in IncludeFileNames)
                     {
                         FileText = FileText.Replace(newName.Replace("_Protected", ""), newName);
+                    }
+
+                    foreach (var dir in IncludeFileDirs) // get each file to write to
+                    {
+                        foreach (var towrite in IncludeFileDirs) // write all new include names
+                        {
+                            var newName2 = Path.GetFileName(towrite);
+
+                            File.WriteAllText(dir, File.ReadAllText(dir).Replace(newName2.Replace("_Protected", ""), newName2));
+                        }
                     }
 
                     File.WriteAllText(shaderPath, FileText);
