@@ -257,6 +257,33 @@ namespace Kanna.Protecc
                     TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\nUNITY_SETUP_INSTANCE_ID(v);",
                     ApplyToIncludes = true,
                 }
+            },
+
+            new KannaDynamicShaderData
+            {
+                ShaderName_StartsWith = "Sunao Shader",
+                SupportsLocking = false,
+
+                UV = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = "float2 uv1     : TEXCOORD1;",
+                    TextToReplaceWith = "float2 uv1     : TEXCOORD1;\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
+                    ApplyToIncludes = true,
+                },
+
+                Vert = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = "VOUT vert (",
+                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\nVOUT vert (",
+                    ApplyToIncludes = true
+                },
+
+                VertexSetup = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = "UNITY_SETUP_INSTANCE_ID(v);",
+                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\nUNITY_SETUP_INSTANCE_ID(v);",
+                    ApplyToIncludes = true,
+                }
             }
         };
 
