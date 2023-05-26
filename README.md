@@ -18,13 +18,13 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 1. [Caveats of this System](#caveats-of-this-system)
 
-2. [Usage Instructions](#usage-instructions)
+2. [Supported Shaders](#supported-shaders)
 
-3. [How secure is this?](#how-secure-is-this)
+3. [Usage Instructions](#usage-instructions)
 
-5. [Supported Shaders](#supported-shaders)
+4. [How secure is this?](#how-secure-is-this)
 
-6. [Support](#support)
+5. [Support](#support)
 
 ## Caveats of this System
 
@@ -33,6 +33,15 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 2. This synchronizes the key with Avatar 3.0 parameters and does take up 32 bits. So this system can only work with avatars that use the VRChat Avatar 3.0 SDK.
 
 3. Support for a specific shader must be manually added in a update. Currently only Poiyomi is supported, version 7.3 and newer. To request another shader to be supported, feel free to ask in the discussions tab here, or in the discord, seen in the [Support](#support) section here.
+
+## Supported Shaders
+
+| Supported Shader Name  | Download |
+| ------------- | ------------- |
+| Poiyomi | https://github.com/poiyomi/PoiyomiToonShader |
+| Unity-Chan Toon Shader (UTS) | https://unity-chan.com/download/releaseNote.php?id=UTS2_0&lang=en |
+| GTAvaToon | https://github.com/rygo6/GTAvaToon |
+| Sunao Shader | https://booth.pm/ja/items/1723985 |
 
 ## Usage Instructions
 
@@ -92,15 +101,6 @@ If you wish to see your avatar again as normal and not encrypted, click on your 
 ## How secure is this?
 
 I will keep transparent here without guiding rippers on how to attack your works. This is not foolproof, but the best you can get at this time. Rip wise, this cannot be currently ripped without a insane amount of work, as ripping compiled shadercode, reversing it back to unity compatible code and also getting hold of the keys would be hell. Hotswap wise, a dedicated enough ripper with experience with mods could hotswap your avatar. This is not immune to that. (Soon to be countered with trap params making even that extremely harder to do) You can however put a watermark on your avatar to drive hotswappers into being banned which they wont be able to remove, as the meshes will be encrypted, regardless of hotswap. A hotswap done with the high amount of work i have mentioned here would only get the avatar working normally in game; not in unity.
-
-## Supported Shaders
-
-| Supported Shader Name  | Download |
-| ------------- | ------------- |
-| Poiyomi | https://github.com/poiyomi/PoiyomiToonShader |
-| Unity-Chan Toon Shader (UTS) | https://unity-chan.com/download/releaseNote.php?id=UTS2_0&lang=en |
-| GTAvaToon | https://github.com/rygo6/GTAvaToon |
-| Sunao Shader | https://booth.pm/ja/items/1723985 |
 
 ## Support
 
