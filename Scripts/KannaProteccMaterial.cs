@@ -230,6 +230,33 @@ namespace Kanna.Protecc
                     TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\nUNITY_SETUP_INSTANCE_ID(v);",
                     ApplyToIncludes = true,
                 }
+            },
+
+            new KannaDynamicShaderData
+            {
+                ShaderName_StartsWith = "GeoTetra/GTAvaToon",
+                SupportsLocking = false,
+
+                UV = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = "float2 uv : TEXCOORD0;",
+                    TextToReplaceWith = "float2 uv : TEXCOORD0;\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
+                    ApplyToIncludes = true,
+                },
+
+                Vert = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = "v2f vert (",
+                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\nv2f vert (",
+                    ApplyToIncludes = true
+                },
+
+                VertexSetup = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = "UNITY_SETUP_INSTANCE_ID(v);",
+                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\nUNITY_SETUP_INSTANCE_ID(v);",
+                    ApplyToIncludes = true,
+                }
             }
         };
 

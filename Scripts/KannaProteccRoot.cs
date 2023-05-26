@@ -320,7 +320,7 @@ namespace Kanna.Protecc
 
                     var IncludeFileNames = new List<string>();
 
-                    foreach (var include in Directory.GetFiles(path, "*.cginc", SearchOption.AllDirectories).Where(o => !o.Contains("KannaModelDecode.cginc")))
+                    foreach (var include in Directory.GetFiles(path, "*.cginc", SearchOption.AllDirectories).Concat(Directory.GetFiles(path, "*.hlsl", SearchOption.AllDirectories)).Where(o => !o.Contains("KannaModelDecode.cginc")))
                     {
                         var includeText = File.ReadAllText(include);
 
