@@ -17,7 +17,7 @@ namespace Kanna.Protecc
     {
         public class KannaReplaceText
         {
-            public string TextToFind;
+            public string[] TextToFind;
             public string TextToReplaceWith;
             public bool ApplyToIncludes;
             public string[] ExcludeIncludes = {};
@@ -128,23 +128,23 @@ namespace Kanna.Protecc
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "float2 uv3 : TEXCOORD3;",
-                    TextToReplaceWith = "float2 uv3 : TEXCOORD3;\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
+                    TextToFind = new [] { "float2 uv3 : TEXCOORD3;" },
+                    TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
                 },
 
                 Vert = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "v2f vert(",
-                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\nv2f vert(",
+                    TextToFind = new [] { "v2f vert(", "v2f vert (" },
+                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\n{OrigText}",
                     ApplyToIncludes = true,
                     ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 },
 
                 VertexSetup = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "UNITY_SETUP_INSTANCE_ID(v);",
-                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\nUNITY_SETUP_INSTANCE_ID(v);",
+                    TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
+                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
                     ApplyToIncludes = true,
                 }
             },
@@ -156,23 +156,23 @@ namespace Kanna.Protecc
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "float2 uv3 : TEXCOORD3;",
-                    TextToReplaceWith = "float2 uv3 : TEXCOORD3;\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
+                    TextToFind = new [] { "float2 uv3 : TEXCOORD3;" },
+                    TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
                 },
 
                 Vert = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "v2f vert(",
-                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\nv2f vert(",
+                    TextToFind = new [] { "v2f vert(", "v2f vert (" },
+                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\n{OrigText}",
                     ApplyToIncludes = true,
                     ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 },
 
                 VertexSetup = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "UNITY_SETUP_INSTANCE_ID(v);",
-                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\nUNITY_SETUP_INSTANCE_ID(v);",
+                    TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
+                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
                     ApplyToIncludes = true,
                 }
             },
@@ -184,23 +184,23 @@ namespace Kanna.Protecc
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "float2 uv3 : TEXCOORD3;",
-                    TextToReplaceWith = "float2 uv3 : TEXCOORD3;\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
+                    TextToFind = new [] { "float2 uv3 : TEXCOORD3;" },
+                    TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
                 },
 
                 Vert = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "VertexOut vert(",
-                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\nVertexOut vert(",
+                    TextToFind = new [] { "VertexOut vert(", "VertexOut vert (" },
+                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\n{OrigText}",
                     ApplyToIncludes = true,
                     ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 },
 
                 VertexSetup = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "UNITY_SETUP_INSTANCE_ID(v);",
-                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\nUNITY_SETUP_INSTANCE_ID(v);",
+                    TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
+                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
                     ApplyToIncludes = true,
                 }
             },
@@ -212,49 +212,49 @@ namespace Kanna.Protecc
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "float3 bitangentDir : TEXCOORD3;",
-                    TextToReplaceWith = "float3 bitangentDir : TEXCOORD3;\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
+                    TextToFind = new [] { "float3 bitangentDir : TEXCOORD3;" },
+                    TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
                 },
 
                 Vert = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "VertexOutput vert (",
-                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\nVertexOutput vert (",
+                    TextToFind = new [] { "VertexOutput vert(", "VertexOutput vert (" },
+                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\n{OrigText}",
                     ApplyToIncludes = true
                 },
 
                 VertexSetup = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "UNITY_SETUP_INSTANCE_ID(v);",
-                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\nUNITY_SETUP_INSTANCE_ID(v);",
+                    TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
+                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
                     ApplyToIncludes = true,
                 }
             },
 
             new KannaDynamicShaderData
             {
-                ShaderName_StartsWith = "GeoTetra/GTAvaToon",
+                ShaderName_StartsWith = "GeoTetra/GTAvaToon", // why you gotta have inconsistent ass syntax and naming rygo xD
                 SupportsLocking = false,
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "float2 uv : TEXCOORD0;",
-                    TextToReplaceWith = "float2 uv : TEXCOORD0;\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
+                    TextToFind = new [] { "float2 uv : TEXCOORD0;", "float2 uv0 : TEXCOORD0;" },
+                    TextToReplaceWith = "{OrigText};\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
                 },
 
                 Vert = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "v2f vert (",
-                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\nv2f vert (",
+                    TextToFind = new [] { "v2f vert(", "v2f vert (" }, 
+                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\n{OrigText}",
                     ApplyToIncludes = true
                 },
 
                 VertexSetup = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "UNITY_SETUP_INSTANCE_ID(v);",
-                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\nUNITY_SETUP_INSTANCE_ID(v);",
+                    TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
+                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
                     ApplyToIncludes = true,
                 }
             },
@@ -266,22 +266,22 @@ namespace Kanna.Protecc
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "float2 uv1     : TEXCOORD1;",
-                    TextToReplaceWith = "float2 uv1     : TEXCOORD1;\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
+                    TextToFind = new [] { "float2 uv1     : TEXCOORD1;" },
+                    TextToReplaceWith = "{OrigText};\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
                 },
 
                 Vert = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "VOUT vert (",
-                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\nVOUT vert (",
+                    TextToFind = new [] { "VOUT vert(", "VOUT vert (" },
+                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\n{OrigText}",
                     ApplyToIncludes = true
                 },
 
                 VertexSetup = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = "UNITY_SETUP_INSTANCE_ID(v);",
-                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\nUNITY_SETUP_INSTANCE_ID(v);",
+                    TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
+                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
                     ApplyToIncludes = true,
                 }
             }

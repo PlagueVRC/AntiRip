@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Random = UnityEngine.Random;
 using System.Collections;
 using Object = UnityEngine.Object;
+using System.Text.RegularExpressions;
 
 #if UNITY_EDITOR
 using Thry;
@@ -599,17 +600,22 @@ namespace Kanna.Protecc
     }
     public static class KannaExtensions
     {
-        public static bool ReplaceOrLog(this StringBuilder text, string textToReplace, string replaceWith)
+        public static bool ReplaceOrLog(this StringBuilder text, string[] textToReplace, string replaceWith)
         {
-            if (text.IndexOf(textToReplace) != -1)
-            {
-                text.Replace(textToReplace, replaceWith);
+            var AnyFound = false;
 
-                return true;
-            }
-            else
+            foreach (var tofind in textToReplace)
             {
-                //Debug.LogError($"{text} Does Not Contain {textToReplace}!");
+                if (text.IndexOf(tofind) != -1)
+                {
+                    text.Replace(tofind, replaceWith.Replace("{OrigText}", tofind));
+
+                    return true;
+                }
+                else
+                {
+                    //Debug.LogError($"{text} Does Not Contain {textToReplace}!");
+                }
             }
 
             return false;
