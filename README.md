@@ -100,6 +100,7 @@ I will keep transparent here without guiding rippers on how to attack your works
 | Poiyomi | https://github.com/poiyomi/PoiyomiToonShader |
 | Unity-Chan Toon Shader (UTS) | https://unity-chan.com/download/releaseNote.php?id=UTS2_0&lang=en |
 | GTAvaToon | https://github.com/rygo6/GTAvaToon |
+| Sunao Shader | https://booth.pm/ja/items/1723985 |
 
 ## Support
 
