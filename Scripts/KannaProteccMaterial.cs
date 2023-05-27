@@ -131,6 +131,7 @@ namespace Kanna.Protecc
                     TextToFind = new [] { "float2 uv3 : TEXCOORD3;" },
                     TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
+                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 },
 
                 Vert = new KannaDynamicShaderData.KannaReplaceText
@@ -146,6 +147,7 @@ namespace Kanna.Protecc
                     TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
                     TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
                     ApplyToIncludes = true,
+                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 }
             },
 
@@ -159,6 +161,7 @@ namespace Kanna.Protecc
                     TextToFind = new [] { "float2 uv3 : TEXCOORD3;" },
                     TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
+                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 },
 
                 Vert = new KannaDynamicShaderData.KannaReplaceText
@@ -174,6 +177,7 @@ namespace Kanna.Protecc
                     TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
                     TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
                     ApplyToIncludes = true,
+                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 }
             },
 
@@ -187,6 +191,7 @@ namespace Kanna.Protecc
                     TextToFind = new [] { "float2 uv3 : TEXCOORD3;" },
                     TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
+                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 },
 
                 Vert = new KannaDynamicShaderData.KannaReplaceText
@@ -202,6 +207,7 @@ namespace Kanna.Protecc
                     TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
                     TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
                     ApplyToIncludes = true,
+                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 }
             },
 

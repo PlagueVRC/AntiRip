@@ -322,7 +322,7 @@ namespace Kanna.Protecc
 
                     var IncludeFileDirs = new List<string>();
 
-                    foreach (var include in Directory.GetFiles(path, "*.cginc", SearchOption.AllDirectories).Concat(Directory.GetFiles(path, "*.hlsl", SearchOption.AllDirectories)).Where(o => !o.Contains("KannaModelDecode.cginc")))
+                    foreach (var include in mat.shader.FindAllShaderIncludes().Where(o => !o.Contains("KannaModelDecode.cginc")))
                     {
                         var includeText = File.ReadAllText(include);
 
@@ -609,8 +609,7 @@ namespace Kanna.Protecc
                 if (text.IndexOf(tofind) != -1)
                 {
                     text.Replace(tofind, replaceWith.Replace("{OrigText}", tofind));
-
-                    return true;
+                    AnyFound = true;
                 }
                 else
                 {
@@ -618,7 +617,56 @@ namespace Kanna.Protecc
                 }
             }
 
-            return false;
+            return AnyFound;
+        }
+
+        public static string GetRelativePath(this string RelativeDir, string toPath)
+        {
+            if (toPath[0] == '/' || toPath[0] == '\\')
+            {
+                toPath = toPath.Substring(1);
+            }
+
+            var combinedPath = Path.Combine(RelativeDir, toPath); // C:/shaders/myshader.shader/../somefile.cginc
+            var absolutePath = Path.GetFullPath(combinedPath); // C:/shaders/somefile.cginc
+
+            Debug.Log(absolutePath);
+
+            return absolutePath;
+        }
+
+        public static List<string> FindAllShaderIncludes(this Shader shader)
+        {
+            var FoundIncludes = new List<string>();
+            
+            var ShaderText = File.ReadAllText(AssetDatabase.GetAssetPath(shader));
+
+            FindIncludes(ShaderText, Path.GetDirectoryName(AssetDatabase.GetAssetPath(shader)));
+
+            void FindIncludes(string searchMe, string dir)
+            {
+                if (searchMe.IndexOf("#include") > -1)
+                {
+                    foreach (var line in searchMe.Split(new [] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        if (line.IndexOf("#include") > -1)
+                        {
+                            var StartIndex = line.IndexOf("#include \"") + "#include \"".Length;
+                            var EndIndex = line.LastIndexOf("\"");
+
+                            var IncludeName = dir.GetRelativePath(line.Substring(StartIndex, EndIndex - StartIndex));
+
+                            if (File.Exists(IncludeName) && !FoundIncludes.Contains(IncludeName))
+                            {
+                                FoundIncludes.Add(IncludeName);
+                                FindIncludes(File.ReadAllText(IncludeName), Path.GetDirectoryName(IncludeName));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return FoundIncludes;
         }
     }
 
