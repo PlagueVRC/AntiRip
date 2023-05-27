@@ -40,7 +40,6 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 | ------------- | ------------- |
 | Poiyomi | https://github.com/poiyomi/PoiyomiToonShader |
 | Unity-Chan Toon Shader (UTS) | https://unity-chan.com/download/releaseNote.php?id=UTS2_0&lang=en |
-| GTAvaToon | https://github.com/rygo6/GTAvaToon |
 | Sunao Shader | https://booth.pm/ja/items/1723985 |
 
 ## Usage Instructions
