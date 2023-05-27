@@ -645,14 +645,16 @@ namespace Kanna.Protecc
 
             void FindIncludes(string searchMe, string dir)
             {
-                if (searchMe.IndexOf("#include") > -1)
+                if (searchMe.IndexOf("#include ") > -1)
                 {
-                    foreach (var line in searchMe.Split(new [] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+                    foreach (var line in searchMe.Split(new [] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries))
                     {
-                        if (line.IndexOf("#include") > -1)
+                        if (line.IndexOf("#include ") > -1)
                         {
                             var StartIndex = line.IndexOf("#include \"") + "#include \"".Length;
                             var EndIndex = line.LastIndexOf("\"");
+
+                            Debug.Log($"Making {line.Substring(StartIndex)} Relative To {dir}");
 
                             var IncludeName = dir.GetRelativePath(line.Substring(StartIndex, EndIndex - StartIndex));
 
