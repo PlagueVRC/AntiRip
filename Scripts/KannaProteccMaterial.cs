@@ -248,13 +248,15 @@ namespace Kanna.Protecc
                     TextToFind = new [] { "float2 uv : TEXCOORD0;", "float2 uv0 : TEXCOORD0;" },
                     TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
+                    ExcludeIncludes = new [] { "VRChatShadow" }
                 },
 
                 Vert = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = new [] { "v2f vert(", "v2f vert (" }, 
+                    TextToFind = new [] { "v2f vert(", "v2f vert (", "grabpass_v2f grabpass_vert" }, 
                     TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\n{OrigText}",
-                    ApplyToIncludes = true
+                    ApplyToIncludes = true,
+                    ExcludeIncludes = new [] { "VRChatShadow" }
                 },
 
                 VertexSetup = new KannaDynamicShaderData.KannaReplaceText
@@ -262,6 +264,7 @@ namespace Kanna.Protecc
                     TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
                     TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
                     ApplyToIncludes = true,
+                    ExcludeIncludes = new [] { "VRChatShadow" }
                 }
             },
 
