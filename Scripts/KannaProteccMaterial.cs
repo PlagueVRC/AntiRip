@@ -246,7 +246,7 @@ namespace Kanna.Protecc
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
                     TextToFind = new [] { "float2 uv : TEXCOORD0;", "float2 uv0 : TEXCOORD0;" },
-                    TextToReplaceWith = "{OrigText};\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
+                    TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
                 },
 
@@ -273,7 +273,7 @@ namespace Kanna.Protecc
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
                     TextToFind = new [] { "float2 uv1     : TEXCOORD1;" },
-                    TextToReplaceWith = "{OrigText};\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
+                    TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
                 },
 
