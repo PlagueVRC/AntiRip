@@ -302,7 +302,7 @@ namespace Kanna.Protecc
                     {
                         _sb.Clear();
                         _sb.AppendLine("//KannaProtecc Injected");
-                        _sb.Append(shaderText);
+                        _sb.Append(shaderText.Replace("Shader \"", "Shader \"Kanna Protecc/"));
 
                         _sb.ReplaceOrLog(shaderMatch.UV.TextToFind, shaderMatch.UV.TextToReplaceWith);
 
