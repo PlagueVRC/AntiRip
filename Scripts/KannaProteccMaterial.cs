@@ -245,7 +245,7 @@ namespace Kanna.Protecc
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = new [] { "float2 uv : TEXCOORD0;", "float2 uv0 : TEXCOORD0;" },
+                    TextToFind = new [] { "float4 vertex : POSITION0;", "float4 vertex : POSITION;" },
                     TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
                     ExcludeIncludes = new [] { "VRChatShadow" }
@@ -261,8 +261,8 @@ namespace Kanna.Protecc
 
                 VertexSetup = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
-                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
+                    TextToFind = new [] { "UNITY_TRANSFER_LIGHTING(o, v.uv1);", "o.normal_depth.w = _DepthId;" },
+                    TextToReplaceWith = "{OrigText}\r\no.pos = modelDecode(o.pos, v.normal, v.uv6, v.uv7);",
                     ApplyToIncludes = true,
                     ExcludeIncludes = new [] { "VRChatShadow" }
                 }
