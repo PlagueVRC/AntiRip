@@ -214,7 +214,7 @@ namespace Kanna.Protecc
 
             if (GUILayout.Button(new GUIContent("Unlock materials", "Unlock All Materials In Hierarchy")))
             {
-                MenuUtilites.UnlockAllPoiMaterialsInHierarchy(null);
+                MenuUtilites.UnlockAllMaterialsInHierarchy(null);
             }
 
             if (KannaProteccRoot.IsProtected)

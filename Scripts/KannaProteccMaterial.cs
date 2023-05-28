@@ -293,6 +293,33 @@ namespace Kanna.Protecc
                     TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
                     ApplyToIncludes = true,
                 }
+            },
+
+            new KannaDynamicShaderData
+            {
+                ShaderName_StartsWith = "Xiexe/Toon",
+                SupportsLocking = false,
+
+                UV = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = new [] { "float2 uv2 : TEXCOORD2;" },
+                    TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
+                    ApplyToIncludes = true,
+                },
+
+                Vert = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = new [] { "VertexOutput vert" },
+                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\n{OrigText}",
+                    ApplyToIncludes = true
+                },
+
+                VertexSetup = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
+                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
+                    ApplyToIncludes = true,
+                }
             }
         };
 

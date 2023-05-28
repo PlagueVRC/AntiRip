@@ -13,7 +13,7 @@ namespace Kanna.Protecc
         const string okText = "Ok";
         
         [MenuItem("Tools/Kanna Protecc/Unlock All Materials In Hierarchy...", false)]
-        public static void UnlockAllPoiMaterialsInHierarchy(MenuCommand command)
+        public static void UnlockAllMaterialsInHierarchy(MenuCommand command)
         {
             KannaProteccRoot.Instance.IsProtected = false;
 
@@ -66,7 +66,21 @@ namespace Kanna.Protecc
 
                     if (path.Contains("_Protected.shader") && File.Exists(path.Replace("_Protected.shader", ".shader")))
                     {
-                        material.shader = AssetDatabase.LoadAssetAtPath<Shader>(AssetDatabase.GetAssetPath(material.shader).Replace("_Protected.shader", ".shader"));
+                        var ProtecctedFilePath = AssetDatabase.GetAssetPath(material.shader);
+
+                        material.shader = AssetDatabase.LoadAssetAtPath<Shader>(ProtecctedFilePath.Replace("_Protected.shader", ".shader"));
+
+                        var AllIncludes = AssetDatabase.LoadAssetAtPath<Shader>(ProtecctedFilePath).FindAllShaderIncludes();
+
+                        File.Delete(ProtecctedFilePath);
+
+                        foreach (var include in AllIncludes)
+                        {
+                            if (include.Contains("_Protected") || include.Contains("KannaModelDecode"))
+                            {
+                                File.Delete(include);
+                            }
+                        }
                     }
 
                     if (KannaProteccMaterial.IsShaderSupported(material.shader, out var shaderMatch) && shaderMatch.SupportsLocking && material.shader.name.Contains("Locked"))
@@ -89,7 +103,21 @@ namespace Kanna.Protecc
 
                     if (path.Contains("_Protected.shader") && File.Exists(path.Replace("_Protected.shader", ".shader")))
                     {
-                        material.shader = AssetDatabase.LoadAssetAtPath<Shader>(AssetDatabase.GetAssetPath(material.shader).Replace("_Protected.shader", ".shader"));
+                        var ProtecctedFilePath = AssetDatabase.GetAssetPath(material.shader);
+
+                        material.shader = AssetDatabase.LoadAssetAtPath<Shader>(ProtecctedFilePath.Replace("_Protected.shader", ".shader"));
+
+                        var AllIncludes = AssetDatabase.LoadAssetAtPath<Shader>(ProtecctedFilePath).FindAllShaderIncludes();
+
+                        File.Delete(ProtecctedFilePath);
+
+                        foreach (var include in AllIncludes)
+                        {
+                            if (include.Contains("_Protected") || include.Contains("KannaModelDecode"))
+                            {
+                                File.Delete(include);
+                            }
+                        }
                     }
 
                     if (KannaProteccMaterial.IsShaderSupported(material.shader, out var shaderMatch) && shaderMatch.SupportsLocking && material.shader.name.Contains("Locked"))
