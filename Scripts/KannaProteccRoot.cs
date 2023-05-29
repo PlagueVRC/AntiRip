@@ -132,6 +132,12 @@ namespace Kanna.Protecc
         
         public void EncryptAvatar()
         {
+            if (ParameterRenamedValues.Count == 0 && !string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId))
+            {
+                EditorUtility.DisplayDialog("Error!", "Do Not Encrypt A Previously Non-Encrypted Avatar That Was Uploaded! Detach The Blueprint ID And Upload This To A New One!", "Okay");
+                return;
+            }
+
             var newName = gameObject.name + "_Encrypted";
             
             // delete old GO, do as such in case its disabled
