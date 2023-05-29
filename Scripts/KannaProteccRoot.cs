@@ -643,6 +643,7 @@ namespace Kanna.Protecc
             return absolutePath;
         }
 
+#if UNITY_EDITOR
         public static List<string> FindAllShaderIncludes(this Shader shader)
         {
             var FoundIncludes = new List<string>();
@@ -678,6 +679,7 @@ namespace Kanna.Protecc
 
             return FoundIncludes;
         }
+#endif
     }
 
     // Credit: Poiyomi & Thry - Embedded due to the want of no external dependencies.
