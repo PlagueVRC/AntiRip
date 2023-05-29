@@ -134,8 +134,10 @@ namespace Kanna.Protecc
         {
             if (ParameterRenamedValues.Count == 0 && !string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId))
             {
-                EditorUtility.DisplayDialog("Error!", "Do Not Encrypt A Previously Non-Encrypted Avatar That Was Uploaded! Detach The Blueprint ID And Upload This To A New One!", "Okay");
-                return;
+                if (EditorUtility.DisplayDialog("Error!", "Do Not Encrypt A Previously Non-Encrypted Avatar That Was Uploaded! Detach The Blueprint ID And Upload This To A New One!", "Okay", "Bypass Warning"))
+                {
+                    return;
+                }
             }
 
             var newName = gameObject.name + "_Encrypted";
