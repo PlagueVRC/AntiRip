@@ -260,7 +260,7 @@ namespace Kanna.Protecc
 
             IsProtected = true;
 
-            EditorUtility.DisplayDialog("Successfully Encrypted!", "Keys were automatically written. Your avatar should be ready to upload!", "Okay");
+            EditorUtility.DisplayDialog("Successfully Encrypted!", $"{(string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId) ? "" : "Keys were automatically written. ")}Your avatar should be ready to upload!", "Okay");
         }
 
         void AddMaterialsToIgnoreList(Material[] materials, List<Material> aggregateIgnoredMaterials)
