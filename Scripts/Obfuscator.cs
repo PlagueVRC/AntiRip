@@ -18,8 +18,6 @@ using UnityEngine;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
 
-using static Thry.AnimationParser;
-
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
@@ -238,6 +236,10 @@ namespace Kanna.Protecc
                     }
                 }
 
+                ProgressBar("Randomizing Sibling Order", 12);
+
+                RandomizeAllSiblingOrders(obj);
+
                 ProgressBar("Done!", 1, 1);
             }
             catch (Exception err)
@@ -261,6 +263,20 @@ namespace Kanna.Protecc
             }
 
             return obj;
+        }
+
+        private System.Random random = new System.Random();
+
+        private void RandomizeAllSiblingOrders(GameObject obj)
+        {
+            var AllChildren = obj.transform.GetAllChildren(true);
+
+            AllChildren.Remove(obj.transform);
+
+            foreach (var child in AllChildren)
+            {
+                child.SetSiblingIndex(random.Next(0, child.parent.childCount + 1));
+            }
         }
 
         private void AddAllParent(GameObject root, Animator animator, Transform bone)
@@ -291,7 +307,7 @@ namespace Kanna.Protecc
                 templist.Add(new VRCExpressionParameters.Parameter
                 {
                     name = $"BitKey{i}",
-                    saved = true,
+                    saved = random.Next(0, 2) == 0,
                     valueType = VRCExpressionParameters.ValueType.Bool,
                     defaultValue = 0f
                 });

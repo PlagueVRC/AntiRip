@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Kanna.Protecc;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
+using VRC.SDK3.Avatars.Components;
+using VRC.SDK3.Avatars.ScriptableObjects;
+using VRC.SDKBase;
 using AnimatorController = UnityEditor.Animations.AnimatorController;
 using AnimatorControllerLayer = UnityEditor.Animations.AnimatorControllerLayer;
 using Object = UnityEngine.Object;
@@ -132,17 +136,17 @@ namespace Kanna.Protecc
             }
         }
 
-        public void ValidateLayers(AnimatorController controller)
+        public void ValidateLayers(GameObject obj, AnimatorController controller)
         {
             if (controller.layers.All(l => l?.name != LayerName))
             {
-                CreateLayer(LayerName, controller);
+                CreateLayer(LayerName, controller, obj);
             }
         }
 
-        void CreateLayer(string Name, AnimatorController controller)
+        void CreateLayer(string Name, AnimatorController controller, GameObject obj)
         {
-            DBT = new DBT_API.DBT_Instance(controller, Name);
+            DBT = new DBT_API.DBT_Instance(controller, Name, obj, false);
 
             for (var i = 0; i < _KannaProteccKeyNames.Length; i++)
             {
@@ -253,7 +257,7 @@ public class DBT_API
         public AnimatorControllerLayer layer;
         public MasterTree masterTree;
 
-        public DBT_Instance(AnimatorController controller, string LayerName)
+        public DBT_Instance(AnimatorController controller, string LayerName, GameObject obj, bool IsTrapped)
         {
             var controllerPath = AssetDatabase.GetAssetPath(controller);
 
@@ -276,7 +280,61 @@ public class DBT_API
 
             this.controller = controller;
 
-            var state = CreateState(layer, $"{LayerName}_BlendRootState");
+            AnimatorState state;
+
+            if (IsTrapped) // To Do: R&D For Trapping In Synced Parameters, Or To Be Able To Clear Keys From Synced Parameters While Still Decrypting For Late-Joiners.
+            {
+                var prestate = CreateState(layer, $"{LayerName}_PreBlendRootState"); // Default As First
+
+                state = CreateState(layer, $"{LayerName}_BlendRootState");
+
+                var TrapName = GUID.Generate().ToString();
+
+                var trap = new AnimatorControllerParameter
+                {
+                    name = TrapName,
+                    type = AnimatorControllerParameterType.Float,
+                    defaultFloat = 1f
+                };
+
+                var parameters = controller.parameters.ToList();
+                parameters.Add(trap);
+                controller.parameters = parameters.ToArray();
+
+                prestate.AddTransition(new AnimatorStateTransition()
+                {
+                    conditions = new[] { new AnimatorCondition() { mode = AnimatorConditionMode.Less, parameter = TrapName, threshold = 1f } },
+                    hasExitTime = false,
+                    exitTime = 0f, // yeet into it bruh
+                    duration = 0f,
+                    destinationState = state
+                });
+
+                // To Do: Exit Layer.
+
+                var aviparameters = obj.GetComponent<VRCAvatarDescriptor>().expressionParameters.parameters.ToList();
+                aviparameters.Add(new VRCExpressionParameters.Parameter()
+                {
+                    name = TrapName,
+                    defaultValue = 0f,
+                    saved = false,
+                    valueType = VRCExpressionParameters.ValueType.Bool
+                });
+                obj.GetComponent<VRCAvatarDescriptor>().expressionParameters.parameters = aviparameters.ToArray();
+
+                var driver = state.AddStateMachineBehaviour<VRCAvatarParameterDriver>();
+
+                driver.parameters.Add(new VRC_AvatarParameterDriver.Parameter()
+                {
+                    chance = 1f,
+                    name = TrapName,
+                    value = 1f
+                });
+            }
+            else
+            {
+                state = CreateState(layer, $"{LayerName}_BlendRootState");
+            }
 
             masterTree = new MasterTree(controller, state, $"{LayerName} Master Tree");
         }

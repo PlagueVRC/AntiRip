@@ -12,7 +12,9 @@ using Object = UnityEngine.Object;
 using System.Text.RegularExpressions;
 
 #if UNITY_EDITOR
+#if TPS
 using Thry;
+#endif
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEditor.SceneManagement;
@@ -85,7 +87,7 @@ namespace Kanna.Protecc
             _KannaProteccController.InitializeCount(_bitKeys.Length);
             _KannaProteccController.ValidateAnimations(obj, controller);
             _KannaProteccController.ValidateParameters(controller);
-            _KannaProteccController.ValidateLayers(controller);
+            _KannaProteccController.ValidateLayers(obj, controller);
 
             obfuscator.ObfuscateLayer(controller.layers.First(o => o.name == KannaProteccController.LayerName), controller, this);
         }
@@ -285,9 +287,13 @@ namespace Kanna.Protecc
                 {
                     if (shaderMatch.SupportsLocking && !mat.shader.name.Contains("Locked"))
                     {
+#if TPS
                         ShaderOptimizer.SetLockedForAllMaterials(new []{mat}, 1, true, false, false);
+#else
+                        EditorUtility.DisplayDialog("Error!", "Avatar Has Locking Supported Shader, But Thry Is Not In Your Project!", "Okay");
+#endif
                     }
-                    
+
                     if (shaderMatch.SupportsLocking && !mat.shader.name.Contains("Locked"))
                     {
                         Debug.LogError($"{mat.name} {mat.shader.name} Trying to Inject not-locked shader?!");
@@ -605,9 +611,29 @@ namespace Kanna.Protecc
             _KannaProteccController.DeleteKannaProteccObjectsFromController(GetAnimatorController());
         }
 #endif
-    }
+                    }
+
     public static class KannaExtensions
     {
+        public static List<Transform> GetAllChildren(this Transform parent, bool recursive)
+        {
+            var list = new List<Transform>();
+
+            if (recursive)
+            {
+                list.AddRange(parent.GetComponentsInChildren<Transform>(true));
+            }
+            else
+            {
+                for (var i = 0; i < parent.childCount; i++)
+                {
+                    list.Add(parent.GetChild(i));
+                }
+            }
+
+            return list;
+        }
+
         public static bool ReplaceOrLog(this StringBuilder text, string[] textToReplace, string replaceWith)
         {
             var AnyFound = false;
