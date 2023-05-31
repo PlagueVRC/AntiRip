@@ -265,8 +265,6 @@ namespace Kanna.Protecc
             return obj;
         }
 
-        private System.Random random = new System.Random();
-
         private void RandomizeAllSiblingOrders(GameObject obj)
         {
             var AllChildren = obj.transform.GetAllChildren(true);
@@ -275,7 +273,7 @@ namespace Kanna.Protecc
 
             foreach (var child in AllChildren)
             {
-                child.SetSiblingIndex(random.Next(0, child.parent.childCount + 1));
+                child.SetSiblingIndex(UnityEngine.Random.Range(0, child.parent.childCount));
             }
         }
 
@@ -307,7 +305,7 @@ namespace Kanna.Protecc
                 templist.Add(new VRCExpressionParameters.Parameter
                 {
                     name = $"BitKey{i}",
-                    saved = random.Next(0, 2) == 0,
+                    saved = true,
                     valueType = VRCExpressionParameters.ValueType.Bool,
                     defaultValue = 0f
                 });
