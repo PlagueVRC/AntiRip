@@ -392,11 +392,13 @@ namespace Kanna.Protecc
             var expressionsMenu = CopyAssetFile("asset", menu, root);
             foreach (var control in expressionsMenu.controls)
             {
-                if (control.type == VRCExpressionsMenu.Control.ControlType.SubMenu && control.subMenu != null && control.subMenu != expressionsMenu && control.subMenu != menu) control.subMenu = ExpressionsMenuObfuscator(control.subMenu, root);
+                if (control.type == VRCExpressionsMenu.Control.ControlType.SubMenu && control.subMenu != null && control.subMenu != expressionsMenu && control.subMenu != menu && !_filePathDic.ContainsValue(AssetDatabase.GetAssetPath(control.subMenu))) control.subMenu = ExpressionsMenuObfuscator(control.subMenu, root);
+
                 if (control.parameter != null)
                     control.parameter.name = _parameterDic.ContainsKey(control.parameter.name)
                         ? _parameterDic[control.parameter.name]
                         : control.parameter.name;
+
                 if (control.subParameters != null)
                     foreach (var param in control.subParameters)
                         param.name = _parameterDic.ContainsKey(param.name)
