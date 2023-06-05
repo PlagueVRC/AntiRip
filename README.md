@@ -58,7 +58,7 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 #### Prep Your FBX's.
 
-Be sure all of this is set correctly on your FBX's. (Legacy blend shape normals too!)
+Be sure all of this is set correctly on your FBX's. (Legacy blend shape normals and read/write on too!)
 
 ![Model](Textures/DocSteps0.png)
 
