@@ -9,17 +9,14 @@ using System.Collections.Generic;
 using Random = UnityEngine.Random;
 using System.Collections;
 using Object = UnityEngine.Object;
-using System.Text.RegularExpressions;
 
 #if UNITY_EDITOR
-#if TPS
-using Thry;
-#endif
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEditor.SceneManagement;
 using VRC.Core;
 using VRC.SDK3.Avatars.Components;
+using System.Reflection;
 #endif
 
 namespace Kanna.Protecc
@@ -277,6 +274,14 @@ namespace Kanna.Protecc
             }
         }
 
+        public static Type GetTypeFromAnyAssembly(string FullName)
+        {
+            return (from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                from type in assembly.GetTypes()
+                where type.FullName == FullName
+                    select type).FirstOrDefault();
+        }
+
         bool EncryptMaterials(Material[] materials, string decodeShader,  List<Material> aggregateIgnoredMaterials)
         {
             var materialEncrypted = false;
@@ -287,11 +292,14 @@ namespace Kanna.Protecc
                 {
                     if (shaderMatch.SupportsLocking && !mat.shader.name.Contains("Locked"))
                     {
-#if TPS
-                        ShaderOptimizer.SetLockedForAllMaterials(new []{mat}, 1, true, false, false);
-#else
-                        EditorUtility.DisplayDialog("Error!", "Avatar Has Locking Supported Shader, But Thry Is Not In Your Project!", "Okay");
-#endif
+                        if (GetTypeFromAnyAssembly("Thry.ShaderOptimizer") is var optimizer && optimizer != null)
+                        {
+                            optimizer.GetMethod("SetLockedForAllMaterials", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { new[] { mat }, 1, true, false, false });
+                        }
+                        else
+                        {
+                            EditorUtility.DisplayDialog("Error!", "Avatar Has Locking Supported Shader, But Thry Is Not In Your Project!", "Okay");
+                        }
                     }
 
                     if (shaderMatch.SupportsLocking && !mat.shader.name.Contains("Locked"))
