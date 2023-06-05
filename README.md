@@ -56,6 +56,12 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 2. Download the supported shader of your choice from [Supported Shaders](#supported-shaders), and import it into your Unity project.
 3. Click ([Download](https://github.com/PlagueVRC/AntiRip/archive/refs/heads/main.zip)). Once downloaded, extract it. Once you have the folder, put that into your assets folder of your unity project.
 
+#### Prep Your FBX's.
+
+Be sure all of this is set correctly on your FBX's. (Legacy blend shape normals too!)
+
+![Model](Textures/DocSteps0.png)
+
 #### Setup VRC Components.
 
 1. Add the `KannaProteccRoot` component onto the root GameObject of your avatar, next to the `VRCAvatarDescriptor` component.
