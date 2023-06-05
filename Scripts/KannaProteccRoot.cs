@@ -294,7 +294,7 @@ namespace Kanna.Protecc
                     {
                         if (GetTypeFromAnyAssembly("Thry.ShaderOptimizer") is var optimizer && optimizer != null)
                         {
-                            optimizer.GetMethod("SetLockedForAllMaterials", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { new[] { mat }, 1, true, false, false });
+                            optimizer.GetMethod("SetLockedForAllMaterials", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { new[] { mat }, 1, true, false, false, null });
                         }
                         else
                         {
