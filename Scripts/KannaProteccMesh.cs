@@ -1,14 +1,44 @@
 ﻿#if UNITY_EDITOR
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
+
 using Random = UnityEngine.Random;
 
 namespace Kanna.Protecc
 {
     public static class KannaProteccMesh
     {
-        public static Mesh EncryptMesh(Mesh mesh, float distortRatio, KannaProteccData data)
+        private static int GetSubmeshIndexForVertex(Mesh mesh, int vertexIndex)
+        {
+            // This gets the number of submeshes in the mesh
+            int submeshCount = mesh.subMeshCount;
+
+            // This variable will store the submesh index for that vertex, or -1 if not found
+            int submeshIndex = -1;
+
+            // This loop goes over all the submeshes
+            for (int i = 0; i < submeshCount; i++)
+            {
+                // This gets the submesh at index i
+                SubMeshDescriptor submesh = mesh.GetSubMesh(i);
+
+                // This checks if the vertex index is within the range of indices for that submesh
+                if (vertexIndex >= submesh.indexStart && vertexIndex < submesh.indexStart + submesh.indexCount)
+                {
+                    // If yes, then store the submesh index and break the loop
+                    submeshIndex = i;
+                    break;
+                }
+            }
+
+            // This returns the result
+            return submeshIndex;
+        }
+
+        public static Mesh EncryptMesh(Renderer renderer, Mesh mesh, float distortRatio, KannaProteccData data, List<Material> IgnoredMaterials)
         {
             if (mesh == null) return null;
 
@@ -24,6 +54,13 @@ namespace Kanna.Protecc
 
             for (var v = 0; v < newVertices.Length; v++)
             {
+                var mat = renderer.sharedMaterials[GetSubmeshIndexForVertex(mesh, v)];
+
+                if (IgnoredMaterials.Contains(mat))
+                {
+                    continue;
+                }
+
                 uv7Offsets[v].x = Random.Range(minRange, maxRange);
                 uv7Offsets[v].y = Random.Range(minRange, maxRange);
 

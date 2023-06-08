@@ -170,7 +170,7 @@ namespace Kanna.Protecc
                     var materials = meshFilter.o.GetComponent<MeshRenderer>().sharedMaterials;
                     if (EncryptMaterials(materials, decodeShader, m_IgnoredMaterials))
                     {
-                        meshFilter.o.sharedMesh = KannaProteccMesh.EncryptMesh(meshFilter.o.sharedMesh, _distortRatio, data);
+                        meshFilter.o.sharedMesh = KannaProteccMesh.EncryptMesh(meshFilter.o.GetComponent<MeshRenderer>(), meshFilter.o.sharedMesh, _distortRatio, data, m_IgnoredMaterials);
                     }
                     else
                     {
@@ -193,7 +193,7 @@ namespace Kanna.Protecc
                     var materials = skinnedMeshRenderer.o.sharedMaterials;
                     if (EncryptMaterials(materials, decodeShader, m_IgnoredMaterials))
                     {
-                        skinnedMeshRenderer.o.sharedMesh = KannaProteccMesh.EncryptMesh(skinnedMeshRenderer.o.sharedMesh, _distortRatio, data);
+                        skinnedMeshRenderer.o.sharedMesh = KannaProteccMesh.EncryptMesh(skinnedMeshRenderer.o, skinnedMeshRenderer.o.sharedMesh, _distortRatio, data, m_IgnoredMaterials);
                     }
                     else
                     {
