@@ -158,30 +158,8 @@ namespace Kanna.Protecc
 
             var meshFilters = encodedGameObject.GetComponentsInChildren<MeshFilter>(true).Select(o => (o, o.gameObject.activeSelf));
             var skinnedMeshRenderers = encodedGameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(o => (o, o.gameObject.activeSelf));
-
-            var aggregateIgnoredMaterials = new List<Material>();
-
-            // Gather all materials to ignore based on if they are shared in mesh
-            foreach (var meshFilter in meshFilters)
-            {
-                if (meshFilter.o.GetComponent<MeshRenderer>() != null)
-                {
-                    var materials = meshFilter.o.GetComponent<MeshRenderer>().sharedMaterials;
-                    AddMaterialsToIgnoreList(materials, aggregateIgnoredMaterials);
-                }
-                else
-                {
-                    Debug.LogError("WTF? -> " + meshFilter.o.name);
-                }
-            }
-
-            foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
-            {
-                var materials = skinnedMeshRenderer.o.sharedMaterials;
-                AddMaterialsToIgnoreList(materials, aggregateIgnoredMaterials);
-            }
             
-            EncryptMaterials(m_AdditionalMaterials.ToArray(), decodeShader, aggregateIgnoredMaterials);
+            EncryptMaterials(m_AdditionalMaterials.ToArray(), decodeShader, m_IgnoredMaterials);
 
             // Do encrypting
             foreach (var meshFilter in meshFilters)
@@ -190,7 +168,7 @@ namespace Kanna.Protecc
                 {
                     meshFilter.o.gameObject.SetActive(true);
                     var materials = meshFilter.o.GetComponent<MeshRenderer>().sharedMaterials;
-                    if (EncryptMaterials(materials, decodeShader, aggregateIgnoredMaterials))
+                    if (EncryptMaterials(materials, decodeShader, m_IgnoredMaterials))
                     {
                         meshFilter.o.sharedMesh = KannaProteccMesh.EncryptMesh(meshFilter.o.sharedMesh, _distortRatio, data);
                     }
@@ -213,7 +191,7 @@ namespace Kanna.Protecc
                 {
                     skinnedMeshRenderer.o.gameObject.SetActive(true);
                     var materials = skinnedMeshRenderer.o.sharedMaterials;
-                    if (EncryptMaterials(materials, decodeShader, aggregateIgnoredMaterials))
+                    if (EncryptMaterials(materials, decodeShader, m_IgnoredMaterials))
                     {
                         skinnedMeshRenderer.o.sharedMesh = KannaProteccMesh.EncryptMesh(skinnedMeshRenderer.o.sharedMesh, _distortRatio, data);
                     }
@@ -266,7 +244,7 @@ namespace Kanna.Protecc
         {
             foreach (var material in materials)
             {
-                if (m_IgnoredMaterials.Any(o => o.name == material.name && o.ComputeCRC() == material.ComputeCRC()))
+                if (m_IgnoredMaterials.Any(o => AssetDatabase.GetAssetPath(o) == AssetDatabase.GetAssetPath(material)))
                 {
                     aggregateIgnoredMaterials.AddRange(materials);
                     return;
