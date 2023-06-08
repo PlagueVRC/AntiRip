@@ -262,11 +262,6 @@ namespace Kanna.Protecc
 
         bool EncryptMaterials(Material[] materials, string decodeShader,  List<Material> aggregateIgnoredMaterials)
         {
-            if (materials.Any(aggregateIgnoredMaterials.Contains))
-            {
-                return false;
-            }
-
             var materialEncrypted = false;
             foreach (var mat in materials)
             {
@@ -287,6 +282,11 @@ namespace Kanna.Protecc
                     if (shaderMatch.SupportsLocking && !mat.shader.name.Contains("Locked"))
                     {
                         Debug.LogError($"{mat.name} {mat.shader.name} Trying to Inject not-locked shader?!");
+                        continue;
+                    }
+
+                    if (aggregateIgnoredMaterials.Contains(mat))
+                    {
                         continue;
                     }
 

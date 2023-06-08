@@ -14,16 +14,16 @@ namespace Kanna.Protecc
         private static int GetSubmeshIndexForVertex(Mesh mesh, int vertexIndex)
         {
             // This gets the number of submeshes in the mesh
-            int submeshCount = mesh.subMeshCount;
+            var submeshCount = mesh.subMeshCount;
 
             // This variable will store the submesh index for that vertex, or -1 if not found
-            int submeshIndex = -1;
+            var submeshIndex = -1;
 
             // This loop goes over all the submeshes
-            for (int i = 0; i < submeshCount; i++)
+            for (var i = 0; i < submeshCount; i++)
             {
                 // This gets the submesh at index i
-                SubMeshDescriptor submesh = mesh.GetSubMesh(i);
+                var submesh = mesh.GetSubMesh(i);
 
                 // This checks if the vertex index is within the range of indices for that submesh
                 if (vertexIndex >= submesh.indexStart && vertexIndex < submesh.indexStart + submesh.indexCount)
