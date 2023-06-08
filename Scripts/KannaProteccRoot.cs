@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Random = UnityEngine.Random;
 using System.Collections;
 using Object = UnityEngine.Object;
+using Codice.Client.BaseCommands;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -262,8 +263,12 @@ namespace Kanna.Protecc
 
         bool EncryptMaterials(Material[] materials, string decodeShader,  List<Material> aggregateIgnoredMaterials)
         {
+            if (materials.Any(aggregateIgnoredMaterials.Contains))
+            {
+                return false;
+            }
+
             var materialEncrypted = false;
-            var ignoredMats = false;
             foreach (var mat in materials)
             {
                 if (mat != null && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderMatch))
@@ -283,12 +288,6 @@ namespace Kanna.Protecc
                     if (shaderMatch.SupportsLocking && !mat.shader.name.Contains("Locked"))
                     {
                         Debug.LogError($"{mat.name} {mat.shader.name} Trying to Inject not-locked shader?!");
-                        continue;
-                    }
-                    
-                    if (aggregateIgnoredMaterials.Contains(mat))
-                    {
-                        ignoredMats = true;
                         continue;
                     }
 
@@ -372,7 +371,7 @@ namespace Kanna.Protecc
                 }
             }
 
-            return materialEncrypted && !ignoredMats;
+            return materialEncrypted;
         }
 
         public void WriteBitKeysToExpressions(VRCExpressionParameters ExtraParams = null, bool WriteOnlyToExtra = false, bool DoLog = false)
