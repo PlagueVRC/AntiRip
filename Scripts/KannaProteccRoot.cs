@@ -240,18 +240,6 @@ namespace Kanna.Protecc
             EditorUtility.DisplayDialog("Successfully Encrypted!", $"{(string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId) ? "" : "Keys were automatically written. ")}Your avatar should be ready to upload!", "Okay");
         }
 
-        void AddMaterialsToIgnoreList(Material[] materials, List<Material> aggregateIgnoredMaterials)
-        {
-            foreach (var material in materials)
-            {
-                if (m_IgnoredMaterials.Any(o => AssetDatabase.GetAssetPath(o) == AssetDatabase.GetAssetPath(material)))
-                {
-                    aggregateIgnoredMaterials.AddRange(materials);
-                    return;
-                }
-            }
-        }
-
         public static Type GetTypeFromAnyAssembly(string FullName)
         {
             return (from assembly in AppDomain.CurrentDomain.GetAssemblies()

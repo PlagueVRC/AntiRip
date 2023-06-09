@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 using Random = UnityEngine.Random;
 
@@ -26,7 +25,7 @@ namespace Kanna.Protecc
                 var submesh = mesh.GetSubMesh(i);
 
                 // This checks if the vertex index is within the range of indices for that submesh
-                if (vertexIndex >= submesh.indexStart && vertexIndex < submesh.indexStart + submesh.indexCount)
+                if (vertexIndex >= submesh.firstVertex && vertexIndex < submesh.firstVertex + submesh.vertexCount)
                 {
                     // If yes, then store the submesh index and break the loop
                     submeshIndex = i;
@@ -56,7 +55,8 @@ namespace Kanna.Protecc
             {
                 var mat = renderer.sharedMaterials[GetSubmeshIndexForVertex(mesh, v)];
 
-                if (IgnoredMaterials.Contains(mat))
+                // What I suspect: has to be an issue w
+                if (!mat.shader.name.StartsWith("Kanna Protecc"))
                 {
                     continue;
                 }
