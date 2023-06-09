@@ -55,7 +55,6 @@ namespace Kanna.Protecc
             {
                 var mat = renderer.sharedMaterials[GetSubmeshIndexForVertex(mesh, v)];
 
-                // What I suspect: has to be an issue w
                 if (!mat.shader.name.StartsWith("Kanna Protecc"))
                 {
                     continue;
