@@ -91,7 +91,7 @@ namespace Kanna.Protecc
             try
             {
                 if (string.IsNullOrEmpty(root.path))
-                    root.path = root.pathPrefix + root.gameObject.name;
+                    root.path = root.pathPrefix + root.gameObject.name.Trim();
 
                 if (AssetDatabase.IsValidFolder(root.path))
                 {
@@ -102,7 +102,7 @@ namespace Kanna.Protecc
 
                 ProgressBar("Clone Avatar Object", 1);
                 var o = gobj;
-                var gameObjectName = o.name + "_Obfuscated";
+                var gameObjectName = o.name.Trim() + "_Obfuscated";
                 obj = Object.Instantiate(o);
                 obj.name = gameObjectName;
                 obj.SetActive(true);

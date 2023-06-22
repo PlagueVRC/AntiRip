@@ -139,14 +139,14 @@ namespace Kanna.Protecc
                 }
             }
 
-            var newName = gameObject.name + "_Encrypted";
+            var newName = gameObject.name.Trim() + "_Encrypted";
             
             // delete old GO, do as such in case its disabled
             var scene = SceneManager.GetActiveScene();
             var sceneRoots = scene.GetRootGameObjects();
             foreach(var oldGameObject in sceneRoots)
             {
-                if (oldGameObject.name == newName) DestroyImmediate(oldGameObject);
+                if (oldGameObject.name.Trim() == newName) DestroyImmediate(oldGameObject);
             }
 
             var encodedGameObject = Instantiate(gameObject);

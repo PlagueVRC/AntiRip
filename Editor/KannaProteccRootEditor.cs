@@ -162,7 +162,7 @@ namespace Kanna.Protecc
 
             if (GUILayout.Button(new GUIContent("Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
             {
-                KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name + "_Encrypted_Obfuscated").GetComponent<VRCAvatarDescriptor>().expressionParameters, true, true);
+                KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name.Trim() + "_Encrypted_Obfuscated").GetComponent<VRCAvatarDescriptor>().expressionParameters, true, true);
             }
 
             GUI.enabled = true;
