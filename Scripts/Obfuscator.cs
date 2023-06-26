@@ -364,7 +364,9 @@ namespace Kanna.Protecc
             //    expressionParameters.parameters = parameters.ToArray();
             //}
 
-            while ((VRCExpressionParameters.MAX_PARAMETER_COST - (expressionParameters.CalcTotalCost() + root._bitKeys.Length)) > 0)
+            var AmountToReserveForOtherThings = 75;
+
+            while ((VRCExpressionParameters.MAX_PARAMETER_COST - (expressionParameters.CalcTotalCost() + AmountToReserveForOtherThings)) > 0)
             {
                 var newName = GUID.Generate().ToString();
 
