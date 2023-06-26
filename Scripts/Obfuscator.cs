@@ -648,7 +648,11 @@ namespace Kanna.Protecc
             {
                 case AnimationClip clip:
                     {
-                        if (AssetDatabase.GetAssetPath(motion).StartsWith("Assets/VRCSDK/")) return motion;
+                        if (AssetDatabase.GetAssetPath(motion).ToLower().Contains("proxyanim")) 
+                        {
+                            return motion; // To Do: Figure Out Why This Is Needed, Why Do Proxy Anims Break?
+                        }
+
                         var animationClip = CopyAssetFile("anim", clip, root);
                         animationClip.name = GetAssetName(animationClip);
                         _animClipList.Add(animationClip);
@@ -659,18 +663,22 @@ namespace Kanna.Protecc
                         var blendTree = CopyAssetFile("asset", tree, root);
                         blendTree.name = GetAssetName(blendTree);
 
-                        blendTree.children = blendTree.children.Select(child => new ChildMotion
+                        var children = new List<ChildMotion>();
+                        children.AddRange(blendTree.children);
+
+                        for (var index = 0; index < children.Count; index++)
                         {
-                            mirror = child.mirror,
-                            motion = MotionObfuscator(child.motion, root),
-                            position = child.position,
-                            threshold = child.threshold,
-                            cycleOffset = child.cycleOffset,
-                            timeScale = child.timeScale,
-                            directBlendParameter = _parameterDic.ContainsKey(child.directBlendParameter)
+                            var child = children[index];
+
+                            child.motion = MotionObfuscator(child.motion, root);
+                            child.directBlendParameter = _parameterDic.ContainsKey(child.directBlendParameter)
                                 ? _parameterDic[child.directBlendParameter]
-                                : child.directBlendParameter
-                        }).ToArray();
+                                : child.directBlendParameter;
+
+                            children[index] = child;
+                        }
+
+                        blendTree.children = children.ToArray();
 
                         blendTree.blendParameter = _parameterDic.ContainsKey(blendTree.blendParameter)
                             ? _parameterDic[blendTree.blendParameter]
