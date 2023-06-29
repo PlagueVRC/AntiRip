@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.IO;
 
 using System.Linq;
-
+using System.Text.RegularExpressions;
 using Kanna.Protecc;
 
 using UnityEditor;
@@ -315,7 +315,7 @@ namespace Kanna.Protecc
             var parameters = expressionParameters.parameters.ToList().Where(p => !string.IsNullOrEmpty(p.name.Trim()))
                 .ToList();
 
-            foreach (var parameter in parameters.Where(parameter => Array.FindIndex(SkipParameterNames, value => value == parameter.name) == -1 && Array.FindIndex(root.excludeParamNames.ToArray(), value => value == parameter.name) == -1))
+            foreach (var parameter in parameters.Where(parameter => !SkipParameterNames.Contains(parameter.name) && root.excludeParamNames.All(o => !Regex.IsMatch(parameter.name, o))))
             {
                 if (_parameterDic.ContainsKey(parameter.name))
                 {
