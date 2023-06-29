@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -151,16 +152,18 @@ namespace Kanna.Protecc
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
 
-            GUI.enabled = !KannaProteccRoot.IsProtected;
+            var IsVRCOpen = Process.GetProcessesByName("VRChat").Length > 0;
 
-            if (GUILayout.Button(new GUIContent("Encrypt Avatar", "Validate the AnimatorController, then create encrypted avatar."), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
+            GUI.enabled = !KannaProteccRoot.IsProtected && !IsVRCOpen;
+
+            if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Encrypt Avatar" : "Close VRChat To Encrypt", "Validate the AnimatorController, then create encrypted avatar."), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
             {
                 KannaProteccRoot.EncryptAvatar();
             }
 
-            GUI.enabled = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("Encrypted"));
+            GUI.enabled = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("Encrypted")) && !IsVRCOpen;
 
-            if (GUILayout.Button(new GUIContent("Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
+            if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Write Keys" : "Close VRChat To Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
             {
                 KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name.Trim() + "_Encrypted_Obfuscated").GetComponent<VRCAvatarDescriptor>().expressionParameters, true, true);
             }
