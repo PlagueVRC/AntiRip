@@ -1,13 +1,10 @@
 ﻿#if UNITY_EDITOR
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 
 using System.Linq;
 using System.Text.RegularExpressions;
-using Kanna.Protecc;
 
 using UnityEditor;
 using UnityEditor.Animations;
@@ -17,8 +14,6 @@ using UnityEngine;
 
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
-
-using static PlasticGui.PlasticTableColumn;
 
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
@@ -142,7 +137,14 @@ namespace Kanna.Protecc
                             {
                                 var tex = encryptedmat.GetTexture(texname);
 
-                                var encryptedtex = CopyAssetFile(Path.GetExtension(AssetDatabase.GetAssetPath(tex)).Substring(1), tex, root);
+                                var texpathvalid = Path.GetExtension(AssetDatabase.GetAssetPath(tex));
+
+                                if (texpathvalid.Length < 3)
+                                {
+                                    continue;
+                                }
+
+                                var encryptedtex = CopyAssetFile(texpathvalid.Substring(1), tex, root);
 
                                 encryptedmat.SetTexture(texname, encryptedtex);
                             }
@@ -172,7 +174,14 @@ namespace Kanna.Protecc
                             {
                                 var tex = encryptedmat.GetTexture(texname);
 
-                                var encryptedtex = CopyAssetFile(Path.GetExtension(AssetDatabase.GetAssetPath(tex)).Substring(1), tex, root);
+                                var texpathvalid = Path.GetExtension(AssetDatabase.GetAssetPath(tex));
+
+                                if (texpathvalid.Length < 3)
+                                {
+                                    continue;
+                                }
+
+                                var encryptedtex = CopyAssetFile(texpathvalid.Substring(1), tex, root);
 
                                 encryptedmat.SetTexture(texname, encryptedtex);
                             }
@@ -198,7 +207,14 @@ namespace Kanna.Protecc
                         {
                             var tex = encryptedmat.GetTexture(texname);
 
-                            var encryptedtex = CopyAssetFile(Path.GetExtension(AssetDatabase.GetAssetPath(tex)).Substring(1), tex, root);
+                            var texpathvalid = Path.GetExtension(AssetDatabase.GetAssetPath(tex));
+
+                            if (texpathvalid.Length < 3)
+                            {
+                                continue;
+                            }
+
+                            var encryptedtex = CopyAssetFile(texpathvalid.Substring(1), tex, root);
 
                             encryptedmat.SetTexture(texname, encryptedtex);
                         }

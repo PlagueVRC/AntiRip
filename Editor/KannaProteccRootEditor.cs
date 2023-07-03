@@ -5,7 +5,9 @@ using UnityEditor;
 using UnityEngine;
 using UnityEditorInternal;
 using UnityEngine.SceneManagement;
+using VRC.Core;
 using VRC.SDK3.Avatars.Components;
+using UnityEditor.SceneManagement;
 
 namespace Kanna.Protecc
 {
@@ -167,12 +169,25 @@ namespace Kanna.Protecc
                     var sceneRoots = scene.GetRootGameObjects();
                     foreach (var oldGameObject in sceneRoots)
                     {
-                        if (oldGameObject.name.Trim() == newName) DestroyImmediate(oldGameObject);
+                        if (oldGameObject.name.Trim() == newName)
+                        {
+                            // Check if blueprint ID was not copied, and do it for them
+                            if (string.IsNullOrEmpty(KannaProteccRoot.gameObject.GetComponent<PipelineManager>().blueprintId) && !string.IsNullOrEmpty(oldGameObject.GetComponent<PipelineManager>().blueprintId))
+                            {
+                                KannaProteccRoot.gameObject.GetComponent<PipelineManager>().contentType = PipelineManager.ContentType.avatar;
+                                KannaProteccRoot.gameObject.GetComponent<PipelineManager>().blueprintId = oldGameObject.GetComponent<PipelineManager>().blueprintId;
+                                EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
+                            }
+
+                            DestroyImmediate(oldGameObject);
+                        }
                     }
 
                     ((KannaProteccRoot)target).obfuscator.ClearObfuscatedFiles((KannaProteccRoot)target);
 
                     KannaProteccRoot.IsProtected = false;
+
+                    KannaProteccRoot.gameObject.SetActive(true);
                 }
 
                 GUI.backgroundColor = origColor;

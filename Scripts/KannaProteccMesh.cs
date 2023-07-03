@@ -41,6 +41,16 @@ namespace Kanna.Protecc
         {
             if (mesh == null) return null;
 
+            var existingMeshPath = AssetDatabase.GetAssetPath(mesh);
+            
+            if (string.IsNullOrEmpty(existingMeshPath) || existingMeshPath.Contains(".asset") || existingMeshPath.Contains("Library"))
+            {
+                Debug.LogError($"Asset For Mesh Not Found, Invalid Or Is A Built In Unity Mesh! -> {existingMeshPath}");
+                return null;
+            }
+
+            Debug.Log($"Existing Mesh Path For {mesh.name} Is {existingMeshPath}");
+
             var newVertices = mesh.vertices;
             var normals = mesh.normals;
             var uv7Offsets = new Vector2[mesh.vertexCount];
@@ -55,7 +65,7 @@ namespace Kanna.Protecc
             {
                 var mat = renderer.sharedMaterials[GetSubmeshIndexForVertex(mesh, v)];
 
-                if (!mat.shader.name.StartsWith("Kanna Protecc"))
+                if (!mat.shader.name.StartsWith("Kanna Protecc") || IgnoredMaterials.Contains(mat))
                 {
                     continue;
                 }
@@ -93,16 +103,6 @@ namespace Kanna.Protecc
                 //newVertices[v] += normals[v] * (uv8Offsets[v].x * data.ComKey[7]);
             }
 
-            var existingMeshPath = AssetDatabase.GetAssetPath(mesh);
-
-            if (string.IsNullOrEmpty(existingMeshPath) || existingMeshPath.Contains("unity default resources"))
-            {
-                Debug.LogError("Asset For Mesh Not Found, Invalid Or Is A Built In Unity Mesh!");
-                return null;
-            }
-
-            Debug.Log($"Existing Mesh Path For {mesh.name} Is {existingMeshPath}");
-
             //Do Not Care What File Type The Mesh Is, Attempt Anyway.
             //The Inline If Statement Is A Fallback Check, It Gets The Path Combined With The Filename Without Extension With Our Own Extension, If The Path Is Null, It Would Then Use Enviroment.CurrentDirectory Via Inheritance As The Path.
             //var encryptedMeshPath = Path.GetDirectoryName(existingMeshPath) != null
@@ -110,10 +110,7 @@ namespace Kanna.Protecc
             //        Path.GetFileNameWithoutExtension(existingMeshPath)) + $"_{mesh.name}_Encrypted.asset")
             //    : (Path.GetFileNameWithoutExtension(existingMeshPath) + $"_{mesh.name}_Encrypted.asset");
 
-            var encryptedMeshPath = Path.GetDirectoryName(existingMeshPath) != null
-                ? (Path.Combine(Path.GetDirectoryName(existingMeshPath),
-                    $"{GUID.Generate()}.asset"))
-                : $"{GUID.Generate()}.asset";
+            var encryptedMeshPath = Path.GetDirectoryName(existingMeshPath) != null ? (Path.Combine(Path.GetDirectoryName(existingMeshPath), $"{GUID.Generate()}.asset")) : $"Assets/{GUID.Generate()}.asset";
 
             Debug.Log($"Encrypted Mesh Path {encryptedMeshPath}");
 
@@ -121,6 +118,7 @@ namespace Kanna.Protecc
             {
                 subMeshCount = mesh.subMeshCount,
                 vertices = mesh.vertices,
+                triangles = mesh.triangles,
                 colors = mesh.colors,
                 normals = mesh.normals,
                 tangents = mesh.tangents,
@@ -134,16 +132,8 @@ namespace Kanna.Protecc
                 uv5 = mesh.uv5,
                 uv6 = mesh.uv6,
                 uv7 = uv7Offsets,
-                uv8 = uv8Offsets
+                uv8 = uv8Offsets,
             };
-
-            // transfer sub meshes
-            for (var meshIndex = 0; meshIndex < mesh.subMeshCount; meshIndex++)
-            {
-                var triangles = mesh.GetTriangles(meshIndex);
-
-                newMesh.SetTriangles(triangles, meshIndex);
-            }
 
             newMesh.vertices = newVertices;
 
