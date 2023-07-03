@@ -18,6 +18,8 @@ using UnityEngine;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
 
+using static PlasticGui.PlasticTableColumn;
+
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
@@ -71,7 +73,7 @@ namespace Kanna.Protecc
 
         private readonly Dictionary<string, string> _parameterDic = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _objectNameDic = new Dictionary<string, string>();
-        private readonly Dictionary<string, string> _filePathDic = new Dictionary<string, string>();
+        public readonly Dictionary<string, string> _filePathDic = new Dictionary<string, string>();
         private readonly List<AnimationClip> _animClipList = new List<AnimationClip>();
         private readonly HashSet<string> _excludeNameSet = new HashSet<string>();
         private uint _tempIndex;
@@ -100,31 +102,120 @@ namespace Kanna.Protecc
 
                 CreateFolder(root.path);
 
-                ProgressBar("Clone Avatar Object", 1);
+                var progress = 0;
+
+                ProgressBar("Clone Avatar Object", ++progress);
                 var o = gobj;
-                var gameObjectName = o.name.Trim() + "_Obfuscated";
+                var gameObjectName = o.name.Trim() + "_Encrypted";
                 obj = Object.Instantiate(o);
                 obj.name = gameObjectName;
                 obj.SetActive(true);
                 o.SetActive(false);
 
-                ProgressBar("Remove animatorController of RootAnimator", 2);
+                ProgressBar("Remove animatorController of RootAnimator", ++progress);
                 var rootAnimator = obj.GetComponent<Animator>();
                 if (rootAnimator != null) rootAnimator.runtimeAnimatorController = null;
 
-                ProgressBar("Find AvatarDescriptor Component", 3);
+                ProgressBar("Find AvatarDescriptor Component", ++progress);
 
                 var avatar = obj.GetComponent<VRCAvatarDescriptor>();
 
-                ProgressBar("ExpressionParameters obfuscation", 4);
+                ProgressBar("Materials obfuscation", ++progress);
+                var meshRenderers = obj.GetComponentsInChildren<MeshRenderer>(true);
+                var skinnedMeshRenderers = obj.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+
+                foreach (var renderer in meshRenderers)
+                {
+                    var materials = renderer.sharedMaterials.ToList();
+
+                    for (var index = 0; index < renderer.sharedMaterials.Length; index++)
+                    {
+                        var mat = renderer.sharedMaterials[index];
+
+                        if (mat != null && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderdata) && !root.m_IgnoredMaterials.Contains(mat))
+                        {
+                            var encryptedmat = CopyAssetFile("mat", mat, root);
+
+                            var texnames = encryptedmat.GetTexturePropertyNames();
+
+                            foreach (var texname in texnames)
+                            {
+                                var tex = encryptedmat.GetTexture(texname);
+
+                                var encryptedtex = CopyAssetFile(Path.GetExtension(AssetDatabase.GetAssetPath(tex)).Substring(1), tex, root);
+
+                                encryptedmat.SetTexture(texname, encryptedtex);
+                            }
+
+                            materials[index] = encryptedmat;
+                        }
+                    }
+
+                    renderer.sharedMaterials = materials.ToArray();
+                }
+
+                foreach (var renderer in skinnedMeshRenderers)
+                {
+                    var materials = renderer.sharedMaterials.ToList();
+
+                    for (var index = 0; index < renderer.sharedMaterials.Length; index++)
+                    {
+                        var mat = renderer.sharedMaterials[index];
+
+                        if (mat != null && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderdata) && !root.m_IgnoredMaterials.Contains(mat))
+                        {
+                            var encryptedmat = CopyAssetFile("mat", mat, root);
+
+                            var texnames = encryptedmat.GetTexturePropertyNames();
+
+                            foreach (var texname in texnames)
+                            {
+                                var tex = encryptedmat.GetTexture(texname);
+
+                                var encryptedtex = CopyAssetFile(Path.GetExtension(AssetDatabase.GetAssetPath(tex)).Substring(1), tex, root);
+
+                                encryptedmat.SetTexture(texname, encryptedtex);
+                            }
+
+                            materials[index] = encryptedmat;
+                        }
+                    }
+
+                    renderer.sharedMaterials = materials.ToArray();
+                }
+
+                for (var index = 0; index < root.m_AdditionalMaterials.Count; index++)
+                {
+                    var mat = root.m_AdditionalMaterials[index];
+
+                    if (mat != null && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderdata) && !root.m_IgnoredMaterials.Contains(mat))
+                    {
+                        var encryptedmat = CopyAssetFile("mat", mat, root);
+
+                        var texnames = encryptedmat.GetTexturePropertyNames();
+
+                        foreach (var texname in texnames)
+                        {
+                            var tex = encryptedmat.GetTexture(texname);
+
+                            var encryptedtex = CopyAssetFile(Path.GetExtension(AssetDatabase.GetAssetPath(tex)).Substring(1), tex, root);
+
+                            encryptedmat.SetTexture(texname, encryptedtex);
+                        }
+
+                        root.m_AdditionalMaterials[index] = encryptedmat;
+                    }
+                }
+
+                ProgressBar("ExpressionParameters obfuscation", ++progress);
                 if (avatar.expressionParameters != null)
                     avatar.expressionParameters = ExpressionParametersObfuscator(avatar.expressionParameters, root);
 
-                ProgressBar("ExpressionsMenu obfuscation", 5);
+                ProgressBar("ExpressionsMenu obfuscation", ++progress);
                 if (avatar.expressionsMenu != null)
                     avatar.expressionsMenu = ExpressionsMenuObfuscator(avatar.expressionsMenu, root);
 
-                ProgressBar("baseAnimationLayers animatorController obfuscation", 6);
+                ProgressBar("baseAnimationLayers animatorController obfuscation", ++progress);
                 var animationLayers = avatar.baseAnimationLayers;
                 for (var i = 0; i < animationLayers.Length; ++i)
                 {
@@ -135,7 +226,7 @@ namespace Kanna.Protecc
 
                 avatar.baseAnimationLayers = animationLayers;
 
-                ProgressBar("specialAnimationLayers animatorController obfuscation", 7);
+                ProgressBar("specialAnimationLayers animatorController obfuscation", ++progress);
                 var specialAnimationLayers = avatar.specialAnimationLayers;
                 for (var i = 0; i < specialAnimationLayers.Length; ++i)
                 {
@@ -146,7 +237,7 @@ namespace Kanna.Protecc
 
                 avatar.specialAnimationLayers = specialAnimationLayers;
 
-                ProgressBar("Another animatorController obfuscation", 8);
+                ProgressBar("Another animatorController obfuscation", ++progress);
                 var otherAnimators = obj.GetComponentsInChildren<Animator>(true)
                     .Where(t => t.runtimeAnimatorController == null || t.gameObject != obj);
                 foreach (var animator in otherAnimators)
@@ -156,7 +247,7 @@ namespace Kanna.Protecc
                     animator.runtimeAnimatorController = AnimatorObfuscator((AnimatorController)animator.runtimeAnimatorController, root);
                 }
 
-                ProgressBar("Get all bones from animator", 9);
+                ProgressBar("Get all bones from animator", ++progress);
                 var animators = obj.GetComponentsInChildren<Animator>(true);
                 var enumValues = Enum.GetValues(typeof(HumanBodyBones));
                 foreach (HumanBodyBones boneId in enumValues)
@@ -178,7 +269,7 @@ namespace Kanna.Protecc
                         _excludeNameSet.Add(objectName.name);
                     }
 
-                    ProgressBar("Object name obfuscation", 10);
+                    ProgressBar("Object name obfuscation", ++progress);
                     var children = obj.GetComponentsInChildren<Transform>(true).Where(t => t != obj.transform).ToList();
 
                     foreach (var childObject in children.Select(child => child.gameObject)
@@ -197,7 +288,7 @@ namespace Kanna.Protecc
                         childObject.name = _objectNameDic[childObject.name];
                     }
 
-                    ProgressBar("Update AnimationClips", 11);
+                    ProgressBar("Update AnimationClips", ++progress);
                     foreach (var clip in _animClipList)
                     {
                         foreach (var binding in AnimationUtility.GetCurveBindings(clip))
@@ -236,7 +327,7 @@ namespace Kanna.Protecc
                     }
                 }
 
-                ProgressBar("Randomizing Sibling Order", 12);
+                ProgressBar("Randomizing Sibling Order", ++progress);
 
                 RandomizeAllSiblingOrders(obj);
 
@@ -771,8 +862,13 @@ namespace Kanna.Protecc
             EditorSceneManager.SaveOpenScenes();
         }
 
-        private static void ProgressBar(string info, float min, float max = 12)
+        private static void ProgressBar(string info, float min, float max = -1)
         {
+            if (max == -1)
+            {
+                max = min * 2;
+            }
+
             EditorUtility.DisplayProgressBar("Obfuscator", info, min / max);
         }
     }

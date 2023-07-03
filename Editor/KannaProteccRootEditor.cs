@@ -140,7 +140,7 @@ namespace Kanna.Protecc
 
             var origColor = GUI.backgroundColor;
 
-            if (GUILayout.Button(new GUIContent(HeaderTexture, "Vist my Discord for help!"), EditorStyles.label, GUILayout.Height(Screen.width / 8)))
+            if (GUILayout.Button(new GUIContent(HeaderTexture, "Click To Join The Discord For Help!"), EditorStyles.label, GUILayout.Height(Screen.width / 8)))
             {
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
@@ -154,18 +154,44 @@ namespace Kanna.Protecc
 
             var IsVRCOpen = Process.GetProcessesByName("VRChat").Length > 0;
 
-            GUI.enabled = !KannaProteccRoot.IsProtected && !IsVRCOpen;
-
-            if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Encrypt Avatar" : "Close VRChat To Encrypt", "Validate the AnimatorController, then create encrypted avatar."), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
+            if (KannaProteccRoot.IsProtected)
             {
-                KannaProteccRoot.EncryptAvatar();
+                GUI.backgroundColor = Color.green;
+
+                if (GUILayout.Button(new GUIContent("Delete Encrypted", "Removes the encrypted avatar from your hierarchy, and deletes all obfuscated files for it."), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
+                {
+                    var newName = KannaProteccRoot.gameObject.name.Trim() + "_Encrypted";
+
+                    // delete old GO, do as such in case its disabled
+                    var scene = SceneManager.GetActiveScene();
+                    var sceneRoots = scene.GetRootGameObjects();
+                    foreach (var oldGameObject in sceneRoots)
+                    {
+                        if (oldGameObject.name.Trim() == newName) DestroyImmediate(oldGameObject);
+                    }
+
+                    ((KannaProteccRoot)target).obfuscator.ClearObfuscatedFiles((KannaProteccRoot)target);
+
+                    KannaProteccRoot.IsProtected = false;
+                }
+
+                GUI.backgroundColor = origColor;
+            }
+            else
+            {
+                GUI.enabled = !IsVRCOpen;
+
+                if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Encrypt Avatar" : "Close VRChat To Encrypt", "Validate the AnimatorController, then create encrypted avatar."), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
+                {
+                    KannaProteccRoot.EncryptAvatar();
+                }
             }
 
             GUI.enabled = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("Encrypted")) && !IsVRCOpen;
 
             if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Write Keys" : "Close VRChat To Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
             {
-                KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name.Trim() + "_Encrypted_Obfuscated").GetComponent<VRCAvatarDescriptor>().expressionParameters, true, true);
+                KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name.Trim() + "_Encrypted").GetComponent<VRCAvatarDescriptor>().expressionParameters, true, true);
             }
 
             GUI.enabled = true;
@@ -208,29 +234,22 @@ namespace Kanna.Protecc
             GUILayout.Space(5f);
 
             //buttons for mats and key lock
-            GUILayout.BeginHorizontal();
+            //GUILayout.BeginHorizontal();
 
-            if (KannaProteccRoot.IsProtected)
-            {
-                GUI.backgroundColor = Color.green;
-            }
+            //if (KannaProteccRoot.IsProtected)
+            //{
+            //    GUI.backgroundColor = Color.green;
+            //}
 
-            if (GUILayout.Button(new GUIContent("Unlock materials", "Unlock All Materials In Hierarchy")))
-            {
-                MenuUtilites.UnlockAllMaterialsInHierarchy(null);
-            }
+            //if (GUILayout.Button(new GUIContent("Unlock materials", "Unlock All Materials In Hierarchy")))
+            //{
+            //    MenuUtilites.UnlockAllMaterialsInHierarchy(null);
+            //}
 
-            if (KannaProteccRoot.IsProtected)
-            {
-                GUI.backgroundColor = origColor;
-            }
-
-            if (_lockKeys)
-            {
-                if (GUILayout.Button(new GUIContent("Unlock bitKeys", "Prevent changes to key selection"), GUILayout.Width((Screen.width / 2) - 20f))) _lockKeys = !_lockKeys;
-            }
-            else if (GUILayout.Button(new GUIContent("Lock BitKeys", "Prevent changes to key selection"), GUILayout.Width((Screen.width / 2) - 20f))) _lockKeys = !_lockKeys;
-            GUILayout.EndHorizontal();
+            //if (KannaProteccRoot.IsProtected)
+            //{
+            //    GUI.backgroundColor = origColor;
+            //}
 
             //draw keys here
             using (new GUILayout.HorizontalScope(EditorStyles.helpBox))
@@ -240,7 +259,7 @@ namespace Kanna.Protecc
                 GUILayout.BeginVertical();
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
-                GUILayout.Label("Bitkeys", EditorStyles.boldLabel);
+                GUILayout.Label("BitKeys", EditorStyles.boldLabel);
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
 
@@ -256,7 +275,7 @@ namespace Kanna.Protecc
                 GUILayout.BeginVertical();
 
                 //Display in 4 columns
-                for (var i = 0; i < m_KeysProperty.arraySize/4; i++)
+                for (var i = 0; i < m_KeysProperty.arraySize / 4; i++)
                 {
                     GUILayout.BeginHorizontal();
                     m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
@@ -276,7 +295,7 @@ namespace Kanna.Protecc
                 GUILayout.EndVertical();
                 GUILayout.FlexibleSpace();
                 GUILayout.BeginVertical();
-                for (var i = m_KeysProperty.arraySize / 2; i < (m_KeysProperty.arraySize / 4) * 3 ; i++)
+                for (var i = m_KeysProperty.arraySize / 2; i < (m_KeysProperty.arraySize / 4) * 3; i++)
                 {
                     GUILayout.BeginHorizontal();
                     m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
@@ -305,10 +324,14 @@ namespace Kanna.Protecc
                 }
                 EditorGUI.EndDisabledGroup();
             }
-            
+
             GUILayout.EndHorizontal();
             EditorGUILayout.Space();
             EditorGUILayout.Separator();
+
+            if (GUILayout.Button(new GUIContent(_lockKeys ? "Unlock bitKeys" : "Lock BitKeys", "Prevent changes to key selection"))) _lockKeys = !_lockKeys;
+            //GUILayout.EndHorizontal();
+
             _debugFoldout = EditorGUILayout.Foldout(_debugFoldout, "Debug");
             if (_debugFoldout)
             {
@@ -352,22 +375,22 @@ namespace Kanna.Protecc
 
             GUI.enabled = !string.IsNullOrEmpty(_pathProperty?.stringValue);
 
-            EditorGUILayout.Space();
+            //EditorGUILayout.Space();
 
-            if (!string.IsNullOrEmpty(_pathProperty?.stringValue))
-            {
-                GUI.backgroundColor = Color.green;
-            }
+            //if (!string.IsNullOrEmpty(_pathProperty?.stringValue))
+            //{
+            //    GUI.backgroundColor = Color.green;
+            //}
 
-            if (GUILayout.Button("Clean Up Obfuscated Files"))
-            {
-                ((KannaProteccRoot)target).obfuscator.ClearObfuscatedFiles((KannaProteccRoot)target);
-            }
+            //if (GUILayout.Button("Clean Up Obfuscated Files"))
+            //{
+            //    ((KannaProteccRoot)target).obfuscator.ClearObfuscatedFiles((KannaProteccRoot)target);
+            //}
 
-            if (!string.IsNullOrEmpty(_pathProperty?.stringValue))
-            {
-                GUI.backgroundColor = origColor;
-            }
+            //if (!string.IsNullOrEmpty(_pathProperty?.stringValue))
+            //{
+            //    GUI.backgroundColor = origColor;
+            //}
 
             EditorGUILayout.Space();
 

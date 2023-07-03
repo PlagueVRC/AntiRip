@@ -105,10 +105,11 @@ namespace Kanna.Protecc
 
                 sb0.AppendLine($"    float decodeKey{i} = (_BitKey{i*KannaProteccData.CountDivisor} + {data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor]}) * (_BitKey{i*KannaProteccData.CountDivisor+1} + {data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+1]}) * (_BitKey{i*KannaProteccData.CountDivisor+2} + {data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+2]}) * (_BitKey{i*KannaProteccData.CountDivisor+3} + {data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+3]});");
 
-                sb1.AppendLine($"    float comKey{i} = {firstSignStr}(decodeKey{data.RandomKeyIndex[i*KannaProteccData.CountDivisor]} {firstAddStr} decodeKey{data.RandomKeyIndex[i*KannaProteccData.CountDivisor+1]}) * {data.RandomDivideMultiplier[i]} * {secondSignStr}(decodeKey{data.RandomKeyIndex[i*KannaProteccData.CountDivisor+2]} {secondAddStr} decodeKey{data.RandomKeyIndex[i*KannaProteccData.CountDivisor+3]});");
+                sb1.AppendLine($"    float comKey{i} = {firstSignStr}(decodeKey{data.RandomKeyIndex[i * KannaProteccData.CountDivisor]} {firstAddStr} decodeKey{data.RandomKeyIndex[i * KannaProteccData.CountDivisor + 1]}) * {data.RandomDivideMultiplier[i]} * {secondSignStr}(decodeKey{data.RandomKeyIndex[i * KannaProteccData.CountDivisor + 2]} {secondAddStr} decodeKey{data.RandomKeyIndex[i * KannaProteccData.CountDivisor + 3]});");
             }
 
             var decodeShader = $"{ModelDecodeIfndef}{ModelShaderDecodeFirst}{sb0}\r\n{sb1}{ModelShaderDecodeSecond}{ModelDecodeEndif}";
+
             return decodeShader;
         }
 

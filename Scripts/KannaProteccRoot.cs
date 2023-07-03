@@ -43,11 +43,11 @@ namespace Kanna.Protecc
         
         [Header("Materials in this list will also be locked and injected.")]
         [SerializeField] 
-        List<Material> m_AdditionalMaterials = new List<Material>();
+        public List<Material> m_AdditionalMaterials = new List<Material>();
 
         [Header("Materials in this list will be ignored.")]
         [SerializeField] 
-        List<Material> m_IgnoredMaterials = new List<Material>();
+        public List<Material> m_IgnoredMaterials = new List<Material>();
         
         [SerializeField] 
         public bool[] _bitKeys = new bool[32];
@@ -149,15 +149,16 @@ namespace Kanna.Protecc
                 if (oldGameObject.name.Trim() == newName) DestroyImmediate(oldGameObject);
             }
 
-            var encodedGameObject = Instantiate(gameObject);
-            encodedGameObject.name = newName;
-            encodedGameObject.SetActive(true);
+            // Do Obfuscation
+            var newobj = obfuscator.Obfuscate(gameObject, this);
+
+            gameObject.SetActive(false); // Temp
             
             var data = new KannaProteccData(_bitKeys.Length);
             var decodeShader = KannaProteccMaterial.GenerateDecodeShader(data, _bitKeys);
 
-            var meshFilters = encodedGameObject.GetComponentsInChildren<MeshFilter>(true).Select(o => (o, o.gameObject.activeSelf));
-            var skinnedMeshRenderers = encodedGameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(o => (o, o.gameObject.activeSelf));
+            var meshFilters = newobj.GetComponentsInChildren<MeshFilter>(true).Select(o => (o, o.gameObject.activeSelf));
+            var skinnedMeshRenderers = newobj.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(o => (o, o.gameObject.activeSelf));
             
             EncryptMaterials(m_AdditionalMaterials.ToArray(), decodeShader, m_IgnoredMaterials);
 
@@ -208,23 +209,13 @@ namespace Kanna.Protecc
                 }
             }
 
-            var KannaProteccRoots = encodedGameObject.GetComponentsInChildren<KannaProteccRoot>(true);
+            var KannaProteccRoots = newobj.GetComponentsInChildren<KannaProteccRoot>(true);
             foreach (var KannaProteccRoot in KannaProteccRoots)
             {
                 DestroyImmediate(KannaProteccRoot);
             }
-            
-            // Disable old for convienence.
-            gameObject.SetActive(false);
 
             // Force unity to import things
-            AssetDatabase.Refresh();
-
-            // Do Obfuscation
-            var newobj = obfuscator.Obfuscate(encodedGameObject, this);
-
-            encodedGameObject.SetActive(false); // Temp
-
             AssetDatabase.SaveAssets();
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
 
