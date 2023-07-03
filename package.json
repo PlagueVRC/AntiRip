@@ -1,0 +1,15 @@
+{
+  "name": "com.plaguevrc.kannaprotecc",
+  "displayName": "Kanna Protecc",
+  "version": "1.0.0",
+  "unity": "2019.4",
+  "keywords": [
+    "editor",
+    "vrchat"
+  ],
+  "description": "AntiRip (Kanna Protecc) - Free and insanely strong VRChat Anti Rip. Let us rid of rippers, together.",
+  "author": {
+    "name": "Kanna",
+    "url": "https://github.com/PlagueVRC/AntiRip"
+  }
+}
