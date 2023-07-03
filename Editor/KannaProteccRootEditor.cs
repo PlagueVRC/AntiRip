@@ -244,11 +244,14 @@ namespace Kanna.Protecc
                 if (GUILayout.Button(new GUIContent("Auto Detect", "Attempts to automatically detect additional materials.")))
                 {
                     var descriptor = KannaProteccRoot.gameObject.GetComponent<VRCAvatarDescriptor>();
+
                     var AllAnimations = descriptor.baseAnimationLayers.Where(p => p.animatorController != null && !KannaProteccRoot.excludeObjectNames.Contains((UnityEditor.Animations.AnimatorController)p.animatorController)).SelectMany(o => o.animatorController.animationClips).Concat(descriptor.specialAnimationLayers.Where(p => p.animatorController != null && !KannaProteccRoot.excludeObjectNames.Contains((UnityEditor.Animations.AnimatorController)p.animatorController)).SelectMany(o => o.animatorController.animationClips));
 
                     foreach (var anim in AllAnimations)
                     {
-                        foreach (var mat in anim.events.Where(o => o.objectReferenceParameter != null && o.objectReferenceParameter is Material).Select(p => (Material)p.objectReferenceParameter))
+                        var mats = AnimationUtility.GetObjectReferenceCurveBindings(anim).Where(p => p.type == typeof(Material)).Select(o => AnimationUtility.GetAnimatedObject(KannaProteccRoot.gameObject, o) as Material);
+
+                        foreach (var mat in mats)
                         {
                             if (!KannaProteccRoot.m_AdditionalMaterials.Contains(mat))
                             {

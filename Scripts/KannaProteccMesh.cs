@@ -65,7 +65,7 @@ namespace Kanna.Protecc
             {
                 var mat = renderer.sharedMaterials[GetSubmeshIndexForVertex(mesh, v)];
 
-                if (!mat.shader.name.StartsWith("Kanna Protecc") || IgnoredMaterials.Contains(mat))
+                if (mat == null || !mat.shader.name.StartsWith("Kanna Protecc") || IgnoredMaterials.Contains(mat))
                 {
                     continue;
                 }
