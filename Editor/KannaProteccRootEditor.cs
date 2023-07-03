@@ -3,11 +3,11 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEditorInternal;
-using UnityEngine.SceneManagement;
 using VRC.Core;
 using VRC.SDK3.Avatars.Components;
 using UnityEditor.SceneManagement;
+using UnityEditorInternal;
+using UnityEngine.SceneManagement;
 
 namespace Kanna.Protecc
 {
@@ -241,6 +241,22 @@ namespace Kanna.Protecc
             using (new GUILayout.VerticalScope(EditorStyles.helpBox))
             {
                 m_AdditionalList.DoLayoutList();
+                if (GUILayout.Button(new GUIContent("Auto Detect", "Attempts to automatically detect additional materials.")))
+                {
+                    var descriptor = KannaProteccRoot.gameObject.GetComponent<VRCAvatarDescriptor>();
+                    var AllAnimations = descriptor.baseAnimationLayers.Where(p => p.animatorController != null && !KannaProteccRoot.excludeObjectNames.Contains((UnityEditor.Animations.AnimatorController)p.animatorController)).SelectMany(o => o.animatorController.animationClips).Concat(descriptor.specialAnimationLayers.Where(p => p.animatorController != null && !KannaProteccRoot.excludeObjectNames.Contains((UnityEditor.Animations.AnimatorController)p.animatorController)).SelectMany(o => o.animatorController.animationClips));
+
+                    foreach (var anim in AllAnimations)
+                    {
+                        foreach (var mat in anim.events.Where(o => o.objectReferenceParameter != null && o.objectReferenceParameter is Material).Select(p => (Material)p.objectReferenceParameter))
+                        {
+                            if (!KannaProteccRoot.m_AdditionalMaterials.Contains(mat))
+                            {
+                                KannaProteccRoot.m_AdditionalMaterials.Add(mat);
+                            }
+                        }
+                    }
+                }
                 EditorGUILayout.Space();
                 m_IgnoreList.DoLayoutList();
                 EditorGUILayout.Space();
