@@ -120,7 +120,7 @@ namespace Kanna.Protecc
             var newMesh = new Mesh
             {
                 subMeshCount = mesh.subMeshCount,
-                vertices = newVertices,
+                vertices = mesh.vertices,
                 colors = mesh.colors,
                 normals = mesh.normals,
                 tangents = mesh.tangents,
@@ -144,6 +144,8 @@ namespace Kanna.Protecc
 
                 newMesh.SetTriangles(triangles, meshIndex);
             }
+
+            newMesh.vertices = newVertices;
 
             // transfer blend shapes
             for (var shapeIndex = 0; shapeIndex < mesh.blendShapeCount; shapeIndex++)
