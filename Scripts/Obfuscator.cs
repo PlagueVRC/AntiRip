@@ -131,6 +131,11 @@ namespace Kanna.Protecc
                         {
                             var encryptedmat = CopyAssetFile("mat", mat, root);
 
+                            if (mat == encryptedmat)
+                            {
+                                continue;
+                            }
+
                             var texnames = encryptedmat.GetTexturePropertyNames();
 
                             foreach (var texname in texnames)
@@ -168,6 +173,11 @@ namespace Kanna.Protecc
                         {
                             var encryptedmat = CopyAssetFile("mat", mat, root);
 
+                            if (mat == encryptedmat)
+                            {
+                                continue;
+                            }
+
                             var texnames = encryptedmat.GetTexturePropertyNames();
 
                             foreach (var texname in texnames)
@@ -200,6 +210,11 @@ namespace Kanna.Protecc
                     if (mat != null && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderdata) && !root.m_IgnoredMaterials.Contains(mat))
                     {
                         var encryptedmat = CopyAssetFile("mat", mat, root);
+
+                        if (mat == encryptedmat)
+                        {
+                            continue;
+                        }
 
                         var texnames = encryptedmat.GetTexturePropertyNames();
 
