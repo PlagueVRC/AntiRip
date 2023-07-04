@@ -136,23 +136,23 @@ namespace Kanna.Protecc
                                 continue;
                             }
 
-                            var texnames = encryptedmat.GetTexturePropertyNames();
+                            //var texnames = encryptedmat.GetTexturePropertyNames();
 
-                            foreach (var texname in texnames)
-                            {
-                                var tex = encryptedmat.GetTexture(texname);
+                            //foreach (var texname in texnames)
+                            //{
+                            //    var tex = encryptedmat.GetTexture(texname);
 
-                                var texpathvalid = Path.GetExtension(AssetDatabase.GetAssetPath(tex));
+                            //    var texpathvalid = Path.GetExtension(AssetDatabase.GetAssetPath(tex));
 
-                                if (texpathvalid.Length < 3)
-                                {
-                                    continue;
-                                }
+                            //    if (texpathvalid.Length < 3)
+                            //    {
+                            //        continue;
+                            //    }
 
-                                var encryptedtex = CopyAssetFile(texpathvalid.Substring(1), tex, root);
+                            //    var encryptedtex = CopyAssetFile(texpathvalid.Substring(1), tex, root);
 
-                                encryptedmat.SetTexture(texname, encryptedtex);
-                            }
+                            //    encryptedmat.SetTexture(texname, encryptedtex);
+                            //}
 
                             materials[index] = encryptedmat;
                         }
@@ -178,23 +178,23 @@ namespace Kanna.Protecc
                                 continue;
                             }
 
-                            var texnames = encryptedmat.GetTexturePropertyNames();
+                            //var texnames = encryptedmat.GetTexturePropertyNames();
 
-                            foreach (var texname in texnames)
-                            {
-                                var tex = encryptedmat.GetTexture(texname);
+                            //foreach (var texname in texnames)
+                            //{
+                            //    var tex = encryptedmat.GetTexture(texname);
 
-                                var texpathvalid = Path.GetExtension(AssetDatabase.GetAssetPath(tex));
+                            //    var texpathvalid = Path.GetExtension(AssetDatabase.GetAssetPath(tex));
 
-                                if (texpathvalid.Length < 3)
-                                {
-                                    continue;
-                                }
+                            //    if (texpathvalid.Length < 3)
+                            //    {
+                            //        continue;
+                            //    }
 
-                                var encryptedtex = CopyAssetFile(texpathvalid.Substring(1), tex, root);
+                            //    var encryptedtex = CopyAssetFile(texpathvalid.Substring(1), tex, root);
 
-                                encryptedmat.SetTexture(texname, encryptedtex);
-                            }
+                            //    encryptedmat.SetTexture(texname, encryptedtex);
+                            //}
 
                             materials[index] = encryptedmat;
                         }
@@ -216,23 +216,23 @@ namespace Kanna.Protecc
                             continue;
                         }
 
-                        var texnames = encryptedmat.GetTexturePropertyNames();
+                        //var texnames = encryptedmat.GetTexturePropertyNames();
 
-                        foreach (var texname in texnames)
-                        {
-                            var tex = encryptedmat.GetTexture(texname);
+                        //foreach (var texname in texnames)
+                        //{
+                        //    var tex = encryptedmat.GetTexture(texname);
 
-                            var texpathvalid = Path.GetExtension(AssetDatabase.GetAssetPath(tex));
+                        //    var texpathvalid = Path.GetExtension(AssetDatabase.GetAssetPath(tex));
 
-                            if (texpathvalid.Length < 3)
-                            {
-                                continue;
-                            }
+                        //    if (texpathvalid.Length < 3)
+                        //    {
+                        //        continue;
+                        //    }
 
-                            var encryptedtex = CopyAssetFile(texpathvalid.Substring(1), tex, root);
+                        //    var encryptedtex = CopyAssetFile(texpathvalid.Substring(1), tex, root);
 
-                            encryptedmat.SetTexture(texname, encryptedtex);
-                        }
+                        //    encryptedmat.SetTexture(texname, encryptedtex);
+                        //}
 
                         root.m_AdditionalMaterials[index] = encryptedmat;
                     }
