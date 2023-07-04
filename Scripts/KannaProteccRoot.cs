@@ -228,7 +228,7 @@ namespace Kanna.Protecc
 
             IsProtected = true;
 
-            EditorUtility.DisplayDialog("Successfully Encrypted!", $"{(string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId) ? "" : "Keys were automatically written. ")}Your avatar should be ready to upload!", "Okay");
+            EditorUtility.DisplayDialog("Successfully Encrypted!", $"{(string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId) ? "" : "Keys were automatically written. ")}Your avatar should be ready to upload!{(string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId) ? " - Be sure to come back to copy the blueprint ID from the encrypted version to this one, then click write keys!" : "")}", "Okay");
         }
 
         public static Type GetTypeFromAnyAssembly(string FullName)
