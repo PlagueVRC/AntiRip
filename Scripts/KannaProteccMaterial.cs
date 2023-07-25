@@ -213,6 +213,36 @@ namespace Kanna.Protecc
 
             new KannaDynamicShaderData
             {
+                ShaderName_StartsWith = ".poiyomi/Poiyomi 8.2",
+                SupportsLocking = true,
+
+                UV = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = new [] { "float2 uv3 : TEXCOORD3;" },
+                    TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
+                    ApplyToIncludes = true,
+                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
+                },
+
+                Vert = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = new [] { "VertexOut vert(", "VertexOut vert (" },
+                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\n{OrigText}",
+                    ApplyToIncludes = true,
+                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
+                },
+
+                VertexSetup = new KannaDynamicShaderData.KannaReplaceText
+                {
+                    TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
+                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
+                    ApplyToIncludes = true,
+                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
+                }
+            },
+
+            new KannaDynamicShaderData
+            {
                 ShaderName_StartsWith = "UnityChanToonShader",
                 SupportsLocking = false,
 
