@@ -118,3 +118,9 @@ https://discord.gg/SyZcuTPXZA
 
 This will let you keep up to date with major features that will take time to implement. This does not act as a changelog, nor will it have every upcoming feature listed. Only time-consuming ones.
 https://trello.com/b/k88bNBvd/kanna-protecc
+
+## Hall Of Shame
+
+People who lied claiming they could bypass this yet would never put their money where their mouth is
+![image](https://github.com/PlagueVRC/AntiRip/assets/36628963/5048a3da-9fcd-4eca-ae7e-f077fcdd574e)
+
