@@ -121,6 +121,12 @@ https://trello.com/b/k88bNBvd/kanna-protecc
 
 ## Hall Of Shame
 
-People who lied claiming they could bypass this yet would never put their money where their mouth is
+People who lied claiming they could bypass this yet would never put their money where their mouth is, or just terrible people in general, such as contributors to the ripping scene.
 ![image](https://github.com/PlagueVRC/AntiRip/assets/36628963/5048a3da-9fcd-4eca-ae7e-f077fcdd574e)
+
+Idiot dev of sars who claims he doesn't endorse ripping, meanwhile majority admins rip and AC outright told someone they can rip any avatar. Even in cool people role has people openly expressing they make and use crashers.
+![image](https://github.com/PlagueVRC/AntiRip/assets/36628963/82561d83-3e39-4163-991f-f9ed9162fceb)
+Proof of admin endorsing it:
+
+https://github.com/PlagueVRC/AntiRip/assets/36628963/8fab7cab-ba16-4b34-b612-5481758c582f
 
