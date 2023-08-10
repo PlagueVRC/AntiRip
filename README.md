@@ -130,3 +130,6 @@ Proof of admin endorsing it:
 
 https://github.com/PlagueVRC/AntiRip/assets/36628963/8fab7cab-ba16-4b34-b612-5481758c582f
 
+Member of SARS community panicking at Kanna Protecc existing:
+![image](https://github.com/PlagueVRC/AntiRip/assets/36628963/4b24c38b-ae32-44f8-8aa9-937440537507)
+
