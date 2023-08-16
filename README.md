@@ -5,6 +5,7 @@
   </a>
 </div>
 
+Fuck RipperStore!
 This project was previously owned by rygo6. It has been passed on for me to own and work on.
 This is the official repository for this project.
 
