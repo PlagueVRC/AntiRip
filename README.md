@@ -136,3 +136,5 @@ https://github.com/PlagueVRC/AntiRip/assets/36628963/8fab7cab-ba16-4b34-b612-548
 Member of SARS community panicking at Kanna Protecc existing:
 ![image](https://github.com/PlagueVRC/AntiRip/assets/36628963/4b24c38b-ae32-44f8-8aa9-937440537507)
 
+Soy boy
+![image](https://github.com/PlagueVRC/AntiRip/assets/36628963/5645b5aa-a83e-4f38-a21e-53840fd31f34)
