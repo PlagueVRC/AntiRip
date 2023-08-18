@@ -17,6 +17,11 @@ This is a rather invasive anti-avatar-ripping system to be used for VRChat. It w
 
 This system will randomize all the vertices of your avatar's mesh, then write that to disk. Then rely on a custom shader with a 32 bit key to un-randomize the vertex positions in game. This is <b>not</b> done through blend shapes. Rather this will copy, and destructively edit, the 'Basis' layer of your mesh. It will also obfuscate pretty much everything else on your avatar to confusing as a extra middle finger for the ripper.
 
+## Tutorial Video
+[Tutorial By PxINKY](https://youtu.be/vEXrRBen3NI)
+
+## Contents
+
 1. [Caveats of this System](#caveats-of-this-system)
 
 2. [Supported Shaders](#supported-shaders)
@@ -26,6 +31,10 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 4. [How secure is this?](#how-secure-is-this)
 
 5. [Support](#support)
+
+6. [Roadmap](#roadmap)
+
+7. [Hall Of Shame](#hall-of-shame)
 
 ## Caveats of this System
 
