@@ -466,18 +466,20 @@ float4 modelDecode(float4 vertex, float3 normal, float2 uv0, float2 uv1)
 
         void Shuffle<T>(IList<T> list)
         {
-            var provider = new RNGCryptoServiceProvider();
-            var n = list.Count;
-            while (n > 1)
+            using (var provider = new RNGCryptoServiceProvider())
             {
-                var box = new byte[1];
-                do provider.GetBytes(box);
-                while (!(box[0] < n * (Byte.MaxValue / n)));
-                var k = (box[0] % n);
-                n--;
-                var value = list[k];
-                list[k] = list[n];
-                list[n] = value;
+                var n = list.Count;
+                while (n > 1)
+                {
+                    var box = new byte[1];
+                    do provider.GetBytes(box);
+                    while (!(box[0] < n * (Byte.MaxValue / n)));
+                    var k = (box[0] % n);
+                    n--;
+                    var value = list[k];
+                    list[k] = list[n];
+                    list[n] = value;
+                }
             }
         }
         
