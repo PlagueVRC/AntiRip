@@ -11,6 +11,8 @@ This is the official repository for this project.
 
 This is free. Actually read all of this.
 
+NOTE: Rather pathetically, some are spreading the false rumor this has been bypassed. It has not been bypassed. This is from the malicious scene to try to stop this becoming too common.
+
 # Kanna Protecc
 
 This is a rather invasive anti-avatar-ripping system to be used for VRChat. It will protect against your avatar being ripped, extracted and edited. It will also protect against your avatar being ripped and re-uploaded without edits.
