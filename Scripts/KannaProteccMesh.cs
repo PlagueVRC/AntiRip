@@ -53,9 +53,16 @@ namespace Kanna.Protecc
 
             for (var v = 0; v < newVertices.Length; v++)
             {
-                var mat = renderer.sharedMaterials[GetSubmeshIndexForVertex(mesh, v)];
+                var SubIndex = GetSubmeshIndexForVertex(mesh, v);
+                
+                if (renderer.sharedMaterials.Length > (SubIndex + 1))
+                {
+                    continue;
+                }
+                
+                var mat = renderer.sharedMaterials[SubIndex];
 
-                if (!mat.shader.name.StartsWith("Kanna Protecc"))
+                if (mat == null || !mat.shader.name.StartsWith("Kanna Protecc"))
                 {
                     continue;
                 }
