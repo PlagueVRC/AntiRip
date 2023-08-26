@@ -740,6 +740,12 @@ namespace Kanna.Protecc
             else newPath = _filePathDic[originalPath];
 
             var asset = AssetDatabase.LoadAssetAtPath<T>(newPath);
+
+            if (asset == null)
+            {
+                Debug.LogError($"blyat, {newPath} no existo when loaded");
+            }
+
             return asset;
         }
 
