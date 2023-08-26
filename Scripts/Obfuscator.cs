@@ -734,6 +734,7 @@ namespace Kanna.Protecc
                     newPath = root.path + "/" + GUID.Generate() + ".asset";
 
                 AssetDatabase.CopyAsset(originalPath, newPath);
+                AssetDatabase.Refresh();
                 _filePathDic.Add(originalPath, newPath);
             }
             else newPath = _filePathDic[originalPath];
