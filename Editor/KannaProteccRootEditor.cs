@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -29,8 +31,14 @@ namespace Kanna.Protecc
         SerializedProperty _disableObjectNameObfuscationProperty;
         SerializedProperty _excludeObjectNamesProperty;
         SerializedProperty _excludeParamNamesProperty;
+        SerializedProperty _excludeAnimatorLayersProperty;
         ReorderableList _excludeObjectNamesPropertyList;
         ReorderableList _excludeParamNamesPropertyList;
+        ReorderableList _excludeAnimatorLayersPropertyList;
+
+        // This avoids excessive object allocation when drawing enums in _excludeAnimatorLayersPropertyList,
+        // As custom editors only support enum as indexes and we have do conversions to Enum object
+        Dictionary<int, Enum> _enumIndexToEnumObjectDict = new Dictionary<int, Enum>();
 
         static bool _objectNameObfuscationFoldout = false;
 
@@ -60,6 +68,7 @@ namespace Kanna.Protecc
             _disableObjectNameObfuscationProperty = serializedObject.FindProperty("disableObjectNameObfuscation");
             _excludeObjectNamesProperty = serializedObject.FindProperty("excludeObjectNames");
             _excludeParamNamesProperty = serializedObject.FindProperty("excludeParamNames");
+            _excludeAnimatorLayersProperty = serializedObject.FindProperty("excludeAnimatorLayers");
 
             _excludeObjectNamesPropertyList = new ReorderableList(
                 serializedObject,
@@ -107,6 +116,38 @@ namespace Kanna.Protecc
                     rect.y += 2;
 
                     element.stringValue = EditorGUI.TextField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), element.stringValue);
+                };
+            
+            _excludeAnimatorLayersPropertyList = new ReorderableList(
+                serializedObject,
+                _excludeAnimatorLayersProperty,
+                true,
+                true,
+                true,
+                true
+            );
+
+            _excludeAnimatorLayersPropertyList.drawHeaderCallback = rect =>
+            {
+                EditorGUI.LabelField(rect, "Exclude Animator Layers From Obfuscation", EditorStyles.boldLabel);
+            };
+
+            foreach (int enumValue in Enum.GetValues(typeof(VRCAvatarDescriptor.AnimLayerType)))
+            { 
+                _enumIndexToEnumObjectDict.Add(enumValue, (Enum)Enum.ToObject(typeof(VRCAvatarDescriptor.AnimLayerType), enumValue));
+            }
+
+            _excludeAnimatorLayersPropertyList.drawElementCallback =
+                (rect, index, isActive, isFocused) =>
+                {
+                   var element = _excludeAnimatorLayersPropertyList.serializedProperty.GetArrayElementAtIndex(index);
+                    rect.y += 2;
+
+                    Enum layer = EditorGUI.EnumPopup(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight),
+                        //(Enum)Enum.ToObject(typeof(VRCAvatarDescriptor.AnimLayerType), element.enumValueIndex), // Heavy object allocation
+                        _enumIndexToEnumObjectDict[element.enumValueIndex]
+                    );
+                    element.enumValueIndex = Convert.ToInt32(layer);
                 };
 
             KannaProteccRoot.Instance = (KannaProteccRoot)target;
@@ -391,6 +432,10 @@ namespace Kanna.Protecc
             FeatureToggleFoldout(true, "Parameter Name Obfuscation");
 
             _excludeParamNamesPropertyList.DoLayoutList();
+
+            EditorGUILayout.Space();
+
+            _excludeAnimatorLayersPropertyList.DoLayoutList();
 
             EditorGUILayout.Space();
 
