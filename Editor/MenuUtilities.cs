@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Thry;
 using UnityEditor;
 using UnityEngine;
-using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace Kanna.Protecc
 {
@@ -52,15 +51,19 @@ namespace Kanna.Protecc
             }
 
             var Mats = new List<Material>();
-            
+
+            var ProcessedMats = new List<Material>();
+
             foreach (var renderer in skinnedMeshRenderers)
             {
                 foreach (var material in renderer.sharedMaterials)
                 {
-                    if (material == null)
+                    if (material == null || ProcessedMats.Contains(material))
                     {
                         continue;
                     }
+
+                    ProcessedMats.Add(material);
 
                     var path = AssetDatabase.GetAssetPath(material.shader);
 
@@ -94,10 +97,12 @@ namespace Kanna.Protecc
             {
                 foreach (var material in renderer.sharedMaterials)
                 {
-                    if (material == null)
+                    if (material == null || ProcessedMats.Contains(material))
                     {
                         continue;
                     }
+
+                    ProcessedMats.Add(material);
 
                     var path = AssetDatabase.GetAssetPath(material.shader);
 
