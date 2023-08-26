@@ -128,7 +128,11 @@ namespace Kanna.Protecc
                 var animationLayers = avatar.baseAnimationLayers;
                 for (var i = 0; i < animationLayers.Length; ++i)
                 {
-                    if (animationLayers[i].animatorController == null || ((AnimatorController)animationLayers[i].animatorController).name.ToLower().Contains("gogo") || root.excludeObjectNames.Any(z => z == (AnimatorController)animationLayers[i].animatorController)) continue;
+                    if (animationLayers[i].animatorController == null ||
+                        root.excludeAnimatorLayers.Contains(animationLayers[i].type) ||
+                        root.excludeObjectNames.Any(z => z == (AnimatorController)animationLayers[i].animatorController))
+                            continue;
+
                     var animator = animationLayers[i].animatorController;
                     animationLayers[i].animatorController = AnimatorObfuscator((AnimatorController)animator, root);
                 }
@@ -139,7 +143,11 @@ namespace Kanna.Protecc
                 var specialAnimationLayers = avatar.specialAnimationLayers;
                 for (var i = 0; i < specialAnimationLayers.Length; ++i)
                 {
-                    if (specialAnimationLayers[i].animatorController == null || ((AnimatorController)specialAnimationLayers[i].animatorController).name.ToLower().Contains("gogo") || root.excludeObjectNames.Any(z => z == (AnimatorController)specialAnimationLayers[i].animatorController)) continue;
+                    if (specialAnimationLayers[i].animatorController == null ||
+                        root.excludeAnimatorLayers.Contains(specialAnimationLayers[i].type) ||
+                        root.excludeObjectNames.Any(z => z == (AnimatorController)specialAnimationLayers[i].animatorController))
+                            continue;
+                            
                     var animator = specialAnimationLayers[i].animatorController;
                     specialAnimationLayers[i].animatorController = AnimatorObfuscator((AnimatorController)animator, root);
                 }

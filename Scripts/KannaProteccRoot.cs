@@ -67,6 +67,9 @@ namespace Kanna.Protecc
         public List<string> excludeParamNames = new List<string>();
 
         [SerializeField]
+        public List<VRCAvatarDescriptor.AnimLayerType> excludeAnimatorLayers = new List<VRCAvatarDescriptor.AnimLayerType>();
+
+        [SerializeField]
         public StringStringSerializableDictionary ParameterRenamedValues = new StringStringSerializableDictionary();
 
         public string GetBitKeyName(int id, int LimitRenameLength = -1)
