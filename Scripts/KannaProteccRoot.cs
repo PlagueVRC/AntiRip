@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -269,6 +269,8 @@ namespace Kanna.Protecc
                             EditorUtility.DisplayDialog("Error!", "Avatar Has Locking Supported Shader, But Thry Is Not In Your Project!", "Okay");
                         }
                     }
+
+                    AssetDatabase.Refresh();
 
                     if (shaderMatch.SupportsLocking && !mat.shader.name.Contains("Locked"))
                     {
