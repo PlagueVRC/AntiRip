@@ -69,13 +69,11 @@ namespace Kanna.Protecc
 
                     if (path.Contains("_Protected.shader") && File.Exists(path.Replace("_Protected.shader", ".shader")))
                     {
-                        var ProtecctedFilePath = AssetDatabase.GetAssetPath(material.shader);
+                        var AllIncludes = material.shader.FindAllShaderIncludes();
 
-                        material.shader = AssetDatabase.LoadAssetAtPath<Shader>(ProtecctedFilePath.Replace("_Protected.shader", ".shader"));
+                        material.shader = AssetDatabase.LoadAssetAtPath<Shader>(path.Replace("_Protected.shader", ".shader"));
 
-                        var AllIncludes = AssetDatabase.LoadAssetAtPath<Shader>(ProtecctedFilePath).FindAllShaderIncludes();
-
-                        File.Delete(ProtecctedFilePath);
+                        File.Delete(path);
 
                         foreach (var include in AllIncludes)
                         {
@@ -108,13 +106,11 @@ namespace Kanna.Protecc
 
                     if (path.Contains("_Protected.shader") && File.Exists(path.Replace("_Protected.shader", ".shader")))
                     {
-                        var ProtecctedFilePath = AssetDatabase.GetAssetPath(material.shader);
+                        var AllIncludes = material.shader.FindAllShaderIncludes();
 
-                        material.shader = AssetDatabase.LoadAssetAtPath<Shader>(ProtecctedFilePath.Replace("_Protected.shader", ".shader"));
+                        material.shader = AssetDatabase.LoadAssetAtPath<Shader>(path.Replace("_Protected.shader", ".shader"));
 
-                        var AllIncludes = AssetDatabase.LoadAssetAtPath<Shader>(ProtecctedFilePath).FindAllShaderIncludes();
-
-                        File.Delete(ProtecctedFilePath);
+                        File.Delete(path);
 
                         foreach (var include in AllIncludes)
                         {
