@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -131,7 +131,7 @@ namespace Kanna.Protecc
                     if (animationLayers[i].animatorController == null ||
                         root.excludeAnimatorLayers.Contains(animationLayers[i].type) ||
                         root.excludeObjectNames.Any(z => z == (AnimatorController)animationLayers[i].animatorController))
-                            continue;
+                        continue;
 
                     var animator = animationLayers[i].animatorController;
                     animationLayers[i].animatorController = AnimatorObfuscator((AnimatorController)animator, root);
@@ -146,7 +146,7 @@ namespace Kanna.Protecc
                     if (specialAnimationLayers[i].animatorController == null ||
                         root.excludeAnimatorLayers.Contains(specialAnimationLayers[i].type) ||
                         root.excludeObjectNames.Any(z => z == (AnimatorController)specialAnimationLayers[i].animatorController))
-                            continue;
+                        continue;
                             
                     var animator = specialAnimationLayers[i].animatorController;
                     specialAnimationLayers[i].animatorController = AnimatorObfuscator((AnimatorController)animator, root);
