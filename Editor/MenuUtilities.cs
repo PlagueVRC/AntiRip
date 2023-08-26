@@ -135,8 +135,12 @@ namespace Kanna.Protecc
                     okText);
                 return;
             }
+
+            AssetDatabase.Refresh();
             
             ShaderOptimizer.SetLockedForAllMaterials(Mats, 0, true, false, false);
+
+            AssetDatabase.Refresh();
         }
         
         //[MenuItem("Tools/Kanna Protecc/Check for Update...", false)]
