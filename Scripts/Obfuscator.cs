@@ -128,7 +128,7 @@ namespace Kanna.Protecc
                 var animationLayers = avatar.baseAnimationLayers;
                 for (var i = 0; i < animationLayers.Length; ++i)
                 {
-                    if (animationLayers[i].animatorController == null ||
+                    if (animationLayers[i].animatorController == null || ((AnimatorController)animationLayers[i].animatorController).name.ToLower().Contains("gogo") ||
                         root.excludeAnimatorLayers.Contains(animationLayers[i].type) ||
                         root.excludeObjectNames.Any(z => z == (AnimatorController)animationLayers[i].animatorController))
                         continue;
@@ -143,7 +143,7 @@ namespace Kanna.Protecc
                 var specialAnimationLayers = avatar.specialAnimationLayers;
                 for (var i = 0; i < specialAnimationLayers.Length; ++i)
                 {
-                    if (specialAnimationLayers[i].animatorController == null ||
+                    if (specialAnimationLayers[i].animatorController == null || ((AnimatorController)specialAnimationLayers[i].animatorController).name.ToLower().Contains("gogo") ||
                         root.excludeAnimatorLayers.Contains(specialAnimationLayers[i].type) ||
                         root.excludeObjectNames.Any(z => z == (AnimatorController)specialAnimationLayers[i].animatorController))
                         continue;
