@@ -205,14 +205,14 @@ namespace Kanna.Protecc
             //Do the properties
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical(GUILayout.Width((Screen.width / 2) - 20f));
-            m_DistortRatioProperty.floatValue = GUILayout.HorizontalSlider(m_DistortRatioProperty.floatValue, .2f, 1.6f);
+            m_DistortRatioProperty.floatValue = GUILayout.HorizontalSlider(m_DistortRatioProperty.floatValue, .6f, 5f);
             GUILayout.Space(15);
             GUILayout.BeginHorizontal();
             GUILayout.Label("Distort Ratio:");
             GUILayout.FlexibleSpace();
             m_DistortRatioProperty.floatValue = EditorGUILayout.FloatField(m_DistortRatioProperty.floatValue);
             GUILayout.EndHorizontal();
-            GUILayout.Label("Set high enough so your encrypted mesh is visually wrecked. Default = .4", EditorStyles.wordWrappedLabel);
+            GUILayout.Label("Set high enough so your encrypted mesh is visually wrecked. Default = 5", EditorStyles.wordWrappedLabel);
             GUILayout.EndVertical();
 
             GUILayout.FlexibleSpace();
