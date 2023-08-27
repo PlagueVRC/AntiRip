@@ -33,9 +33,9 @@ namespace Kanna.Protecc
         public bool IsProtected;
 
         [Header("Set high enough so your encrypted mesh is visuall. Default = .1")]
-        [Range(.1f, .4f)]
+        [Range(.6f, 5f)]
         [SerializeField] 
-        float _distortRatio = .4f;
+        float _distortRatio = 5f;
 
         [Header("Ensure this is pointing to your LocalAvatarData folder!")]
         [SerializeField] 
