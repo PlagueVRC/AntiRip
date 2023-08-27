@@ -65,10 +65,22 @@ namespace Kanna.Protecc
 
         [SerializeField]
         public List<string> excludeParamNames = new List<string>();
-#if UNITY_EDITOR
+
+        public enum AnimLayerType
+        {
+            Base = 0,
+            //Deprecated0 = 1,
+            Additive = 2,
+            Gesture = 3,
+            Action = 4,
+            FX = 5,
+            Sitting = 6,
+            TPose = 7,
+            IKPose = 8,
+        }
+
         [SerializeField]
-        public List<VRCAvatarDescriptor.AnimLayerType> excludeAnimatorLayers = new List<VRCAvatarDescriptor.AnimLayerType>();
-#endif
+        public List<AnimLayerType> excludeAnimatorLayers = new List<AnimLayerType>();
 
         [SerializeField]
         public StringStringSerializableDictionary ParameterRenamedValues = new StringStringSerializableDictionary();
