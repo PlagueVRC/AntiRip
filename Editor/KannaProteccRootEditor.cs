@@ -176,7 +176,7 @@ namespace Kanna.Protecc
 
             var origColor = GUI.backgroundColor;
 
-            if (GUILayout.Button(new GUIContent(HeaderTexture, "Vist my Discord for help!"), EditorStyles.label, GUILayout.Height(Screen.width / 8)))
+            if (GUILayout.Button(new GUIContent(HeaderTexture, "Vist my Discord for help!"), EditorStyles.label, GUILayout.Height(Screen.width / 8f)))
             {
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
@@ -190,14 +190,14 @@ namespace Kanna.Protecc
 
             GUI.enabled = !KannaProteccRoot.IsProtected && !IsVRCOpen;
 
-            if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Encrypt Avatar" : "Close VRChat To Encrypt", "Validate the AnimatorController, then create encrypted avatar."), GUILayout.Height(Screen.width / 10f), GUILayout.Width((Screen.width / 2) - 20f)))
+            if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Encrypt Avatar" : "Close VRChat To Encrypt", "Validate the AnimatorController, then create encrypted avatar."), GUILayout.Height(Screen.width / 10f), GUILayout.Width((Screen.width / 2f) - 20f)))
             {
                 KannaProteccRoot.EncryptAvatar();
             }
 
             GUI.enabled = EncryptedObjExists && !IsVRCOpen;
 
-            if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Write Keys" : "Close VRChat To Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10f), GUILayout.Width((Screen.width / 2) - 20f)))
+            if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Write Keys" : "Close VRChat To Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10f), GUILayout.Width((Screen.width / 2f) - 20f)))
             {
                 KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name.Trim() + "_Encrypted_Obfuscated").GetComponent<VRCAvatarDescriptor>().expressionParameters, true, true);
             }
@@ -216,7 +216,7 @@ namespace Kanna.Protecc
             GUILayout.FlexibleSpace();
             m_DistortRatioProperty.floatValue = EditorGUILayout.FloatField(m_DistortRatioProperty.floatValue);
             GUILayout.EndHorizontal();
-            GUILayout.Label("Set high enough so your encrypted mesh is visually wrecked. Default = 5", EditorStyles.wordWrappedLabel);
+            GUILayout.Label("Set high enough so your encrypted mesh is visually wrecked, the higher the value, the more secure. Default = 5", EditorStyles.wordWrappedLabel);
             GUILayout.EndVertical();
 
             GUILayout.FlexibleSpace();
@@ -249,7 +249,7 @@ namespace Kanna.Protecc
                 GUI.backgroundColor = Color.green;
             }
 
-            if (GUILayout.Button(new GUIContent("Unlock materials", "Unlock All Materials In Hierarchy")))
+            if (GUILayout.Button(new GUIContent("Unlock Materials", "Unlock All Materials In Hierarchy")))
             {
                 MenuUtilites.UnlockAllMaterialsInHierarchy(null);
             }
@@ -261,7 +261,7 @@ namespace Kanna.Protecc
 
             if (_lockKeys)
             {
-                if (GUILayout.Button(new GUIContent("Unlock bitKeys", "Prevent changes to key selection"), GUILayout.Width((Screen.width / 2f) - 20f))) _lockKeys = !_lockKeys;
+                if (GUILayout.Button(new GUIContent("Unlock BitKeys", "Prevent changes to key selection"), GUILayout.Width((Screen.width / 2f) - 20f))) _lockKeys = !_lockKeys;
             }
             else if (GUILayout.Button(new GUIContent("Lock BitKeys", "Prevent changes to key selection"), GUILayout.Width((Screen.width / 2f) - 20f))) _lockKeys = !_lockKeys;
             GUILayout.EndHorizontal();
@@ -274,7 +274,7 @@ namespace Kanna.Protecc
                 GUILayout.BeginVertical();
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
-                GUILayout.Label("Bitkeys", EditorStyles.boldLabel);
+                GUILayout.Label("BitKeys", EditorStyles.boldLabel);
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
 
@@ -333,7 +333,7 @@ namespace Kanna.Protecc
 
                 //Generate key button
                 EditorGUILayout.Space();
-                if (GUILayout.Button(new GUIContent("Generate new Keys", "Generate new key overriding old one. Will need to write keys again!")))
+                if (GUILayout.Button(new GUIContent("Generate New Keys", "Generate new key overriding old one. Will need to write keys again!")))
                 {
                     KannaProteccRoot.GenerateNewKey();
                 }
@@ -364,7 +364,7 @@ namespace Kanna.Protecc
                 EditorGUILayout.Space();
                 GUILayout.BeginHorizontal();
 
-                EditorGUILayout.LabelField("bitKeys Length:");
+                EditorGUILayout.LabelField("BitKeys Length:");
 
                 var keycount = EditorGUILayout.IntField(((KannaProteccRoot)target)._bitKeys.Length);
 
