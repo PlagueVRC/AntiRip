@@ -168,6 +168,12 @@ namespace Kanna.Protecc
             var encodedGameObject = Instantiate(gameObject);
             encodedGameObject.name = newName;
             encodedGameObject.SetActive(true);
+
+            if (GetComponent<VRCAvatarDescriptor>().expressionsMenu.name.StartsWith("VRCFury"))
+            {
+                Debug.Log("Unpacking VRCFury assets");
+                UnpackAssetsForVRCFury();
+            }
             
             var data = new KannaProteccData(_bitKeys.Length);
             var decodeShader = KannaProteccMaterial.GenerateDecodeShader(data, _bitKeys);
@@ -576,6 +582,50 @@ namespace Kanna.Protecc
             EditorUtility.SetDirty(parameters);
 
             return true;
+        }
+
+        void UnpackAssetsForVRCFury()
+        {
+            // VRCFury saves all the animations and blend trees it copies as sub-assets to the animator controllers
+            // that uses them. We unpack everything because KannaProtecc only works with main assets
+            var descriptor = GetComponent<VRCAvatarDescriptor>();
+
+            foreach (var layer in descriptor.baseAnimationLayers.Where(l => l.animatorController != null)
+                .Concat(descriptor.specialAnimationLayers.Where(l => l.animatorController != null)))
+            {
+                var controller = layer.animatorController;
+                var assetPath = AssetDatabase.GetAssetPath(controller);
+                var assetFolder = Path.GetDirectoryName(assetPath);
+
+                // We first delete everything then add everything back because alternating between
+                // AssetDatabase.RemoveObjectFromAsset and AssetDatabase.CreateAsset takes a lot more time for some reason
+                var allSubAssets = AssetDatabase.LoadAllAssetRepresentationsAtPath(assetPath);
+                foreach (var subAsset in allSubAssets)
+                {
+                    AssetDatabase.RemoveObjectFromAsset(subAsset);
+                }
+
+                var newPathPrefix = $"{assetFolder}/{layer.type}_";
+                foreach (var subAsset in allSubAssets)
+                {
+                    var newName = subAsset.name.Replace("/", "");
+                    var newPath = $"{newPathPrefix}{newName}.asset";
+                    AssetDatabase.CreateAsset(subAsset, newPath);
+                }
+            }
+            AssetDatabase.SaveAssets();
+
+            // Submenus are also saved as sub-assets
+            var menu = descriptor.expressionsMenu;
+            var menuPath = AssetDatabase.GetAssetPath(menu);
+            var menuFolder = Path.GetDirectoryName(menuPath);
+            foreach (var subMenu in AssetDatabase.LoadAllAssetRepresentationsAtPath(menuPath))
+            {
+                var newPath = $"{menuFolder}/{subMenu.name}.asset";
+                AssetDatabase.RemoveObjectFromAsset(subMenu);
+                AssetDatabase.CreateAsset(subMenu, newPath);
+            }
+            AssetDatabase.SaveAssets();
         }
         
         //[MenuItem("CONTEXT/VRCExpressionParameters/Remove BitKeys")]
