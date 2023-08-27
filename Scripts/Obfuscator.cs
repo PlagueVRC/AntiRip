@@ -128,13 +128,15 @@ namespace Kanna.Protecc
                 var animationLayers = avatar.baseAnimationLayers;
                 for (var i = 0; i < animationLayers.Length; ++i)
                 {
-                    if (animationLayers[i].animatorController == null || ((AnimatorController)animationLayers[i].animatorController).name.ToLower().Contains("gogo") ||
-                        root.excludeAnimatorLayers.Contains(animationLayers[i].type) ||
-                        root.excludeObjectNames.Any(z => z == (AnimatorController)animationLayers[i].animatorController))
+                    if (animationLayers[i].animatorController == null)
                         continue;
 
+                    var excluded = ((AnimatorController)animationLayers[i].animatorController).name.ToLower().Contains("gogo") ||
+                                   root.excludeAnimatorLayers.Any(p => (int)p == (int)animationLayers[i].type) ||
+                                   root.excludeObjectNames.Any(z => z == (AnimatorController)animationLayers[i].animatorController);
+
                     var animator = animationLayers[i].animatorController;
-                    animationLayers[i].animatorController = AnimatorObfuscator((AnimatorController)animator, root);
+                    animationLayers[i].animatorController = AnimatorObfuscator((AnimatorController)animator, root, excluded);
                 }
 
                 avatar.baseAnimationLayers = animationLayers;
@@ -143,13 +145,16 @@ namespace Kanna.Protecc
                 var specialAnimationLayers = avatar.specialAnimationLayers;
                 for (var i = 0; i < specialAnimationLayers.Length; ++i)
                 {
-                    if (specialAnimationLayers[i].animatorController == null || ((AnimatorController)specialAnimationLayers[i].animatorController).name.ToLower().Contains("gogo") ||
-                        root.excludeAnimatorLayers.Contains(specialAnimationLayers[i].type) ||
-                        root.excludeObjectNames.Any(z => z == (AnimatorController)specialAnimationLayers[i].animatorController))
+                    if (specialAnimationLayers[i].animatorController == null)
                         continue;
-                            
+
+                    var excluded = ((AnimatorController)specialAnimationLayers[i].animatorController).name.ToLower().Contains("gogo") ||
+                                   root.excludeAnimatorLayers.Any(p => (int)p == (int)specialAnimationLayers[i].type) ||
+                                   root.excludeObjectNames.Any(z => z == (AnimatorController)specialAnimationLayers[i].animatorController);
+
+
                     var animator = specialAnimationLayers[i].animatorController;
-                    specialAnimationLayers[i].animatorController = AnimatorObfuscator((AnimatorController)animator, root);
+                    specialAnimationLayers[i].animatorController = AnimatorObfuscator((AnimatorController)animator, root, excluded);
                 }
 
                 avatar.specialAnimationLayers = specialAnimationLayers;
@@ -159,9 +164,11 @@ namespace Kanna.Protecc
                     .Where(t => t.runtimeAnimatorController == null || t.gameObject != obj);
                 foreach (var animator in otherAnimators)
                 {
-                    if (animator.runtimeAnimatorController == null || ((AnimatorController)animator.runtimeAnimatorController).name.ToLower().Contains("gogo") || root.excludeObjectNames.Any(z => z == (AnimatorController)animator.runtimeAnimatorController)) continue;
+                    if (animator.runtimeAnimatorController == null) continue;
 
-                    animator.runtimeAnimatorController = AnimatorObfuscator((AnimatorController)animator.runtimeAnimatorController, root);
+                    var excluded = ((AnimatorController)animator.runtimeAnimatorController).name.ToLower().Contains("gogo") || root.excludeObjectNames.Any(z => z == (AnimatorController)animator.runtimeAnimatorController);
+
+                    animator.runtimeAnimatorController = AnimatorObfuscator((AnimatorController)animator.runtimeAnimatorController, root, excluded);
                 }
 
                 ProgressBar("Get all bones from animator", 9);
@@ -447,7 +454,7 @@ namespace Kanna.Protecc
         }
 #endif
 
-        private AnimatorController AnimatorObfuscator(AnimatorController controller, KannaProteccRoot root)
+        private AnimatorController AnimatorObfuscator(AnimatorController controller, KannaProteccRoot root, bool excluded)
         {
             if (controller == null) return null;
             var animator = CopyAssetFile("controller", controller, root);
@@ -471,18 +478,26 @@ namespace Kanna.Protecc
             parameters = parameters.OrderBy(a => Guid.NewGuid()).ToList();
             animator.parameters = parameters.ToArray();
 
-            var layers = animator.layers.ToList();
-            foreach (var layer in layers)
+            if (!excluded)
             {
-                var newLayerName = GUID.Generate().ToString() + _tempIndex;
-                _tempIndex++;
-                layer.name = newLayerName;
-                layer.stateMachine = StateMachineObfuscator(layer.name, layer.stateMachine, root);
+                var layers = animator.layers.ToList();
+                foreach (var layer in layers)
+                {
+                    var newLayerName = GUID.Generate().ToString() + _tempIndex;
+                    _tempIndex++;
+                    layer.name = newLayerName;
+                    layer.stateMachine = StateMachineObfuscator(layer.name, layer.stateMachine, root);
+                }
+
+                animator.layers = layers.ToArray();
             }
 
-            animator.layers = layers.ToArray();
-
             return animator;
+        }
+
+        private void ObfuscateAnimatorParameters()
+        {
+
         }
 
         public void ObfuscateLayer(AnimatorControllerLayer layer, AnimatorController controller, KannaProteccRoot root)
