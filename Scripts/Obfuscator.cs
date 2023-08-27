@@ -400,6 +400,33 @@ namespace Kanna.Protecc
         private VRCExpressionsMenu ExpressionsMenuObfuscator(VRCExpressionsMenu menu, KannaProteccRoot root)
         {
             var expressionsMenu = CopyAssetFile("asset", menu, root);
+            
+            // When building an avatar, VRCFury will store submenus as sub assets to the main menu asset
+            // We ensure they are being obfuscated as well.
+            // Doesn't do anything if you don't use VRCFury
+            var assetPath = AssetDatabase.GetAssetPath(expressionsMenu);
+            foreach (var subAsset in AssetDatabase.LoadAllAssetRepresentationsAtPath(assetPath))
+            {
+                var subMenu = subAsset as VRCExpressionsMenu;
+                if (subMenu == null) continue;
+
+                foreach (var c in subMenu.controls)
+                {
+                    if (c.parameter != null)
+                        c.parameter.name = _parameterDic.ContainsKey(c.parameter.name)
+                            ? _parameterDic[c.parameter.name]
+                            : c.parameter.name;
+
+                    if (c.subParameters != null)
+                        foreach (var param in c.subParameters)
+                            param.name = _parameterDic.ContainsKey(param.name)
+                                ? _parameterDic[param.name]
+                                : param.name;
+                }
+                subAsset.name = GUID.Generate().ToString();
+            }
+            AssetDatabase.SaveAssets();
+
             foreach (var control in expressionsMenu.controls)
             {
                 if (control.type == VRCExpressionsMenu.Control.ControlType.SubMenu && control.subMenu != null && control.subMenu != expressionsMenu && control.subMenu != menu && !_filePathDic.ContainsValue(AssetDatabase.GetAssetPath(control.subMenu))) control.subMenu = ExpressionsMenuObfuscator(control.subMenu, root);
