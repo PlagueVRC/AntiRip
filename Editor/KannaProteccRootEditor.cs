@@ -38,9 +38,15 @@ namespace Kanna.Protecc
 
         static bool _objectNameObfuscationFoldout = false;
 
+        private bool IsVRCOpen;
+        private bool EncryptedObjExists;
+
         Texture2D HeaderTexture;
         void OnEnable()
         {
+            IsVRCOpen = Process.GetProcessesByName("VRChat").Length > 0;
+            EncryptedObjExists = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("Encrypted"));
+
             m_DistortRatioProperty = serializedObject.FindProperty("_distortRatio");
             m_KeysProperty = serializedObject.FindProperty("_bitKeys");
             m_VrcSavedParamsPathProperty = serializedObject.FindProperty("_vrcSavedParamsPath");
@@ -182,18 +188,16 @@ namespace Kanna.Protecc
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
 
-            var IsVRCOpen = Process.GetProcessesByName("VRChat").Length > 0;
-
             GUI.enabled = !KannaProteccRoot.IsProtected && !IsVRCOpen;
 
-            if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Encrypt Avatar" : "Close VRChat To Encrypt", "Validate the AnimatorController, then create encrypted avatar."), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
+            if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Encrypt Avatar" : "Close VRChat To Encrypt", "Validate the AnimatorController, then create encrypted avatar."), GUILayout.Height(Screen.width / 10f), GUILayout.Width((Screen.width / 2) - 20f)))
             {
                 KannaProteccRoot.EncryptAvatar();
             }
 
-            GUI.enabled = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("Encrypted")) && !IsVRCOpen;
+            GUI.enabled = EncryptedObjExists && !IsVRCOpen;
 
-            if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Write Keys" : "Close VRChat To Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10), GUILayout.Width((Screen.width / 2) - 20f)))
+            if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Write Keys" : "Close VRChat To Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10f), GUILayout.Width((Screen.width / 2) - 20f)))
             {
                 KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name.Trim() + "_Encrypted_Obfuscated").GetComponent<VRCAvatarDescriptor>().expressionParameters, true, true);
             }
@@ -204,7 +208,7 @@ namespace Kanna.Protecc
 
             //Do the properties
             GUILayout.BeginHorizontal();
-            GUILayout.BeginVertical(GUILayout.Width((Screen.width / 2) - 20f));
+            GUILayout.BeginVertical(GUILayout.Width((Screen.width / 2f) - 20f));
             m_DistortRatioProperty.floatValue = GUILayout.HorizontalSlider(m_DistortRatioProperty.floatValue, .6f, 5f);
             GUILayout.Space(15);
             GUILayout.BeginHorizontal();
@@ -216,7 +220,7 @@ namespace Kanna.Protecc
             GUILayout.EndVertical();
 
             GUILayout.FlexibleSpace();
-            GUILayout.BeginVertical(GUILayout.Width((Screen.width / 2) - 20f));
+            GUILayout.BeginVertical(GUILayout.Width((Screen.width / 2f) - 20f));
             GUILayout.Space(3);
             GUILayout.Label("VRC Saved Paramters Path");
             m_VrcSavedParamsPathProperty.stringValue = EditorGUILayout.TextField(m_VrcSavedParamsPathProperty.stringValue);
@@ -257,9 +261,9 @@ namespace Kanna.Protecc
 
             if (_lockKeys)
             {
-                if (GUILayout.Button(new GUIContent("Unlock bitKeys", "Prevent changes to key selection"), GUILayout.Width((Screen.width / 2) - 20f))) _lockKeys = !_lockKeys;
+                if (GUILayout.Button(new GUIContent("Unlock bitKeys", "Prevent changes to key selection"), GUILayout.Width((Screen.width / 2f) - 20f))) _lockKeys = !_lockKeys;
             }
-            else if (GUILayout.Button(new GUIContent("Lock BitKeys", "Prevent changes to key selection"), GUILayout.Width((Screen.width / 2) - 20f))) _lockKeys = !_lockKeys;
+            else if (GUILayout.Button(new GUIContent("Lock BitKeys", "Prevent changes to key selection"), GUILayout.Width((Screen.width / 2f) - 20f))) _lockKeys = !_lockKeys;
             GUILayout.EndHorizontal();
 
             //draw keys here
