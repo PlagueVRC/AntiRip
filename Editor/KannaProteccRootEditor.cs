@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
@@ -35,10 +35,6 @@ namespace Kanna.Protecc
         ReorderableList _excludeObjectNamesPropertyList;
         ReorderableList _excludeParamNamesPropertyList;
         ReorderableList _excludeAnimatorLayersPropertyList;
-
-        // This avoids excessive object allocation when drawing enums in _excludeAnimatorLayersPropertyList,
-        // As custom editors only support enum as indexes and we have do conversions to Enum object
-        Dictionary<int, Enum> _enumIndexToEnumObjectDict = new Dictionary<int, Enum>();
 
         static bool _objectNameObfuscationFoldout = false;
 
@@ -93,8 +89,6 @@ namespace Kanna.Protecc
                     EditorGUI.ObjectField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), element, GUIContent.none);
                 };
 
-            //
-
             _excludeParamNamesPropertyList = new ReorderableList(
                 serializedObject,
                 _excludeParamNamesProperty,
@@ -132,22 +126,17 @@ namespace Kanna.Protecc
                 EditorGUI.LabelField(rect, "Exclude Animator Layers From Obfuscation", EditorStyles.boldLabel);
             };
 
-            foreach (int enumValue in Enum.GetValues(typeof(VRCAvatarDescriptor.AnimLayerType)))
-            { 
-                _enumIndexToEnumObjectDict.Add(enumValue, (Enum)Enum.ToObject(typeof(VRCAvatarDescriptor.AnimLayerType), enumValue));
-            }
-
             _excludeAnimatorLayersPropertyList.drawElementCallback =
                 (rect, index, isActive, isFocused) =>
                 {
                    var element = _excludeAnimatorLayersPropertyList.serializedProperty.GetArrayElementAtIndex(index);
                     rect.y += 2;
 
-                    Enum layer = EditorGUI.EnumPopup(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight),
-                        //(Enum)Enum.ToObject(typeof(VRCAvatarDescriptor.AnimLayerType), element.enumValueIndex), // Heavy object allocation
-                        _enumIndexToEnumObjectDict[element.enumValueIndex]
+                    var layer = (KannaProteccRoot.AnimLayerType)EditorGUI.EnumPopup(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight),
+                        //(Enum)Enum.ToObject(typeof(AnimLayerType), element.enumValueIndex), // Heavy object allocation
+                        (KannaProteccRoot.AnimLayerType)element.intValue
                     );
-                    element.enumValueIndex = Convert.ToInt32(layer);
+                    element.intValue = (int)layer;
                 };
 
             KannaProteccRoot.Instance = (KannaProteccRoot)target;
