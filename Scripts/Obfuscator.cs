@@ -75,16 +75,21 @@ namespace Kanna.Protecc
         private readonly List<AnimationClip> _animClipList = new List<AnimationClip>();
         private readonly HashSet<string> _excludeNameSet = new HashSet<string>();
         private uint _tempIndex;
+        private List<string> IgnoredParams = new List<string>();
 
         public GameObject Obfuscate(GameObject gobj, KannaProteccRoot root)
         {
             GameObject obj = null;
+
+            KannaLogger.LogToFile($"Obfuscation Init..", KannaProteccRoot.LogLocation);
 
             _parameterDic.Clear();
             _objectNameDic.Clear();
             _filePathDic.Clear();
             _animClipList.Clear();
             _excludeNameSet.Clear();
+            IgnoredParams.Clear();
+            ObfuscatedMenus.Clear();
             _tempIndex = 0;
             GC.Collect();
 
@@ -95,11 +100,14 @@ namespace Kanna.Protecc
 
                 if (AssetDatabase.IsValidFolder(root.path))
                 {
+                    KannaLogger.LogToFile($"Obfuscated Files Folder Already Existed, Deleting..", KannaProteccRoot.LogLocation);
                     FileUtil.DeleteFileOrDirectory(root.path);
                 }
 
+                KannaLogger.LogToFile($"Creating Obfuscated Files Folder..", KannaProteccRoot.LogLocation);
                 CreateFolder(root.path);
 
+                KannaLogger.LogToFile($"Cloning Avatar Object..", KannaProteccRoot.LogLocation);
                 ProgressBar("Clone Avatar Object", 1);
                 var o = gobj;
                 var gameObjectName = o.name.Trim() + "_Obfuscated";
@@ -108,23 +116,20 @@ namespace Kanna.Protecc
                 obj.SetActive(true);
                 o.SetActive(false);
 
+                KannaLogger.LogToFile($"Removing AnimatorController From Root Animator..", KannaProteccRoot.LogLocation);
                 ProgressBar("Remove animatorController of RootAnimator", 2);
                 var rootAnimator = obj.GetComponent<Animator>();
                 if (rootAnimator != null) rootAnimator.runtimeAnimatorController = null;
 
-                ProgressBar("Find AvatarDescriptor Component", 3);
+                KannaLogger.LogToFile($"Finding VRCAvatarDescriptor Component..", KannaProteccRoot.LogLocation);
+
+                ProgressBar("Find VRCAvatarDescriptor Component", 3);
 
                 var avatar = obj.GetComponent<VRCAvatarDescriptor>();
 
-                ProgressBar("ExpressionParameters obfuscation", 4);
-                if (avatar.expressionParameters != null)
-                    avatar.expressionParameters = ExpressionParametersObfuscator(avatar.expressionParameters, root);
+                KannaLogger.LogToFile($"Beginning baseAnimationLayers Animator Obfuscation..", KannaProteccRoot.LogLocation);
 
-                ProgressBar("ExpressionsMenu obfuscation", 5);
-                if (avatar.expressionsMenu != null)
-                    avatar.expressionsMenu = ExpressionsMenuObfuscator(avatar.expressionsMenu, root);
-
-                ProgressBar("baseAnimationLayers animatorController obfuscation", 6);
+                ProgressBar("baseAnimationLayers animatorController obfuscation", 4);
                 var animationLayers = avatar.baseAnimationLayers;
                 for (var i = 0; i < animationLayers.Length; ++i)
                 {
@@ -135,13 +140,23 @@ namespace Kanna.Protecc
                                    root.excludeAnimatorLayers.Any(p => (int)p == (int)animationLayers[i].type) ||
                                    root.excludeObjectNames.Any(z => z == (AnimatorController)animationLayers[i].animatorController);
 
-                    var animator = animationLayers[i].animatorController;
-                    animationLayers[i].animatorController = AnimatorObfuscator((AnimatorController)animator, root, excluded);
+                    var animator = (AnimatorController)animationLayers[i].animatorController;
+
+                    if (excluded)
+                    {
+                        IgnoredParams.AddRange(animator.parameters.Select(s => s.name));
+                        IgnoredParams = IgnoredParams.Distinct().ToList(); // Remove Duplicates
+                        continue;
+                    }
+
+                    animationLayers[i].animatorController = AnimatorObfuscator(animator, root);
                 }
 
                 avatar.baseAnimationLayers = animationLayers;
 
-                ProgressBar("specialAnimationLayers animatorController obfuscation", 7);
+                KannaLogger.LogToFile($"Beginning specialAnimationLayers Animator Obfuscation..", KannaProteccRoot.LogLocation);
+
+                ProgressBar("specialAnimationLayers animatorController obfuscation", 5);
                 var specialAnimationLayers = avatar.specialAnimationLayers;
                 for (var i = 0; i < specialAnimationLayers.Length; ++i)
                 {
@@ -153,13 +168,23 @@ namespace Kanna.Protecc
                                    root.excludeObjectNames.Any(z => z == (AnimatorController)specialAnimationLayers[i].animatorController);
 
 
-                    var animator = specialAnimationLayers[i].animatorController;
-                    specialAnimationLayers[i].animatorController = AnimatorObfuscator((AnimatorController)animator, root, excluded);
+                    var animator = (AnimatorController)specialAnimationLayers[i].animatorController;
+
+                    if (excluded)
+                    {
+                        IgnoredParams.AddRange(animator.parameters.Select(s => s.name));
+                        IgnoredParams = IgnoredParams.Distinct().ToList(); // Remove Duplicates
+                        continue;
+                    }
+
+                    specialAnimationLayers[i].animatorController = AnimatorObfuscator(animator, root);
                 }
 
                 avatar.specialAnimationLayers = specialAnimationLayers;
 
-                ProgressBar("Another animatorController obfuscation", 8);
+                KannaLogger.LogToFile($"Beginning Generic Animator Obfuscation..", KannaProteccRoot.LogLocation);
+
+                ProgressBar("Another animatorController obfuscation", 6);
                 var otherAnimators = obj.GetComponentsInChildren<Animator>(true)
                     .Where(t => t.runtimeAnimatorController == null || t.gameObject != obj);
                 foreach (var animator in otherAnimators)
@@ -168,9 +193,33 @@ namespace Kanna.Protecc
 
                     var excluded = ((AnimatorController)animator.runtimeAnimatorController).name.ToLower().Contains("gogo") || root.excludeObjectNames.Any(z => z == (AnimatorController)animator.runtimeAnimatorController);
 
-                    animator.runtimeAnimatorController = AnimatorObfuscator((AnimatorController)animator.runtimeAnimatorController, root, excluded);
+                    if (excluded)
+                    {
+                        IgnoredParams.AddRange(((AnimatorController)animator.runtimeAnimatorController).parameters.Select(s => s.name));
+                        IgnoredParams = IgnoredParams.Distinct().ToList(); // Remove Duplicates
+                        continue;
+                    }
+
+                    animator.runtimeAnimatorController = AnimatorObfuscator((AnimatorController)animator.runtimeAnimatorController, root);
                 }
 
+                KannaLogger.LogToFile($"Beginning ExpressionParameters Obfuscation..", KannaProteccRoot.LogLocation);
+
+                ProgressBar("ExpressionParameters obfuscation", 7);
+                if (avatar.expressionParameters != null)
+                    avatar.expressionParameters = ExpressionParametersObfuscator(avatar.expressionParameters, root);
+
+                KannaLogger.LogToFile($"Beginning ExpressionsMenu Obfuscation..", KannaProteccRoot.LogLocation);
+
+                ProgressBar("ExpressionsMenu obfuscation", 8);
+                if (avatar.expressionsMenu != null)
+                    avatar.expressionsMenu = ExpressionsMenuObfuscator(avatar.expressionsMenu, root);
+
+                KannaLogger.LogToFile($"Saving Assets..", KannaProteccRoot.LogLocation);
+
+                AssetDatabase.SaveAssets();
+
+                KannaLogger.LogToFile($"Caching All Bones Recursively Via Animators", KannaProteccRoot.LogLocation);
                 ProgressBar("Get all bones from animator", 9);
                 var animators = obj.GetComponentsInChildren<Animator>(true);
                 var enumValues = Enum.GetValues(typeof(HumanBodyBones));
@@ -186,6 +235,8 @@ namespace Kanna.Protecc
                     }
                 }
 
+                KannaLogger.LogToFile($"Beginning Object Name Obfuscation..", KannaProteccRoot.LogLocation);
+
                 if (!root.disableObjectNameObfuscation)
                 {
                     foreach (var objectName in root.excludeObjectNames.Where(item => item != null && !string.IsNullOrWhiteSpace(item.name)))
@@ -194,14 +245,19 @@ namespace Kanna.Protecc
                     }
 
                     ProgressBar("Object name obfuscation", 10);
+
+                    KannaLogger.LogToFile($"Getting Every Transform Recursively..", KannaProteccRoot.LogLocation);
                     var children = obj.GetComponentsInChildren<Transform>(true).Where(t => t != obj.transform).ToList();
 
+                    KannaLogger.LogToFile($"Going Through Transforms Individually, Ignoring Root Object And Excluded Objects..", KannaProteccRoot.LogLocation);
                     foreach (var childObject in children.Select(child => child.gameObject)
                                  .Where(childObject => childObject.GetInstanceID() != obj.GetInstanceID() &&
                                                        !_excludeNameSet.Contains(childObject.name)))
                     {
                         if (!_objectNameDic.ContainsKey(childObject.name))
                         {
+                            KannaLogger.LogToFile($"Generating New Name For {childObject.name}..", KannaProteccRoot.LogLocation);
+
                             var newName = GUID.Generate().ToString();
                             while (_objectNameDic.ContainsKey(newName))
                                 newName = GUID.Generate().ToString();
@@ -211,6 +267,8 @@ namespace Kanna.Protecc
 
                         childObject.name = _objectNameDic[childObject.name];
                     }
+
+                    KannaLogger.LogToFile($"Beginning Updating Of AnimationClips; Cached Previously From Animator Obfuscations..", KannaProteccRoot.LogLocation);
 
                     ProgressBar("Update AnimationClips", 11);
                     foreach (var clip in _animClipList)
@@ -232,6 +290,9 @@ namespace Kanna.Protecc
                             AnimationUtility.SetEditorCurve(clip, copy, curve);
                         }
 
+                        KannaLogger.LogToFile($"Finished Direct AnimClip Bindings For Clip: {clip.name}", KannaProteccRoot.LogLocation);
+                        Debug.Log($"Finished Direct AnimClip Bindings For Clip: {clip.name}");
+
                         foreach (var binding in AnimationUtility.GetObjectReferenceCurveBindings(clip))
                         {
                             var copy = binding;
@@ -248,12 +309,18 @@ namespace Kanna.Protecc
                             AnimationUtility.SetObjectReferenceCurve(clip, binding, null);
                             AnimationUtility.SetObjectReferenceCurve(clip, copy, curve);
                         }
+
+                        KannaLogger.LogToFile($"Finished Reference AnimClip Bindings For Clip: {clip.name}", KannaProteccRoot.LogLocation);
+                        Debug.Log($"Finished Reference AnimClip Bindings For Clip: {clip.name}");
                     }
                 }
 
+                KannaLogger.LogToFile($"Randomizing Sibling Order..", KannaProteccRoot.LogLocation);
                 ProgressBar("Randomizing Sibling Order", 12);
 
                 RandomizeAllSiblingOrders(obj);
+
+                KannaLogger.LogToFile($"Obfuscation Finished..", KannaProteccRoot.LogLocation);
 
                 ProgressBar("Done!", 1, 1);
             }
@@ -263,6 +330,8 @@ namespace Kanna.Protecc
             }
             finally
             {
+                KannaLogger.LogToFile($"Obfuscation Cleanup..", KannaProteccRoot.LogLocation);
+
                 _parameterDic.Clear();
                 _objectNameDic.Clear();
                 _animClipList.Clear();
@@ -317,6 +386,7 @@ namespace Kanna.Protecc
             var templist = expressionParameters.parameters.ToList();
             for (var i = 0; i < root._bitKeys.Length; i++)
             {
+                KannaLogger.LogToFile($"Adding BitKey{i} To ExpressionParameters..", KannaProteccRoot.LogLocation);
                 templist.Add(new VRCExpressionParameters.Parameter
                 {
                     name = $"BitKey{i}",
@@ -327,10 +397,12 @@ namespace Kanna.Protecc
             }
             expressionParameters.parameters = templist.ToArray();
 
+            KannaLogger.LogToFile($"Obfuscating Non-Skipped And Non-Ignored Parameters..", KannaProteccRoot.LogLocation);
+
             var parameters = expressionParameters.parameters.ToList().Where(p => !string.IsNullOrEmpty(p.name.Trim()))
                 .ToList();
 
-            foreach (var parameter in parameters.Where(parameter => !SkipParameterNames.Contains(parameter.name) && root.excludeParamNames.All(o => !Regex.IsMatch(parameter.name, o))))
+            foreach (var parameter in parameters.Where(parameter => !SkipParameterNames.Contains(parameter.name) && root.excludeParamNames.All(o => !Regex.IsMatch(parameter.name, o)) && !IgnoredParams.Contains(parameter.name)))
             {
                 if (_parameterDic.ContainsKey(parameter.name))
                 {
@@ -381,6 +453,8 @@ namespace Kanna.Protecc
 
             var AmountToReserveForOtherThings = 75;
 
+            KannaLogger.LogToFile($"Done, Padding Parameters With Dummy Parameters, Reserving {AmountToReserveForOtherThings}..", KannaProteccRoot.LogLocation);
+
             while ((VRCExpressionParameters.MAX_PARAMETER_COST - (expressionParameters.CalcTotalCost() + AmountToReserveForOtherThings)) > 0)
             {
                 var newName = GUID.Generate().ToString();
@@ -401,42 +475,28 @@ namespace Kanna.Protecc
 
             parameters = parameters.OrderBy(a => Guid.NewGuid()).ToList();
             expressionParameters.parameters = parameters.ToArray();
+
+            KannaLogger.LogToFile($"ExpressionParameters Obfuscation Finished", KannaProteccRoot.LogLocation);
+
+            EditorUtility.SetDirty(expressionParameters);
+            AssetDatabase.WriteImportSettingsIfDirty(AssetDatabase.GetAssetPath(expressionParameters));
+            AssetDatabase.SaveAssets();
+
             return expressionParameters;
         }
 
+        private List<VRCExpressionsMenu> ObfuscatedMenus = new List<VRCExpressionsMenu>();
+
         private VRCExpressionsMenu ExpressionsMenuObfuscator(VRCExpressionsMenu menu, KannaProteccRoot root)
         {
+            ObfuscatedMenus.Add(menu);
+
             var expressionsMenu = CopyAssetFile("asset", menu, root);
-            
-            // When building an avatar, VRCFury will store submenus as sub assets to the main menu asset
-            // We ensure they are being obfuscated as well.
-            // Doesn't do anything if you don't use VRCFury
-            var assetPath = AssetDatabase.GetAssetPath(expressionsMenu);
-            foreach (var subAsset in AssetDatabase.LoadAllAssetRepresentationsAtPath(assetPath))
-            {
-                var subMenu = subAsset as VRCExpressionsMenu;
-                if (subMenu == null) continue;
-
-                foreach (var c in subMenu.controls)
-                {
-                    if (c.parameter != null)
-                        c.parameter.name = _parameterDic.ContainsKey(c.parameter.name)
-                            ? _parameterDic[c.parameter.name]
-                            : c.parameter.name;
-
-                    if (c.subParameters != null)
-                        foreach (var param in c.subParameters)
-                            param.name = _parameterDic.ContainsKey(param.name)
-                                ? _parameterDic[param.name]
-                                : param.name;
-                }
-                subAsset.name = GUID.Generate().ToString();
-            }
-            AssetDatabase.SaveAssets();
 
             foreach (var control in expressionsMenu.controls)
             {
-                if (control.type == VRCExpressionsMenu.Control.ControlType.SubMenu && control.subMenu != null && control.subMenu != expressionsMenu && control.subMenu != menu && !_filePathDic.ContainsValue(AssetDatabase.GetAssetPath(control.subMenu))) control.subMenu = ExpressionsMenuObfuscator(control.subMenu, root);
+                if (control.type == VRCExpressionsMenu.Control.ControlType.SubMenu && control.subMenu != null && control.subMenu != expressionsMenu && control.subMenu != menu && !_filePathDic.ContainsValue(AssetDatabase.GetAssetPath(control.subMenu)))
+                    control.subMenu = ExpressionsMenuObfuscator(control.subMenu, root);
 
                 if (control.parameter != null)
                     control.parameter.name = _parameterDic.ContainsKey(control.parameter.name)
@@ -450,11 +510,40 @@ namespace Kanna.Protecc
                             : param.name;
             }
 
+            // When building an avatar, VRCFury will store submenus as sub assets to the main menu asset
+            // We ensure they are being obfuscated as well.
+            // Doesn't do anything if you don't use VRCFury
+            var assetPath = AssetDatabase.GetAssetPath(expressionsMenu);
+            foreach (VRCExpressionsMenu subMenu in AssetDatabase.LoadAllAssetRepresentationsAtPath(assetPath))
+            {
+                if (subMenu == null || ObfuscatedMenus.Contains(subMenu)) continue;
+
+                var sub = ExpressionsMenuObfuscator(subMenu, root);
+
+                foreach (var c in sub.controls)
+                {
+                    if (c.parameter != null)
+                        c.parameter.name = _parameterDic.ContainsKey(c.parameter.name)
+                            ? _parameterDic[c.parameter.name]
+                            : c.parameter.name;
+
+                    if (c.subParameters != null)
+                        foreach (var param in c.subParameters)
+                            param.name = _parameterDic.ContainsKey(param.name)
+                                ? _parameterDic[param.name]
+                                : param.name;
+                }
+            }
+
+            EditorUtility.SetDirty(expressionsMenu);
+            AssetDatabase.WriteImportSettingsIfDirty(AssetDatabase.GetAssetPath(expressionsMenu));
+            AssetDatabase.SaveAssets();
+
             return expressionsMenu;
         }
 #endif
 
-        private AnimatorController AnimatorObfuscator(AnimatorController controller, KannaProteccRoot root, bool excluded)
+        private AnimatorController AnimatorObfuscator(AnimatorController controller, KannaProteccRoot root)
         {
             if (controller == null) return null;
             var animator = CopyAssetFile("controller", controller, root);
@@ -465,7 +554,7 @@ namespace Kanna.Protecc
                 {
                     t.name = _parameterDic[t.name];
                 }
-                else if (Array.FindIndex(SkipParameterNames, value => value == t.name) == -1 && Array.FindIndex(root.excludeParamNames.ToArray(), value => value == t.name) == -1)
+                else if (Array.FindIndex(SkipParameterNames, value => value == t.name) == -1 && Array.FindIndex(root.excludeParamNames.ToArray(), value => value == t.name) == -1 && !IgnoredParams.Contains(t.name))
                 {
                     var newName = GUID.Generate().ToString();
                     while (_parameterDic.ContainsKey(newName)) newName = GUID.Generate().ToString();
@@ -478,26 +567,18 @@ namespace Kanna.Protecc
             parameters = parameters.OrderBy(a => Guid.NewGuid()).ToList();
             animator.parameters = parameters.ToArray();
 
-            if (!excluded)
+            var layers = animator.layers.ToList();
+            foreach (var layer in layers)
             {
-                var layers = animator.layers.ToList();
-                foreach (var layer in layers)
-                {
-                    var newLayerName = GUID.Generate().ToString() + _tempIndex;
-                    _tempIndex++;
-                    layer.name = newLayerName;
-                    layer.stateMachine = StateMachineObfuscator(layer.name, layer.stateMachine, root);
-                }
-
-                animator.layers = layers.ToArray();
+                var newLayerName = GUID.Generate().ToString() + _tempIndex;
+                _tempIndex++;
+                layer.name = newLayerName;
+                layer.stateMachine = StateMachineObfuscator(layer.name, layer.stateMachine, root);
             }
 
+            animator.layers = layers.ToArray();
+
             return animator;
-        }
-
-        private void ObfuscateAnimatorParameters()
-        {
-
         }
 
         public void ObfuscateLayer(AnimatorControllerLayer layer, AnimatorController controller, KannaProteccRoot root)
@@ -748,6 +829,8 @@ namespace Kanna.Protecc
 
         private static void CreateFolder(string folderPath)
         {
+            KannaLogger.LogToFile($"Creating Folder: {folderPath}", KannaProteccRoot.LogLocation);
+
             if (AssetDatabase.IsValidFolder(folderPath)) return;
             if (folderPath[folderPath.Length - 1] == '/') folderPath = folderPath.Substring(0, folderPath.Length - 1);
 
@@ -763,28 +846,31 @@ namespace Kanna.Protecc
 
         private T CopyAssetFile<T>(string ext, T original, KannaProteccRoot root) where T : Object
         {
+
             var originalPath = AssetDatabase.GetAssetPath(original);
             if (string.IsNullOrEmpty(originalPath) || AssetDatabase.IsSubAsset(original) ||
                 !AssetDatabase.IsMainAsset(original))
                 return original;
 
+            KannaLogger.LogToFile($"Copying Asset: {originalPath}", KannaProteccRoot.LogLocation);
+
             string newPath;
-            if (!_filePathDic.ContainsKey(originalPath))
+            if (!_filePathDic.ContainsKey(originalPath)) // Gen File
             {
                 newPath = root.path + "/" + GUID.Generate() + "." + ext;
                 while (!string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(newPath)))
-                    newPath = root.path + "/" + GUID.Generate() + ".asset";
+                    newPath = root.path + "/" + GUID.Generate() + ext;
 
                 AssetDatabase.CopyAsset(originalPath, newPath);
-                AssetDatabase.Refresh();
-                _filePathDic.Add(originalPath, newPath);
+                _filePathDic[originalPath] = newPath;
             }
-            else newPath = _filePathDic[originalPath];
+            else newPath = _filePathDic[originalPath]; // Use Existing
 
             var asset = AssetDatabase.LoadAssetAtPath<T>(newPath);
 
             if (asset == null)
             {
+                KannaLogger.LogToFile($"blyat, {newPath} no existo when loaded", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
                 Debug.LogError($"blyat, {newPath} no existo when loaded");
             }
 

@@ -8,6 +8,9 @@ using VRC.SDK3.Avatars.ScriptableObjects;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
 using System.Collections;
+using System.Diagnostics;
+using Newtonsoft.Json;
+using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
 #if UNITY_EDITOR
@@ -32,7 +35,7 @@ namespace Kanna.Protecc
         [SerializeField]
         public bool IsProtected;
 
-        [Header("Set high enough so your encrypted mesh is visuall. Default = .1")]
+        [Header("Set high enough so your encrypted mesh is visuall. Default = .5")]
         [Range(.6f, 5f)]
         [SerializeField] 
         float _distortRatio = 5f;
@@ -53,6 +56,8 @@ namespace Kanna.Protecc
         public bool[] _bitKeys = new bool[32];
 
         public readonly string pathPrefix = "Assets/Kanna/Obfuscated Files/";
+
+        public static readonly string LogLocation = "KannaProteccLog.json";
 
         [SerializeField]
         public string path = "";
@@ -97,10 +102,14 @@ namespace Kanna.Protecc
 
         public void ValidateAnimatorController(GameObject obj, AnimatorController controller)
         {
+            KannaLogger.LogToFile($"Validating Animator Controller: {obj.name}: {controller.name}", LogLocation);
+
             _KannaProteccController.InitializeCount(_bitKeys.Length);
             _KannaProteccController.ValidateAnimations(obj, controller);
             _KannaProteccController.ValidateParameters(controller);
             _KannaProteccController.ValidateLayers(obj, controller);
+
+            KannaLogger.LogToFile($"Obfuscating Kanna Protecc Layer For Controller: {obj.name}: {controller.name}", LogLocation);
 
             obfuscator.ObfuscateLayer(controller.layers.First(o => o.name == KannaProteccController.LayerName), controller, this);
         }
@@ -155,6 +164,11 @@ namespace Kanna.Protecc
                 }
             }
 
+            if (File.Exists(LogLocation))
+            {
+                File.Delete(LogLocation); // Remove Old Log
+            }
+
             var newName = gameObject.name.Trim() + "_Encrypted";
             
             // delete old GO, do as such in case its disabled
@@ -162,7 +176,11 @@ namespace Kanna.Protecc
             var sceneRoots = scene.GetRootGameObjects();
             foreach(var oldGameObject in sceneRoots)
             {
-                if (oldGameObject.name.Trim() == newName) DestroyImmediate(oldGameObject);
+                if (oldGameObject.name.Trim() == newName)
+                {
+                    KannaLogger.LogToFile($"Destroying Old Encrypted Object: {newName}", LogLocation);
+                    DestroyImmediate(oldGameObject);
+                }
             }
 
             var encodedGameObject = Instantiate(gameObject);
@@ -172,10 +190,16 @@ namespace Kanna.Protecc
             var data = new KannaProteccData(_bitKeys.Length);
             var decodeShader = KannaProteccMaterial.GenerateDecodeShader(data, _bitKeys);
 
+            KannaLogger.LogToFile($"Initialized, Getting All Meshes..", LogLocation);
+
             var meshFilters = encodedGameObject.GetComponentsInChildren<MeshFilter>(true).Select(o => (o, o.gameObject.activeSelf));
             var skinnedMeshRenderers = encodedGameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(o => (o, o.gameObject.activeSelf));
-            
+
+            KannaLogger.LogToFile($"Got All Meshes, Encrypting Additional Materials..", LogLocation);
+
             EncryptMaterials(m_AdditionalMaterials.ToArray(), decodeShader, m_IgnoredMaterials);
+
+            KannaLogger.LogToFile($"Addition Materials Encrypted, Processing MeshFilters..", LogLocation);
 
             // Do encrypting
             foreach (var meshFilter in meshFilters)
@@ -190,6 +214,7 @@ namespace Kanna.Protecc
                     }
                     else
                     {
+                        KannaLogger.LogToFile($"Ignoring Encrypt on {meshFilter.o.gameObject.name} contains ignored material!", LogLocation, KannaLogger.LogType.Error);
                         Debug.Log($"Ignoring Encrypt on {meshFilter.o.gameObject.name} contains ignored material!");
                     }
 
@@ -197,9 +222,12 @@ namespace Kanna.Protecc
                 }
                 else
                 {
+                    KannaLogger.LogToFile("WTF? -> " + meshFilter.o.name, LogLocation, KannaLogger.LogType.Error);
                     Debug.LogError("WTF? -> " + meshFilter.o.name);
                 }
             }
+
+            KannaLogger.LogToFile($"MeshFilters Done, Processing SkinnedMeshRenderers..", LogLocation);
 
             foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
             {
@@ -213,6 +241,7 @@ namespace Kanna.Protecc
                     }
                     else
                     {
+                        KannaLogger.LogToFile($"Ignoring Encrypt on {skinnedMeshRenderer.o.gameObject.name} contains ignored material!", LogLocation);
                         Debug.Log($"Ignoring Encrypt on {skinnedMeshRenderer.o.gameObject.name} contains ignored material!");
                     }
 
@@ -220,24 +249,33 @@ namespace Kanna.Protecc
                 }
                 else
                 {
+                    KannaLogger.LogToFile($"Ignoring Encrypt on {skinnedMeshRenderer.o.gameObject.name} is a cloth material!", LogLocation);
                     Debug.Log($"Ignoring Encrypt on {skinnedMeshRenderer.o.gameObject.name} is a cloth material!");
                 }
             }
+
+            KannaLogger.LogToFile($"SkinnedMeshRenderers Done, Removing Lingering KannaProteccRoot On Encrypted Object..", LogLocation);
 
             var KannaProteccRoots = encodedGameObject.GetComponentsInChildren<KannaProteccRoot>(true);
             foreach (var KannaProteccRoot in KannaProteccRoots)
             {
                 DestroyImmediate(KannaProteccRoot);
             }
-            
+
+            KannaLogger.LogToFile($"Done Removing, Disabling Original Avatar Object And Refreshing AssetDatabase..", LogLocation);
+
             // Disable old for convienence.
             gameObject.SetActive(false);
 
             // Force unity to import things
             AssetDatabase.Refresh();
 
+            KannaLogger.LogToFile($"Done Refreshing, Beginning Obfuscation Stage..", LogLocation);
+
             // Do Obfuscation
             var newobj = obfuscator.Obfuscate(encodedGameObject, this);
+
+            KannaLogger.LogToFile($"Done Obfuscating, Disabling Encrypted Object, Saving Assets And Scene, Then Refreshing AssetDatabase.", LogLocation);
 
             encodedGameObject.SetActive(false); // Temp
 
@@ -247,9 +285,15 @@ namespace Kanna.Protecc
             // Force unity to import things
             AssetDatabase.Refresh();
 
+            KannaLogger.LogToFile($"Done Refreshing, Writing Keys To ExpressionParameters", LogLocation);
+
             WriteBitKeysToExpressions(newobj.GetComponent<VRCAvatarDescriptor>().expressionParameters, true);
 
+            KannaLogger.LogToFile($"Done Writing Keys, Validating FX Controller And Obfuscating Kanna Protecc Layer Within It", LogLocation);
+
             ValidateAnimatorController(newobj, AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(newobj.GetComponent<VRCAvatarDescriptor>().baseAnimationLayers.First(o => o.type == VRCAvatarDescriptor.AnimLayerType.FX).animatorController)));
+
+            KannaLogger.LogToFile($"Done! Showing Dialog To User.", LogLocation);
 
             IsProtected = true;
 
@@ -258,6 +302,8 @@ namespace Kanna.Protecc
 
         public static Type GetTypeFromAnyAssembly(string FullName)
         {
+            KannaLogger.LogToFile($"Getting Type From FullName: {FullName}", LogLocation);
+
             return (from assembly in AppDomain.CurrentDomain.GetAssemblies()
                 from type in assembly.GetTypes()
                 where type.FullName == FullName
@@ -266,13 +312,21 @@ namespace Kanna.Protecc
 
         bool EncryptMaterials(Material[] materials, string decodeShader,  List<Material> aggregateIgnoredMaterials)
         {
+            KannaLogger.LogToFile($"EncryptMaterials Start..", LogLocation);
+
             var materialEncrypted = false;
             foreach (var mat in materials)
             {
+                KannaLogger.LogToFile($"Found Material: {mat?.name} With Shader: {mat?.shader.name}", LogLocation);
+
                 if (mat != null && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderMatch))
                 {
+                    KannaLogger.LogToFile($"Material: {mat.name} Has Kanna Protecc Supported Shader!", LogLocation);
+
                     if (shaderMatch.SupportsLocking && !mat.shader.name.Contains("Locked"))
                     {
+                        KannaLogger.LogToFile($"Shader: {mat.shader.name} Supports Locking And Is Not Locked, Locking..", LogLocation);
+
                         if (GetTypeFromAnyAssembly("Thry.ShaderOptimizer") is var optimizer && optimizer != null)
                         {
                             optimizer.GetMethod("SetLockedForAllMaterials", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { new[] { mat }, 1, true, false, false, null });
@@ -283,27 +337,38 @@ namespace Kanna.Protecc
                         }
                     }
 
+                    KannaLogger.LogToFile($"Done, Refreshing AssetDatabase..", LogLocation);
+
                     AssetDatabase.Refresh();
 
                     if (shaderMatch.SupportsLocking && !mat.shader.name.Contains("Locked"))
                     {
-                        Debug.LogError($"{mat.name} {mat.shader.name} Trying to Inject not-locked shader?!");
+                        KannaLogger.LogToFile($"{mat.name} {mat.shader.name} Trying To Inject Non-Locked Shader?!", LogLocation, KannaLogger.LogType.Error);
+
+                        Debug.LogError($"{mat.name} {mat.shader.name} Trying To Inject Non-Locked Shader?!");
                         continue;
                     }
 
                     if (aggregateIgnoredMaterials.Contains(mat))
                     {
+                        KannaLogger.LogToFile($"Material: {mat.name} Is In IgnoredMaterials, Skipping..", LogLocation);
                         continue;
                     }
+
+                    KannaLogger.LogToFile($"Getting Shader Metadata For Shader: {mat.shader.name} And Writing KannaModelDecode", LogLocation);
 
                     var shaderPath = AssetDatabase.GetAssetPath(mat.shader);
                     var path = Path.GetDirectoryName(shaderPath);
                     var decodeShaderPath = Path.Combine(path, "KannaModelDecode.cginc");
                     File.WriteAllText(decodeShaderPath, decodeShader);
 
+                    KannaLogger.LogToFile($"Done Writing, Processing Shader Contents..", LogLocation);
+
                     var shaderText = File.ReadAllText(shaderPath);
                     if (!shaderText.Contains("//KannaProtecc Injected"))
                     {
+                        KannaLogger.LogToFile($"{mat.shader.name} Not Yet Injected, Injecting..", LogLocation);
+
                         _sb.Clear();
                         _sb.AppendLine("//KannaProtecc Injected");
                         _sb.Append(shaderText.Replace("Shader \"", "Shader \"Kanna Protecc/"));
@@ -314,15 +379,24 @@ namespace Kanna.Protecc
 
                         _sb.ReplaceOrLog(shaderMatch.VertexSetup.TextToFind, shaderMatch.VertexSetup.TextToReplaceWith);
 
-                        File.WriteAllText(shaderPath.Replace(Path.GetExtension(shaderPath), "") + "_Protected.shader", _sb.ToString());
+                        KannaLogger.LogToFile($"Done, Writing Shader File..", LogLocation);
+
+                        shaderPath = shaderPath.Replace(Path.GetExtension(shaderPath), "") + "_Protected.shader";
+
+                        File.WriteAllText(shaderPath, _sb.ToString());
+
+                        KannaLogger.LogToFile($"Done, Refreshing AssetDatabase..", LogLocation);
 
                         AssetDatabase.Refresh();
 
-                        mat.shader = AssetDatabase.LoadAssetAtPath<Shader>(shaderPath.Replace(Path.GetExtension(shaderPath), "") + "_Protected.shader");
-                        shaderPath = shaderPath.Replace(Path.GetExtension(shaderPath), "") + "_Protected.shader";
+                        KannaLogger.LogToFile($"Done, Assigning New Shader To {mat.name} And Assigning VRCFallback Hidden Tag..", LogLocation);
+
+                        mat.shader = AssetDatabase.LoadAssetAtPath<Shader>(shaderPath);
 
                         mat.SetOverrideTag("VRCFallback", "Hidden");
                     }
+
+                    KannaLogger.LogToFile($"Done Handling Injection, Handling Shader Includes..", LogLocation);
 
                     var IncludeFileDirs = new List<string>();
 
@@ -332,6 +406,8 @@ namespace Kanna.Protecc
 
                         if (!includeText.Contains("//KannaProtecc Injected"))
                         {
+                            KannaLogger.LogToFile($"Include File: {include} Not Yet Injected, Injecting..", LogLocation);
+
                             _sb.Clear();
                             _sb.AppendLine("//KannaProtecc Injected\r\n");
                             _sb.Append(includeText);
@@ -348,6 +424,8 @@ namespace Kanna.Protecc
                             var newFileName = include.Replace(Path.GetExtension(include), "") + $"_Protected{Path.GetExtension(include)}";
                             IncludeFileDirs.Add(newFileName);
                             File.WriteAllText(newFileName, _sb.ToString());
+
+                            KannaLogger.LogToFile($"Done, Written Modified Include To {newFileName}", LogLocation);
                         }
                     }
 
@@ -357,11 +435,12 @@ namespace Kanna.Protecc
                     {
                         var newName = Path.GetFileName(dir);
 
-                        FileText = FileText.Replace(newName.Replace("_Protected", ""), newName);
-                    }
+                        KannaLogger.LogToFile($"Adjusting Include: {newName.Replace("_Protected", "")} To {newName} In {shaderPath}..", LogLocation);
 
-                    foreach (var dir in IncludeFileDirs) // get each file to write to
-                    {
+                        FileText = FileText.Replace(newName.Replace("_Protected", ""), newName);
+
+                        KannaLogger.LogToFile($"Done, Now Handling Recursive Includes..", LogLocation);
+
                         foreach (var towrite in IncludeFileDirs) // write all new include names
                         {
                             var newName2 = Path.GetFileName(towrite);
@@ -369,6 +448,8 @@ namespace Kanna.Protecc
                             File.WriteAllText(dir, File.ReadAllText(dir).Replace(newName2.Replace("_Protected", ""), newName2));
                         }
                     }
+
+                    KannaLogger.LogToFile($"Done, Writing Shader Contents To {shaderPath}..", LogLocation);
 
                     File.WriteAllText(shaderPath, FileText);
 
@@ -533,6 +614,7 @@ namespace Kanna.Protecc
             {
                 //RemoveBitKeys(parameters);
             }
+            KannaLogger.LogToFile($"Adding BitKeys To Parameters: {parameters.name}", LogLocation);
 
             var paramList = parameters.parameters.ToList();
             
@@ -543,14 +625,16 @@ namespace Kanna.Protecc
                 var index = Array.FindIndex(parameters.parameters, p => p.name == bitKeyName);
                 if (index != -1)
                 {
-                    Debug.Log($"Found BitKey in params {bitKeyName}");
+                    KannaLogger.LogToFile($"Found BitKey In Params: {bitKeyName}", LogLocation);
+                    Debug.Log($"Found BitKey In Params: {bitKeyName}");
                     parameters.parameters[index].saved = true;
                     parameters.parameters[index].defaultValue = 0;
                     parameters.parameters[index].valueType = VRCExpressionParameters.ValueType.Bool;
                 }
                 else
                 {
-                    Debug.Log($"Adding BitKey in params {bitKeyName}");
+                    KannaLogger.LogToFile($"Adding BitKey In Params: {bitKeyName}", LogLocation);
+                    Debug.Log($"Adding BitKey In Params: {bitKeyName}");
                     var newParam = new VRCExpressionParameters.Parameter
                     {
                         name = bitKeyName,
@@ -565,9 +649,11 @@ namespace Kanna.Protecc
             parameters.parameters = paramList.ToArray();
             
             var remainingCost = VRCExpressionParameters.MAX_PARAMETER_COST - parameters.CalcTotalCost();
-            Debug.Log(remainingCost);
+            KannaLogger.LogToFile($"Remaining Cost: {remainingCost}", LogLocation);
+            Debug.Log($"Remaining Cost: {remainingCost}");
             if (remainingCost < 0)
             {
+                KannaLogger.LogToFile("Adding BitKeys took up too many parameters!", LogLocation, KannaLogger.LogType.Error);
                 Debug.LogError("Adding BitKeys took up too many parameters!");
                 EditorUtility.DisplayDialog("Adding BitKeys took up too many parameters!", "Go to your VRCExpressionParameters and remove some unnecessary parameters to make room for the 32 BitKey bools and run this again.", "Okay");
                 return false;
@@ -654,7 +740,7 @@ namespace Kanna.Protecc
             var combinedPath = Path.Combine(RelativeDir, toPath); // C:/shaders/myshader.shader/../somefile.cginc
             var absolutePath = Path.GetFullPath(combinedPath); // C:/shaders/somefile.cginc
 
-            Debug.Log(absolutePath);
+            //Debug.Log(absolutePath);
 
             return absolutePath;
         }
@@ -679,7 +765,7 @@ namespace Kanna.Protecc
                             var StartIndex = line.IndexOf("#include \"") + "#include \"".Length;
                             var EndIndex = line.LastIndexOf("\"");
 
-                            Debug.Log($"Making {line.Substring(StartIndex)} Relative To {dir}");
+                            //Debug.Log($"Making {line.Substring(StartIndex, EndIndex - StartIndex)} Relative To {dir}");
 
                             var IncludeName = dir.GetRelativePath(line.Substring(StartIndex, EndIndex - StartIndex));
 
@@ -948,4 +1034,74 @@ public class SerializableDictionary<TKey, TValue> : IDictionary<TKey, TValue>//,
     //        this.Add(keys[i], values[i]);
     //    }
     //}
+}
+
+public class KannaLogger
+{
+    public enum LogType
+    {
+        Log,
+        Warning,
+        Error
+    }
+
+    public class LogEntry
+    {
+        public string time;
+        public string type;
+        public readonly List<StackEntry> Stack = new List<StackEntry>();
+        public string text;
+    }
+
+    public class StackEntry
+    {
+        public string FileName;
+        public string MethodDeclaringType;
+        public string MethodName;
+        public int LineNumber;
+    }
+
+    public static LogEntry LogToFile(string text, string path, LogType type = LogType.Log)
+    {
+        var entry = FormatLog(text, type);
+
+        //if (!Directory.Exists(Path.GetDirectoryName(path)))
+        //{
+        //    Directory.CreateDirectory(Path.GetDirectoryName(path));
+        //}
+
+        File.AppendAllText(path, JsonConvert.SerializeObject(entry, Formatting.Indented) + "\r\n");
+
+        return entry;
+    }
+
+    public static LogEntry FormatLog(string text, LogType type = LogType.Log)
+    {
+        var stackTrace = new StackTrace();
+
+        var entry = new LogEntry
+        {
+            time = DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt"),
+            type = type.ToString(),
+            text = text
+        };
+
+        foreach (var frame in stackTrace.GetFrames().Skip(1))
+        {
+            if (entry.Stack.Count == 2)
+            {
+                break;
+            }
+
+            entry.Stack.Add(new StackEntry
+            {
+                FileName = frame.GetFileName(),
+                MethodDeclaringType = $"{frame.GetMethod().DeclaringType?.Namespace}.{frame.GetMethod().DeclaringType?.Name}",
+                MethodName = frame.GetMethod().Name,
+                LineNumber = frame.GetFileLineNumber()
+            });
+        }
+
+        return entry;
+    }
 }

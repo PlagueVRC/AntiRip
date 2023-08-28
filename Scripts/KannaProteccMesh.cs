@@ -41,6 +41,8 @@ namespace Kanna.Protecc
         {
             if (mesh == null) return null;
 
+            KannaLogger.LogToFile($"Encrypting Mesh: {mesh.name} On Renderer: {renderer.name}", KannaProteccRoot.LogLocation);
+
             var newVertices = mesh.vertices;
             var normals = mesh.normals;
             var uv7Offsets = new Vector2[mesh.vertexCount];
@@ -104,10 +106,12 @@ namespace Kanna.Protecc
 
             if (string.IsNullOrEmpty(existingMeshPath) || existingMeshPath.Contains("unity default resources"))
             {
-                Debug.LogError("Asset For Mesh Not Found, Invalid Or Is A Built In Unity Mesh!");
+                KannaLogger.LogToFile($"Asset For Mesh Not Found, Invalid Or Is A Built In Unity Mesh! -> {mesh.name}: {existingMeshPath ?? ""}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
+                Debug.LogWarning($"Asset For Mesh Not Found, Invalid Or Is A Built In Unity Mesh! -> {mesh.name}: {existingMeshPath ?? ""}");
                 return null;
             }
 
+            KannaLogger.LogToFile($"Existing Mesh Path For {mesh.name} Is {existingMeshPath}", KannaProteccRoot.LogLocation);
             Debug.Log($"Existing Mesh Path For {mesh.name} Is {existingMeshPath}");
 
             //Do Not Care What File Type The Mesh Is, Attempt Anyway.
@@ -116,6 +120,8 @@ namespace Kanna.Protecc
             //    ? (Path.Combine(Path.GetDirectoryName(existingMeshPath),
             //        Path.GetFileNameWithoutExtension(existingMeshPath)) + $"_{mesh.name}_Encrypted.asset")
             //    : (Path.GetFileNameWithoutExtension(existingMeshPath) + $"_{mesh.name}_Encrypted.asset");
+
+            KannaLogger.LogToFile($"Creating Encrypted Mesh..", KannaProteccRoot.LogLocation);
 
             var encryptedMeshPath = Path.GetDirectoryName(existingMeshPath) != null
                 ? (Path.Combine(Path.GetDirectoryName(existingMeshPath),
@@ -141,16 +147,22 @@ namespace Kanna.Protecc
                 uv5 = mesh.uv5,
                 uv6 = mesh.uv6,
                 uv7 = uv7Offsets,
-                uv8 = uv8Offsets
+                uv8 = uv8Offsets,
+                bounds = mesh.bounds,
+                name = mesh.name,
+                colors32 = mesh.colors32,
+                triangles = mesh.triangles
             };
 
             // transfer sub meshes
-            for (var meshIndex = 0; meshIndex < mesh.subMeshCount; meshIndex++)
-            {
-                var triangles = mesh.GetTriangles(meshIndex);
+            //for (var meshIndex = 0; meshIndex < mesh.subMeshCount; meshIndex++)
+            //{
+            //    var triangles = mesh.GetTriangles(meshIndex);
 
-                newMesh.SetTriangles(triangles, meshIndex);
-            }
+            //    newMesh.SetTriangles(triangles, meshIndex);
+            //}
+
+            KannaLogger.LogToFile($"Done, Transferring Blend Shapes..", KannaProteccRoot.LogLocation);
 
             // transfer blend shapes
             for (var shapeIndex = 0; shapeIndex < mesh.blendShapeCount; shapeIndex++)
@@ -166,6 +178,8 @@ namespace Kanna.Protecc
                     newMesh.AddBlendShapeFrame(shapeName, weight, deltaVertices, deltaNormals, deltaTangents);
                 }
             }
+
+            KannaLogger.LogToFile($"Done, Creating Mesh Asset File And Saving Assets..", KannaProteccRoot.LogLocation);
 
             AssetDatabase.CreateAsset(newMesh, encryptedMeshPath);
             AssetDatabase.SaveAssets();
