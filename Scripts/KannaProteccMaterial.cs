@@ -115,7 +115,7 @@ namespace Kanna.Protecc
         public static bool IsShaderSupported(Shader shader, out KannaDynamicShaderData shaderData)
         {
             shaderData = Shaders.FirstOrDefault(o => shader.name.Replace("Hidden/Locked/", "").Replace("Kanna Protecc/", "").StartsWith(o.ShaderName_StartsWith));
-
+            
             return shaderData != null;
         }
 
