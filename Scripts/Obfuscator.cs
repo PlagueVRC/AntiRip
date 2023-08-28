@@ -452,26 +452,22 @@ namespace Kanna.Protecc
             parameters = parameters.OrderBy(a => Guid.NewGuid()).ToList();
             animator.parameters = parameters.ToArray();
 
-            if (!excluded)
+            var layers = animator.layers.ToList();
+            foreach (var layer in layers)
             {
-                var layers = animator.layers.ToList();
-                foreach (var layer in layers)
+                if (!excluded)
                 {
                     var newLayerName = GUID.Generate().ToString() + _tempIndex;
                     _tempIndex++;
                     layer.name = newLayerName;
-                    layer.stateMachine = StateMachineObfuscator(layer.name, layer.stateMachine, root);
                 }
 
-                animator.layers = layers.ToArray();
+                layer.stateMachine = StateMachineObfuscator(layer.name, layer.stateMachine, root, excluded);
             }
 
+            animator.layers = layers.ToArray();
+
             return animator;
-        }
-
-        private void ObfuscateAnimatorParameters()
-        {
-
         }
 
         public void ObfuscateLayer(AnimatorControllerLayer layer, AnimatorController controller, KannaProteccRoot root)
@@ -506,7 +502,7 @@ namespace Kanna.Protecc
             var index = layers.FindIndex(o => o.name == layer.name);
 
             layer.name = newLayerName;
-            layer.stateMachine = StateMachineObfuscator(layer.name, layer.stateMachine, root);
+            layer.stateMachine = StateMachineObfuscator(layer.name, layer.stateMachine, root, false);
 
             layers[index] = layer;
 
@@ -515,19 +511,18 @@ namespace Kanna.Protecc
             AssetDatabase.SaveAssets();
         }
 
-        private ChildAnimatorStateMachine ChildStateMachineObfuscator(ChildAnimatorStateMachine stateMachine, KannaProteccRoot root)
+        private ChildAnimatorStateMachine ChildStateMachineObfuscator(ChildAnimatorStateMachine stateMachine, KannaProteccRoot root, bool excluded)
         {
-            var newName = GUID.Generate().ToString() + _tempIndex;
-            _tempIndex++;
+            var newName = excluded ? stateMachine.stateMachine.name : GUID.Generate().ToString() + _tempIndex++;
+
             return new ChildAnimatorStateMachine
             {
-                position = new Vector3(float.NaN, float.NaN, float.NaN),
-                stateMachine = StateMachineObfuscator(newName, stateMachine.stateMachine, root),
+                position = excluded ? stateMachine.position : new Vector3(float.NaN, float.NaN, float.NaN),
+                stateMachine = StateMachineObfuscator(newName, stateMachine.stateMachine, root, excluded),
             };
-            ;
         }
 
-        private AnimatorStateMachine StateMachineObfuscator(string stateMachineName, AnimatorStateMachine stateMachine, KannaProteccRoot root)
+        private AnimatorStateMachine StateMachineObfuscator(string stateMachineName, AnimatorStateMachine stateMachine, KannaProteccRoot root, bool excluded)
         {
             stateMachine.name = stateMachineName;
 
@@ -542,18 +537,21 @@ namespace Kanna.Protecc
             stateMachine.behaviours = behaviours.ToArray();
 #endif
 
-            stateMachine.anyStatePosition = new Vector3(float.NaN, float.NaN, float.NaN);
-            stateMachine.exitPosition = new Vector3(float.NaN, float.NaN, float.NaN);
-            stateMachine.parentStateMachinePosition = new Vector3(float.NaN, float.NaN, float.NaN);
-            stateMachine.entryPosition = new Vector3(float.NaN, float.NaN, float.NaN);
+            if (!excluded)
+            {
+                stateMachine.anyStatePosition = new Vector3(float.NaN, float.NaN, float.NaN);
+                stateMachine.exitPosition = new Vector3(float.NaN, float.NaN, float.NaN);
+                stateMachine.parentStateMachinePosition = new Vector3(float.NaN, float.NaN, float.NaN);
+                stateMachine.entryPosition = new Vector3(float.NaN, float.NaN, float.NaN);
+            }
 
             var childStates = new List<ChildAnimatorState>();
             foreach (var t in stateMachine.states)
                 childStates.Add(
                     new ChildAnimatorState
                     {
-                        position = new Vector3(float.NaN, float.NaN, float.NaN),
-                        state = AnimatorStateObfuscator(t.state, root)
+                        position = excluded ? t.position : new Vector3(float.NaN, float.NaN, float.NaN),
+                        state = AnimatorStateObfuscator(t.state, root, excluded)
                     }
                 );
             stateMachine.states = childStates.ToArray();
@@ -561,7 +559,7 @@ namespace Kanna.Protecc
 
             var stateMachines = new List<ChildAnimatorStateMachine>();
             foreach (var t in stateMachine.stateMachines)
-                stateMachines.Add(ChildStateMachineObfuscator(t, root));
+                stateMachines.Add(ChildStateMachineObfuscator(t, root, excluded));
             stateMachine.stateMachines = stateMachines.ToArray();
 
 
@@ -606,10 +604,9 @@ namespace Kanna.Protecc
             return stateMachine;
         }
 
-        private AnimatorState AnimatorStateObfuscator(AnimatorState state, KannaProteccRoot root)
+        private AnimatorState AnimatorStateObfuscator(AnimatorState state, KannaProteccRoot root, bool excluded)
         {
-            state.name = GUID.Generate() + "_" + _tempIndex;
-            _tempIndex++;
+            if (!excluded) state.name = GUID.Generate() + "_" + _tempIndex++;
 
 #if VRC_SDK_VRCSDK3
             var behaviours = state.behaviours.ToList();
