@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
@@ -303,52 +303,68 @@ namespace Kanna.Protecc
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
 
-                GUILayout.Space(5);
-                GUILayout.BeginHorizontal();
-                GUILayout.FlexibleSpace();
-                GUILayout.BeginVertical();
+                if (_lockKeys)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.FlexibleSpace();
+                    GUILayout.Label("Hidden To Prevent Accidentally Showing To Others - Unlock to show.");
+                    GUILayout.FlexibleSpace();
+                    GUILayout.EndHorizontal();
+                }
 
-                //Display in 4 columns
-                for (var i = 0; i < m_KeysProperty.arraySize/4; i++)
+                if (!_lockKeys)
                 {
+                    GUILayout.Space(5);
                     GUILayout.BeginHorizontal();
-                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
+                    GUILayout.FlexibleSpace();
+                    GUILayout.BeginVertical();
+
+                    //Display in 4 columns
+                    for (var i = 0; i < m_KeysProperty.arraySize / 4; i++)
+                    {
+                        GUILayout.BeginHorizontal();
+                        m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
+                        GUILayout.EndHorizontal();
+                        GUILayout.Space(5f);
+                    }
+
+                    GUILayout.EndVertical();
+                    GUILayout.FlexibleSpace();
+                    GUILayout.BeginVertical();
+                    for (var i = m_KeysProperty.arraySize / 4; i < m_KeysProperty.arraySize / 2; i++)
+                    {
+                        GUILayout.BeginHorizontal();
+                        m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
+                        GUILayout.EndHorizontal();
+                        GUILayout.Space(5f);
+                    }
+
+                    GUILayout.EndVertical();
+                    GUILayout.FlexibleSpace();
+                    GUILayout.BeginVertical();
+                    for (var i = m_KeysProperty.arraySize / 2; i < (m_KeysProperty.arraySize / 4) * 3; i++)
+                    {
+                        GUILayout.BeginHorizontal();
+                        m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
+                        GUILayout.EndHorizontal();
+                        GUILayout.Space(5f);
+                    }
+
+                    GUILayout.EndVertical();
+                    GUILayout.FlexibleSpace();
+                    GUILayout.BeginVertical();
+                    for (var i = (m_KeysProperty.arraySize / 4) * 3; i < m_KeysProperty.arraySize; i++)
+                    {
+                        GUILayout.BeginHorizontal();
+                        m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
+                        GUILayout.EndHorizontal();
+                        GUILayout.Space(5f);
+                    }
+
+                    GUILayout.EndVertical();
+                    GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
-                    GUILayout.Space(5f);
                 }
-                GUILayout.EndVertical();
-                GUILayout.FlexibleSpace();
-                GUILayout.BeginVertical();
-                for (var i = m_KeysProperty.arraySize / 4; i < m_KeysProperty.arraySize / 2; i++)
-                {
-                    GUILayout.BeginHorizontal();
-                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
-                    GUILayout.EndHorizontal();
-                    GUILayout.Space(5f);
-                }
-                GUILayout.EndVertical();
-                GUILayout.FlexibleSpace();
-                GUILayout.BeginVertical();
-                for (var i = m_KeysProperty.arraySize / 2; i < (m_KeysProperty.arraySize / 4) * 3 ; i++)
-                {
-                    GUILayout.BeginHorizontal();
-                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
-                    GUILayout.EndHorizontal();
-                    GUILayout.Space(5f);
-                }
-                GUILayout.EndVertical();
-                GUILayout.FlexibleSpace();
-                GUILayout.BeginVertical();
-                for (var i = (m_KeysProperty.arraySize / 4) * 3; i < m_KeysProperty.arraySize; i++)
-                {
-                    GUILayout.BeginHorizontal();
-                    m_KeysProperty.GetArrayElementAtIndex(i).boolValue = GUILayout.Toggle(m_KeysProperty.GetArrayElementAtIndex(i).boolValue, ((KannaProteccRoot)target).GetBitKeyName(i, 7));
-                    GUILayout.EndHorizontal();
-                    GUILayout.Space(5f);
-                }
-                GUILayout.EndVertical();
-                GUILayout.FlexibleSpace();
-                GUILayout.EndHorizontal();
 
                 //Generate key button
                 EditorGUILayout.Space();
