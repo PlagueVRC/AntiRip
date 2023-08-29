@@ -151,7 +151,6 @@ namespace Kanna.Protecc
                 bounds = mesh.bounds,
                 name = mesh.name,
                 colors32 = mesh.colors32,
-                triangles = mesh.triangles
             };
 
             // transfer sub meshes
