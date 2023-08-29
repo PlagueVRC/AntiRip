@@ -127,9 +127,15 @@ namespace Kanna.Protecc
 
                 var avatar = obj.GetComponent<VRCAvatarDescriptor>();
 
+                KannaLogger.LogToFile($"Beginning ExpressionParameters Obfuscation..", KannaProteccRoot.LogLocation);
+
+                ProgressBar("ExpressionParameters obfuscation", 4);
+                if (avatar.expressionParameters != null)
+                    avatar.expressionParameters = ExpressionParametersObfuscator(avatar.expressionParameters, root);
+
                 KannaLogger.LogToFile($"Beginning baseAnimationLayers Animator Obfuscation..", KannaProteccRoot.LogLocation);
 
-                ProgressBar("baseAnimationLayers animatorController obfuscation", 4);
+                ProgressBar("baseAnimationLayers animatorController obfuscation", 5);
                 var animationLayers = avatar.baseAnimationLayers;
                 for (var i = 0; i < animationLayers.Length; ++i)
                 {
@@ -156,7 +162,7 @@ namespace Kanna.Protecc
 
                 KannaLogger.LogToFile($"Beginning specialAnimationLayers Animator Obfuscation..", KannaProteccRoot.LogLocation);
 
-                ProgressBar("specialAnimationLayers animatorController obfuscation", 5);
+                ProgressBar("specialAnimationLayers animatorController obfuscation", 6);
                 var specialAnimationLayers = avatar.specialAnimationLayers;
                 for (var i = 0; i < specialAnimationLayers.Length; ++i)
                 {
@@ -184,7 +190,7 @@ namespace Kanna.Protecc
 
                 KannaLogger.LogToFile($"Beginning Generic Animator Obfuscation..", KannaProteccRoot.LogLocation);
 
-                ProgressBar("Another animatorController obfuscation", 6);
+                ProgressBar("Another animatorController obfuscation", 7);
                 var otherAnimators = obj.GetComponentsInChildren<Animator>(true)
                     .Where(t => t.runtimeAnimatorController == null || t.gameObject != obj);
                 foreach (var animator in otherAnimators)
@@ -202,12 +208,6 @@ namespace Kanna.Protecc
 
                     animator.runtimeAnimatorController = AnimatorObfuscator((AnimatorController)animator.runtimeAnimatorController, root);
                 }
-
-                KannaLogger.LogToFile($"Beginning ExpressionParameters Obfuscation..", KannaProteccRoot.LogLocation);
-
-                ProgressBar("ExpressionParameters obfuscation", 7);
-                if (avatar.expressionParameters != null)
-                    avatar.expressionParameters = ExpressionParametersObfuscator(avatar.expressionParameters, root);
 
                 KannaLogger.LogToFile($"Beginning ExpressionsMenu Obfuscation..", KannaProteccRoot.LogLocation);
 
