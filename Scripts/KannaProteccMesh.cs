@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -156,9 +157,17 @@ namespace Kanna.Protecc
             // transfer sub meshes
             for (var meshIndex = 0; meshIndex < mesh.subMeshCount; meshIndex++)
             {
-                var triangles = mesh.GetTriangles(meshIndex);
+                try
+                {
+                    var triangles = mesh.GetTriangles(meshIndex);
 
-                newMesh.SetTriangles(triangles, meshIndex);
+                    newMesh.SetTriangles(triangles, meshIndex);
+                }
+                catch (Exception e)
+                {
+                    KannaLogger.LogToFile($"Failed To Transfer Triangles For Mesh: {mesh.name}, {mesh.subMeshCount} != {newMesh.subMeshCount} Somehow. Error: {e}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
+                    Debug.LogWarning($"Failed To Transfer Triangles For Mesh: {mesh.name}, {mesh.subMeshCount} != {newMesh.subMeshCount} Somehow. Error: {e}");
+                }
             }
 
             KannaLogger.LogToFile($"Done, Transferring Blend Shapes..", KannaProteccRoot.LogLocation);
