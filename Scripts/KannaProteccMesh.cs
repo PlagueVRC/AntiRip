@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -155,12 +155,12 @@ namespace Kanna.Protecc
             };
 
             // transfer sub meshes
-            //for (var meshIndex = 0; meshIndex < mesh.subMeshCount; meshIndex++)
-            //{
-            //    var triangles = mesh.GetTriangles(meshIndex);
+            for (var meshIndex = 0; meshIndex < mesh.subMeshCount; meshIndex++)
+            {
+                var triangles = mesh.GetTriangles(meshIndex);
 
-            //    newMesh.SetTriangles(triangles, meshIndex);
-            //}
+                newMesh.SetTriangles(triangles, meshIndex);
+            }
 
             KannaLogger.LogToFile($"Done, Transferring Blend Shapes..", KannaProteccRoot.LogLocation);
 
