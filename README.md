@@ -32,6 +32,7 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 1. [Supported Shaders](#supported-shaders)
 
+
 1. [Usage Instructions](#quick-start-guide)
 
 1. [How secure is this?](#how-secure-is-this)
@@ -138,8 +139,7 @@ You only need to run 'Write Keys' once on first setup, or when you change keys.
 
 If you wish to see your avatar again as normal and not encrypted, or make changes to your avatar: 
 
-1. Delete the copies with '_Encrypted' and '_Encrypted_Obfusticated' appended to the name.
-2. Click on your original non-encrypted avatar, enable it, and click 'Un-Protecc Avatar'.
+1. Click on your original un-encrypted avatar, where "Encrypted" is not in the name; then select Un-Protecc Avatar.
 
 You should now be able to edit your avatar as normal.
 
