@@ -42,6 +42,8 @@ Kanna Protecc allows for exceptions to be added for renaming. For maximum securi
 
 Simply add the desired GogoLoco prefab to your avatar as normal and add it to the list 'Exclude Objects From Renaming'
 
+Also be sure to exclude any GoGoLoco controllers in the 'Exclude Animator Layers From Obfuscation' list!
+
 ![GoGoLoco](https://github.com/BlizzyFox/AntiRip/assets/105831522/dab03184-9473-48ee-81f8-51edbc82b328)
 
 Encrypt, upload and write keys as normal. The GogoLoco prefab will be ignored during encryption and VRCFury will add it to your avatar on upload. 
@@ -49,5 +51,7 @@ Encrypt, upload and write keys as normal. The GogoLoco prefab will be ignored du
 ## Face Tracking
 
 *Please note VRCFaceTracking is a large complicated project. Installing like this is confirmed to work. If you have issues with face tracking contact the [VRCFaceTracking Discord](https://discord.gg/Fh4FNehzKn) This is not intended to be a guide on adding face tracking to an avatar. Just an example of one way to get it working with Kanna Protecc.*
+
+Kanna Note: In the exclude parameters from renaming section, it supports RegEx, you could thus use it to exclude all VRCFT parameters in one. Note this is advanced and you would need to check the parameters to know what to put in. Example: VRCFT_* (Likely wrong, but works as an example of the "anything" wildcard.
 
 [Jerry's Face tracking templates](https://github.com/Adjerry91/VRCFaceTracking-Templates) provides a VRCFury Prefab. Which template to use depends on your VRCFaceTracking setup. A detailed guide is included. Direct questions to [Jerry's Face tracking discord](https://discord.gg/yQtTsVSqx8). 
