@@ -291,7 +291,6 @@ namespace Kanna.Protecc
                         }
 
                         KannaLogger.LogToFile($"Finished Direct AnimClip Bindings For Clip: {clip.name}", KannaProteccRoot.LogLocation);
-                        Debug.Log($"Finished Direct AnimClip Bindings For Clip: {clip.name}");
 
                         foreach (var binding in AnimationUtility.GetObjectReferenceCurveBindings(clip))
                         {
@@ -311,7 +310,6 @@ namespace Kanna.Protecc
                         }
 
                         KannaLogger.LogToFile($"Finished Reference AnimClip Bindings For Clip: {clip.name}", KannaProteccRoot.LogLocation);
-                        Debug.Log($"Finished Reference AnimClip Bindings For Clip: {clip.name}");
                     }
                 }
 
@@ -326,7 +324,7 @@ namespace Kanna.Protecc
             }
             catch (Exception err)
             {
-                Debug.LogError(err);
+                KannaLogger.LogToFile($"{err}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
             }
             finally
             {
@@ -870,8 +868,7 @@ namespace Kanna.Protecc
 
             if (asset == null)
             {
-                KannaLogger.LogToFile($"blyat, {newPath} no existo when loaded", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
-                Debug.LogError($"blyat, {newPath} no existo when loaded");
+                KannaLogger.LogToFile($"blyat, {newPath} no existo when loaded (CopyAsset Was Done, Then LoadAssetAtPath, Yet The Loaded Asset Was Null)", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
             }
 
             return asset;

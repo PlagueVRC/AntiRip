@@ -268,6 +268,37 @@ namespace Kanna.Protecc
             using (new GUILayout.VerticalScope(EditorStyles.helpBox))
             {
                 m_AdditionalList.DoLayoutList();
+                if (GUILayout.Button(new GUIContent("Auto Detect", "Attempts to automatically detect additional materials, such as material swaps.")))
+                {
+                    var avatar = KannaProteccRoot.gameObject;
+
+                    var descriptor = avatar.GetComponent<VRCAvatarDescriptor>();
+
+                    var AllMaterials = new List<string>();
+
+                    var Anims = new List<AnimationClip>();
+
+                    Anims.AddRange(descriptor.baseAnimationLayers.Where(p => p.animatorController != null).SelectMany(o => o.animatorController.animationClips));
+                    Anims.AddRange(descriptor.specialAnimationLayers.Where(p => p.animatorController != null).SelectMany(o => o.animatorController.animationClips));
+
+                    foreach (var anim in Anims.Where(q => q != null))
+                    {
+                        var bindings = AnimationUtility.GetObjectReferenceCurveBindings(anim);
+
+                        if (bindings != null && bindings.Length > 0)
+                        {
+                            foreach (var binding in bindings)
+                            {
+                                if (binding != null && binding.type.Name == "Material")
+                                {
+                                    AllMaterials.Add(binding.propertyName);
+                                }
+                            }
+                        }
+                    }
+
+                    EditorUtility.DisplayDialog("Info", $"{Anims.Count} Anims\r\n{string.Join(", ", AllMaterials)}", "Okay");
+                }
                 EditorGUILayout.Space();
                 m_IgnoreList.DoLayoutList();
                 EditorGUILayout.Space();
@@ -378,7 +409,7 @@ namespace Kanna.Protecc
             GUILayout.EndHorizontal();
             EditorGUILayout.Space();
             EditorGUILayout.Separator();
-            _debugFoldout = EditorGUILayout.Foldout(_debugFoldout, "Debug");
+            _debugFoldout = EditorGUILayout.Foldout(_debugFoldout, "Debug And Fixing A Broken Avatar");
             if (_debugFoldout)
             {
                 EditorGUILayout.Space();
@@ -421,6 +452,29 @@ namespace Kanna.Protecc
                 }
 
                 EditorGUILayout.Space();
+
+                if (GUILayout.Button(new GUIContent("Create Test Log", "Ignore Pls Lol")))
+                {
+                    if (File.Exists(KannaProteccRoot.LogLocation))
+                    {
+                        File.Delete(KannaProteccRoot.LogLocation); // Remove Old Log
+                    }
+
+                    KannaLogger.LogToFile("Test Log 1", KannaProteccRoot.LogLocation);
+                    KannaLogger.LogToFile("Test Log 2", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
+                    KannaLogger.LogToFile("Test Log 3", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
+                }
+
+                if (File.Exists(KannaProteccRoot.LogLocation))
+                {
+                    if (GUILayout.Button(new GUIContent("Open Latest Log", "Opens The Latest Kanna Protecc Log")))
+                    {
+                        Process.Start(KannaProteccRoot.LogLocation);
+                    }
+                }
+
+                EditorGUILayout.Space();
+
                 GUILayout.BeginHorizontal();
 
                 EditorGUILayout.LabelField("BitKeys Length:");

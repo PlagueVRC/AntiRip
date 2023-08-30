@@ -79,7 +79,6 @@ namespace Kanna.Protecc
                                 (Convert.ToSingle(keys[i*KannaProteccData.CountDivisor+1]) + data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+1]) *
                                 (Convert.ToSingle(keys[i*KannaProteccData.CountDivisor+2]) + data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+2]) *
                                 (Convert.ToSingle(keys[i*KannaProteccData.CountDivisor+3]) + data.RandomKeyMultiplier[i*KannaProteccData.CountDivisor+3]);
-                Debug.Log("decodeKey: " + decodeKeys[i]);
             }
 
             var sb0 = new StringBuilder();

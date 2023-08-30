@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -108,12 +108,10 @@ namespace Kanna.Protecc
             if (string.IsNullOrEmpty(existingMeshPath) || existingMeshPath.Contains("unity default resources"))
             {
                 KannaLogger.LogToFile($"Asset For Mesh Not Found, Invalid Or Is A Built In Unity Mesh! -> {mesh.name}: {existingMeshPath ?? ""}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
-                Debug.LogWarning($"Asset For Mesh Not Found, Invalid Or Is A Built In Unity Mesh! -> {mesh.name}: {existingMeshPath ?? ""}");
                 return null;
             }
 
             KannaLogger.LogToFile($"Existing Mesh Path For {mesh.name} Is {existingMeshPath}", KannaProteccRoot.LogLocation);
-            Debug.Log($"Existing Mesh Path For {mesh.name} Is {existingMeshPath}");
 
             //Do Not Care What File Type The Mesh Is, Attempt Anyway.
             //The Inline If Statement Is A Fallback Check, It Gets The Path Combined With The Filename Without Extension With Our Own Extension, If The Path Is Null, It Would Then Use Enviroment.CurrentDirectory Via Inheritance As The Path.
@@ -129,7 +127,7 @@ namespace Kanna.Protecc
                     $"{GUID.Generate()}.asset"))
                 : $"{GUID.Generate()}.asset";
 
-            Debug.Log($"Encrypted Mesh Path {encryptedMeshPath}");
+            KannaLogger.LogToFile($"Encrypted Mesh Path: {encryptedMeshPath}", KannaProteccRoot.LogLocation);
 
             var newMesh = new Mesh
             {
@@ -166,7 +164,6 @@ namespace Kanna.Protecc
                 catch (Exception e)
                 {
                     KannaLogger.LogToFile($"Failed To Transfer Triangles For Mesh: {mesh.name}, {mesh.subMeshCount} != {newMesh.subMeshCount} Somehow. Error: {e}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
-                    Debug.LogWarning($"Failed To Transfer Triangles For Mesh: {mesh.name}, {mesh.subMeshCount} != {newMesh.subMeshCount} Somehow. Error: {e}");
                 }
             }
 

@@ -27,6 +27,8 @@ namespace Kanna.Protecc
 
         public void InitializeCount(int count)
         {
+            KannaLogger.LogToFile($"Initializing KannaProteccController Count Of {count}..", KannaProteccRoot.LogLocation);
+
             _clipsFalse = new AnimationClip[count];
             _clipsTrue = new AnimationClip[count];
 
@@ -40,6 +42,8 @@ namespace Kanna.Protecc
         
         public void ValidateAnimations(GameObject gameObject, AnimatorController controller)
         {
+            KannaLogger.LogToFile($"Validating Animations..", KannaProteccRoot.LogLocation);
+
             for (var i = 0; i < _KannaProteccKeyNames.Length; ++i)
             {
                 ValidateClip(gameObject, controller, i);
@@ -67,6 +71,8 @@ namespace Kanna.Protecc
                 }
             }
 
+            KannaLogger.LogToFile($"Done Validating Animations, Saving Assets..", KannaProteccRoot.LogLocation);
+
             AssetDatabase.SaveAssets();
         }
 
@@ -76,6 +82,9 @@ namespace Kanna.Protecc
             var controllerFileName = System.IO.Path.GetFileName(controllerPath);
             
             var clipName = $"{gameObject.name}_{_KannaProteccKeyNames[index]}";
+
+            KannaLogger.LogToFile($"Validating Animation: {clipName}..", KannaProteccRoot.LogLocation);
+
             var clipNameFalse = $"{clipName}_False";
             var clipNameFalseFile = $"{clipNameFalse}.anim";
             var clipNameTrue = $"{clipName}_True";
@@ -117,10 +126,14 @@ namespace Kanna.Protecc
                 _clipsTrue[index] = controller.animationClips.FirstOrDefault(c => c.name == clipNameTrue);
                 // Debug.Log($"Found clip: {clipNameTrue}");
             }
+
+            KannaLogger.LogToFile($"Done Validating Animation: {clipName}", KannaProteccRoot.LogLocation);
         }
 
         public void ValidateParameters(AnimatorController controller)
         {
+            KannaLogger.LogToFile($"Validating Parameters..", KannaProteccRoot.LogLocation);
+
             foreach (var keyName in _KannaProteccKeyNames)
             {
                 if (controller.parameters.All(parameter => parameter.name != keyName))
@@ -134,24 +147,34 @@ namespace Kanna.Protecc
                     // Debug.Log($"Parameter already added: {keyName}");
                 }
             }
+
+            KannaLogger.LogToFile($"Done Validating Parameters", KannaProteccRoot.LogLocation);
         }
 
         public void ValidateLayers(GameObject obj, AnimatorController controller)
         {
+            KannaLogger.LogToFile($"Validating Layers..", KannaProteccRoot.LogLocation);
+
             if (controller.layers.All(l => l?.name != LayerName))
             {
                 CreateLayer(LayerName, controller, obj);
             }
+
+            KannaLogger.LogToFile($"Done Validating Layers", KannaProteccRoot.LogLocation);
         }
 
         void CreateLayer(string Name, AnimatorController controller, GameObject obj)
         {
+            KannaLogger.LogToFile($"Creating Layer: {Name}..", KannaProteccRoot.LogLocation);
+
             DBT = new DBT_API.DBT_Instance(controller, Name, obj, false);
 
             for (var i = 0; i < _KannaProteccKeyNames.Length; i++)
             {
                 AddBitKeyState(i);
             }
+
+            KannaLogger.LogToFile($"Done Creating Layer: {Name}", KannaProteccRoot.LogLocation);
         }
         
         void AddBitKeyState(int index)
@@ -163,6 +186,8 @@ namespace Kanna.Protecc
 
         public void DeleteKannaProteccObjectsFromController(AnimatorController controller)
         {
+            KannaLogger.LogToFile($"Deleting Kanna Protecc Objects From Controller: {controller.name}..", KannaProteccRoot.LogLocation);
+
             var controllerPath = AssetDatabase.GetAssetPath(controller);
 
             foreach (var subObject in AssetDatabase.LoadAllAssetsAtPath(controllerPath))
@@ -189,6 +214,8 @@ namespace Kanna.Protecc
 
             controller.layers = layerList.ToArray();
             controller.parameters = parametersList.ToArray();
+
+            KannaLogger.LogToFile($"Done Deleting Kanna Protecc Objects From Controller: {controller.name}", KannaProteccRoot.LogLocation);
         }
     }
 }
