@@ -106,7 +106,7 @@ Be sure all of this is set correctly on your FBX's. (Legacy blend shape normals 
 #### Encrypting and Uploading
 
 1. Ensure any meshes you wish to have encrypted are using a compatible shader, such as Poiyomi.
-2. On the `KannaProteccRoot` component click the 'Protecc Avatar' button. This will produce a garbled version of your avatar with '_Encrypted_Obfuscated' appened to the name. 
+2. On the `KannaProteccRoot` component click the 'Protecc Avatar' button. This will produce a garbled version of your avatar with '_Encrypted_Obfuscated' appended to the name. 
 ![Step 4](Textures/DocStepsG.png)
 <b>The mesh appearing scrambled is intended behavior.</b>
 3. Go to the VRChat SDK Menu then 'Build and Publish' your avatar which has '_Encrypted_Obfuscated' appended to the name.
