@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Thry;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -84,7 +84,7 @@ namespace Kanna.Protecc
                         }
                     }
 
-                    if (KannaProteccMaterial.IsShaderSupported(material.shader, out var shaderMatch) && shaderMatch.SupportsLocking && material.shader.name.Contains("Locked"))
+                    if (IsShaderLockable(material.shader) && material.shader.name.Contains("Locked"))
                     {
                         Mats.Add(material);
                     }
@@ -121,7 +121,7 @@ namespace Kanna.Protecc
                         }
                     }
 
-                    if (KannaProteccMaterial.IsShaderSupported(material.shader, out var shaderMatch) && shaderMatch.SupportsLocking && material.shader.name.Contains("Locked"))
+                    if (IsShaderLockable(material.shader) && material.shader.name.Contains("Locked"))
                     {
                         Mats.Add(material);
                     }
@@ -138,11 +138,41 @@ namespace Kanna.Protecc
 
             AssetDatabase.Refresh();
             
-            ShaderOptimizer.SetLockedForAllMaterials(Mats, 0, true, false, false);
+            SetLockedForAllMaterials(Mats.ToArray(), false, true, false, false);
 
             AssetDatabase.Refresh();
         }
-        
+
+        private static bool IsShaderLockable(Shader shader)
+        {
+            var optimizer = KannaProteccRoot.GetTypeFromAnyAssembly("Thry.ShaderOptimizer");
+
+            if (optimizer != null)
+            {
+                return ((bool?)optimizer.GetMethod("IsShaderUsingThryOptimizer", BindingFlags.Public | BindingFlags.Static)?.Invoke(null, new object[] { shader })) ?? false;
+            }
+            else
+            {
+                Debug.LogWarning("Thry Is Not In Your Project, So Kanna Protecc Will Assume All Shaders Do Not Support Locking!");
+            }
+
+            return false;
+        }
+
+        private static void SetLockedForAllMaterials(Material[] mats, bool locked, bool showProgressBar = false, bool showDialog = false, bool allowCancel = true)
+        {
+            var optimizer = KannaProteccRoot.GetTypeFromAnyAssembly("Thry.ShaderOptimizer");
+
+            if (optimizer != null)
+            {
+                optimizer.GetMethod("SetLockedForAllMaterials", BindingFlags.Public | BindingFlags.Static)?.Invoke(null, new object[] { mats, locked ? 1 : 0, showProgressBar, showDialog, allowCancel, null });
+            }
+            else
+            {
+                Debug.LogWarning("Thry Is Not In Your Project, So Kanna Protecc Will Assume All Shaders Do Not Support Locking!");
+            }
+        }
+
         //[MenuItem("Tools/Kanna Protecc/Check for Update...", false)]
         //static void CheckForUpdate()
         //{
