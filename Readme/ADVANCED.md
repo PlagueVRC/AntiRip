@@ -20,7 +20,7 @@ Entering play mode through Gesture Manager will now display your avatar as it sh
 ## Materials Settings
 ![Materials](https://github.com/BlizzyFox/AntiRip/assets/105831522/1d5dd771-75e4-47c5-bb17-eed3c87dbafc)
 
-Any additional materials that are used in animations etc that will be applied to an encrypted mesh should be added to 'Additional Materials'. Otherwise they will not be able to display the decoded mesh. 
+Any additional materials that are used in animations etc that will be applied to an encrypted mesh should be added to 'Additional Materials'. Otherwise they will not be able to display the decoded mesh. Note these are things like material swaps. DO NOT PUT NORMAL NON-ADDITIONAL MATERIALS IN HERE.
 
 Ignored Materials allows you to use a material with a supported shader on a part of your avatar you don't want encrypted. <b> Materials in this list will not be encrypted. Do not add materials to this list that are on parts of your avatar you want to protect. </b>
 
