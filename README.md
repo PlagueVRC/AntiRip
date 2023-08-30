@@ -70,9 +70,9 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 #### Install Kanna Protecc and a supported shader
 
-1. Ensure you are using latest VRC SDK, using the [Creator Companion](https://vcc.docs.vrchat.com/). 
-2. Download the supported shader of your choice from [Supported Shaders](#supported-shaders), and import it into your Unity project.
-3. Click ([Download](https://github.com/PlagueVRC/AntiRip/archive/refs/heads/main.zip)). Once downloaded, extract it. Once you have the folder, put that into your assets folder of your unity project.
+1. Ensure you are using latest [VRChat Avatars SDK](https://vrchat.com/). 
+3. Download the supported shader of your choice from [Supported Shaders](#supported-shaders), and import it into your Unity project.
+4. Click ([Download](https://github.com/PlagueVRC/AntiRip/archive/refs/heads/main.zip)). Once downloaded, extract it. Once you have the folder, put that into your assets folder of your unity project.
 
 #### Prep Your FBX's.
 
@@ -129,8 +129,7 @@ You only need to run 'Write Keys' once on first setup, or when you change keys.
 
 If you wish to see your avatar again as normal and not encrypted, or make changes to your avatar: 
 
-1. Delete the copies with '_Ecrypted' and '_Encrypted_Obfusticated' appended to the name.
-2. Click on your original non-encrypted avatar, enable it, and click 'Un-Protecc Avatar'.
+1. Click on your original un-encrypted avatar, where "Encrypted" is not in the name; then select Un-Protecc Avatar.
 
 You should now be able to edit your avatar as normal.
 
