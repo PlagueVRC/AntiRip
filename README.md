@@ -32,7 +32,7 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 2. [Supported Shaders](#supported-shaders)
 
-3. [Usage Instructions](#usage-instructions)
+3. [Usage Instructions](#quick-start-guide)
 
 4. [How secure is this?](#how-secure-is-this)
 
@@ -50,6 +50,8 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 3. Only a shader from [Supported Shaders](#supported-shaders) will work with this. To request another shader to be supported, feel free to ask in the discussions tab here, or in the discord, seen in the [Support](#support) section.
 
+4. Proper integration with VRCFury is currently in development. 
+
 ## Supported Shaders
 
 | Supported Shader Name  | Download |
@@ -60,7 +62,7 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 | XSToon | https://github.com/Xiexe/Xiexes-Unity-Shaders |
 | GTAvaToon | https://github.com/rygo6/GTAvaToon |
 
-## Usage Instructions
+## Quick Start Guide
 
 ### Backup your project before running these operations in case it doesn't work properly and causes difficult to fix, or impossible to fix, changes in your project.
 
@@ -68,13 +70,13 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 #### Install Kanna Protecc and a supported shader
 
-1. Ensure you are using latest VRC SDK.
-2. Download the supported shader of your choice from [Supported Shaders](#supported-shaders), and import it into your Unity project.
-3. Click ([Download](https://github.com/PlagueVRC/AntiRip/archive/refs/heads/main.zip)). Once downloaded, extract it. Once you have the folder, put that into your assets folder of your unity project.
+1. Ensure you are using latest [VRChat Avatars SDK](https://vrchat.com/). 
+3. Download the supported shader of your choice from [Supported Shaders](#supported-shaders), and import it into your Unity project.
+4. Click ([Download](https://github.com/PlagueVRC/AntiRip/archive/refs/heads/main.zip)). Once downloaded, extract it. Once you have the folder, put that into your assets folder of your unity project.
 
 #### Prep Your FBX's.
 
-Be sure all of this is set correctly on your FBX's. (Legacy blend shape normals and read/write on too!)
+Be sure all of this is set correctly on your FBX's. (Legacy blend shape normals and read/write on too!) 
 
 ![Model](Textures/DocSteps0.png)
 
@@ -84,18 +86,19 @@ Be sure all of this is set correctly on your FBX's. (Legacy blend shape normals 
 
 ![Steps 1](Textures/DocSteps1.png)
 
-2. Ensure your `VRCAvatarDescriptor` has an AnimatorController specified in the 'FX Playable Layer' slot. <b>The AnimatorController you specify should not be shared between multiple avatars, Kanna Protecc is going to write states into the controller which will need to be different for different avatars.</b>
-3. Ensure there is also an `Animator` component on this root GameObject, and that its 'Controller' slot points to the same AnimatorController in the 'FX Playable Layer' slot on the `VRCAvatarDescriptor`.
+2. Ensure your `VRCAvatarDescriptor` has an AnimatorController specified in the 'FX Playable Layer' slot. Ensure there is also an `Animator` component on this root GameObject, and that its 'Controller' slot points to the same AnimatorController in the 'FX Playable Layer' slot on the `VRCAvatarDescriptor`. 
 
-![Steps 1](Textures/DocSteps2to3.png)
+![Steps 2](Textures/DocSteps2to3.png)
 
-5. In the 'Parameters' slot of your `VRCAvatarDescriptor` ensure you have an 'Expression Parameters' object.
+<b>The AnimatorController you specify should not be shared between multiple avatars, Kanna Protecc is going to write states into the controller which will need to be different for different avatars.</b>
 
-![Step 4](Textures/DocSteps4.png)
+3. In the 'Parameters' slot of your `VRCAvatarDescriptor` ensure you have an 'Expression Parameters' object.
+
+![Step 3](Textures/DocSteps4.png)
 
 #### Delete your old Un-Encrypted Avatar from VRC Backend!
 
-VRC API stores old uploads of your avatar! So if you start uploading an encrypted avatar with an ID that you previously uploaded non-encrypted, it may entirely negate any benefit this provides as rippers can just download an older version that was not encrypted.
+<b>VRC API stores old uploads of your avatar! So if you start uploading an encrypted avatar with an ID that you previously uploaded non-encrypted, it may entirely negate any benefit this provides as rippers can just download an older version that was not encrypted.</b>
 
 1. Go into the VRChat SDK Inspector in the Unity Editor, then under 'Content Manager' find the avatar you wish to protect and delete it entirely from the VRC backend.
 2. Go to your current avatar's `Pipeline Manager` component and click the `Detach (Optional)` button so it will generate a new avatar id on upload.
@@ -103,23 +106,37 @@ VRC API stores old uploads of your avatar! So if you start uploading an encrypte
 #### Encrypting and Uploading
 
 1. Ensure any meshes you wish to have encrypted are using a compatible shader, such as Poiyomi.
-2. On the `KannaProteccRoot` component click the 'Encrypt Avatar' button. This will lock all of your materials, make all necessary edits to your AnimatorController, and make a duplicate of your avatar which is encrypted. Be aware your duplicated avatar with "_Encrypted" appended to it's name will appear completely garbled in the editor. The garbled materials will be invisible to those who have you not fully shown.
-3. Go to the VRChat SDK Menu then 'Build and Publish' your avatar which has '_Encrypted' appended to the name.
+2. On the `KannaProteccRoot` component click the 'Protecc Avatar' button. This will produce a garbled version of your avatar with '_Encrypted_Obfuscated' appended to the name. 
+![Step 4](Textures/DocStepsG.png)
+<b>The mesh appearing scrambled is intended behavior.</b>
+3. Go to the VRChat SDK Menu then 'Build and Publish' your avatar which has '_Encrypted_Obfuscated' appended to the name.
 
 *I found some Poi 8/8.1 materials get into a weird state with Lock/Unlock and Kanna Protecc can't lock them. If you get errors that say something like 'Trying to Inject not-locked shader?!' go to the Poi 8/8.1 material it is complaining about and manually click the Lock/Unlock button to get it out of its weird state.*
 
 #### Writing Keys
 
-1. After upload completes, go to the GameObject of your encrypted avatar. Find the `Pipeline Manager` component and copy it's blueprint ID. Then paste the blueprint ID into the `Pipeline Manager` on the un-encrypted avatar and click 'Attach'. This is important.
-2. Now on the KannaProteccRoot component click the 'Write Keys' button. Ensure VRC is closed when you do this, as VRC might disallow writing to the file. This will actually read in and alter the saved 3.0 parameters from your VRChat folder to include the new key so you don't have to enter them in-game. <i>This also means if you "Reset Avatar" in game through the 3.0 menu, it will reset your keys and you will need to re-export them with the 'Write Keys' button!</i>
-3. This should provide ample error dialogues or console errors, so ensure no errors came up!. It should popup a success dialogue if it did it correctly. If there were issues make sure the 'Vrc Saved Params Path' actually points to your LocalAvatarData folder.
-4. You only need to run 'Write Keys' once on first setup, or when you change keys.
+<b>Ensure VRChat is closed! Otherwise when you write keys VRChat may prevent writing!</b>
 
-*Ensure VRChat is closed when you write keys otherwise VRChat may just overwrite them immediately with zeroes!
+1. <b>This is important.</b> After upload completes, go to the GameObject of your encrypted avatar. Find the `Pipeline Manager` component and copy it's blueprint ID. Then paste the blueprint ID into the `Pipeline Manager` on the un-encrypted avatar and click 'Attach'.
+2. Now on the KannaProteccRoot component click the 'Write Keys' button. This will actually read in and alter the saved 3.0 parameters from your VRChat folder to include the new key so you don't have to enter them in-game. 
+3. <b>Ensure no errors came up!. It should popup a success dialogue if it did it correctly. If there were issues make sure the 'Vrc Saved Params Path' actually points to your LocalAvatarData folder.</b>
 
-#### Un-Encrypting Your Avatar
+You only need to run 'Write Keys' once on first setup, or when you change keys. 
 
-If you wish to see your avatar again as normal and not encrypted, click on your original non-encrypted avatar and click unlock materials.
+<i>If you "Reset Avatar" in game through the 3.0 menu, it will reset your keys and you will need to re-export them with the 'Write Keys' button!</i>
+
+#### Un-Encrypting, Editing and Re-uploading Your Avatar
+
+If you wish to see your avatar again as normal and not encrypted, or make changes to your avatar: 
+
+1. Click on your original un-encrypted avatar, where "Encrypted" is not in the name; then select Un-Protecc Avatar.
+
+You should now be able to edit your avatar as normal.
+
+<b>Do not upload the avatar without encrypting it!</b>
+
+3. Click 'Protecc Avatar' again. Follow the steps in [Encrypting and uploading](#encrypting-and-uploading)
+4. Writing keys should not be necessary unless you genereated new keys.
 
 ## How secure is this?
 
