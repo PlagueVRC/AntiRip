@@ -7,7 +7,7 @@ Entering play mode will not decrypt the protected avatar on its own. There are m
 <b>Gesture manager needs to access stored parameters in order to show the avatar as it will appear in game.</b>
 *If you've not yet uploaded your avatar and written the keys this will not work. Upload and write keys first.*
 
-1. Enable gesture manager in 'Tools -> Gesture Manager Emulator' select the game object in the Hierarchy and click the cog to edit it's settings.
+1. Enable gesture manager in 'Tools -> Gesture Manager Emulator' select the game object in the Hierarchy and click the cog to edit its settings.
 
 ![Gesture Settings](https://github.com/BlizzyFox/AntiRip/assets/105831522/c3918b36-b51a-4848-be38-8c4a35d14d30)
 
@@ -32,7 +32,7 @@ You can change the 'BitKeys Length' under 'Debug' settings. This allows users wi
 
 ![Screenshot 2023-08-30 161535](https://github.com/BlizzyFox/AntiRip/assets/105831522/de527606-253d-4a28-aa9d-40865bdf37f0)
 
-By default Kanna Protecc Obfuscates all objects, parameter names, and animator layers on a users avatar. Features of VRChat that users may want to take advantage of. Such as contact senders, OSC integrations, etc, often require specific names to be unaltered to maintain functionality.
+By default Kanna Protecc Obfuscates all objects, parameter names, and animator layers on a user's avatar. Features of VRChat that users may want to take advantage of. Such as contact senders, OSC integrations, etc, often require specific names to be unaltered to maintain functionality.
 
 Kanna Protecc allows for exceptions to be added for renaming. For maximum security only add exceptions for parameters that are required to be unaltered. *Note that contact parameter names not intended to interact with other avatars will function perfectly fine obfuscated. Physbone parameters also function perfectly obfuscated. Neither need to be added to exceptions.*
 
