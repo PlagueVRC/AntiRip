@@ -1,4 +1,4 @@
-This section is intended for users that have already followed the [[Quick Start Guide!|Quick Start Guide!]]. 
+This section is intended for users that have already followed the [Quick Start Guide!](../#quick-start-guide)
 
 ## Testing in Unity
 
