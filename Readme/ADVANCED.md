@@ -52,6 +52,6 @@ Encrypt, upload and write keys as normal. The GogoLoco prefab will be ignored du
 
 *Please note VRCFaceTracking is a large complicated project. Installing like this is confirmed to work. If you have issues with face tracking contact the [VRCFaceTracking Discord](https://discord.gg/Fh4FNehzKn) This is not intended to be a guide on adding face tracking to an avatar. Just an example of one way to get it working with Kanna Protecc.*
 
-Kanna Note: In the exclude parameters from renaming section, it supports RegEx, you could thus use it to exclude all VRCFT parameters in one. Note this is advanced and you would need to check the parameters to know what to put in. Example: VRCFT_* (Likely wrong, but works as an example of the "anything" wildcard.
+Kanna Note: In the exclude parameters from renaming section, it supports RegEx, you could thus use `.*(FT\/|v2\/).*` to exclude all VRCFaceTracking Parameters.
 
 [Jerry's Face tracking templates](https://github.com/Adjerry91/VRCFaceTracking-Templates) provides a VRCFury Prefab. Which template to use depends on your VRCFaceTracking setup. A detailed guide is included. Direct questions to [Jerry's Face tracking discord](https://discord.gg/yQtTsVSqx8). 
