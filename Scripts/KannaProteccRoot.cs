@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,22 +38,22 @@ namespace Kanna.Protecc
 
         [Header("Set high enough so your encrypted mesh is visuall. Default = .5")]
         [Range(.6f, 5f)]
-        [SerializeField] 
+        [SerializeField]
         float _distortRatio = 5f;
 
         [Header("Ensure this is pointing to your LocalAvatarData folder!")]
-        [SerializeField] 
+        [SerializeField]
         string _vrcSavedParamsPath = string.Empty;
-        
+
         [Header("Materials in this list will also be locked and injected.")]
-        [SerializeField] 
+        [SerializeField]
         List<Material> m_AdditionalMaterials = new List<Material>();
 
         [Header("Materials in this list will be ignored.")]
-        [SerializeField] 
+        [SerializeField]
         List<Material> m_IgnoredMaterials = new List<Material>();
-        
-        [SerializeField] 
+
+        [SerializeField]
         public bool[] _bitKeys = new bool[32];
 
         public readonly string pathPrefix = "Assets/Kanna/Obfuscated Files/";
@@ -119,42 +119,42 @@ namespace Kanna.Protecc
         {
             if (transform.parent != null)
             {
-                EditorUtility.DisplayDialog("KannaProteccRoot component not on a Root GameObject.", 
-                    "The GameObject which the KannaProteccRoot component is placed on must not be the child of any other GameObject.", 
+                EditorUtility.DisplayDialog("KannaProteccRoot component not on a Root GameObject.",
+                    "The GameObject which the KannaProteccRoot component is placed on must not be the child of any other GameObject.",
                     "Ok");
                 return null;
             }
-            
+
             var animator = GetComponent<Animator>();
             if (animator == null)
             {
-                EditorUtility.DisplayDialog("No Animator.", 
-                    "Add an animator to the Avatar's root GameObject.", 
+                EditorUtility.DisplayDialog("No Animator.",
+                    "Add an animator to the Avatar's root GameObject.",
                     "Ok");
                 return null;
             }
-            
+
             var runtimeController = animator.runtimeAnimatorController;
-            if(runtimeController == null)
+            if (runtimeController == null)
             {
-                EditorUtility.DisplayDialog("Animator has no AnimatorController.", 
-                    "Add an AnimatorController to the Animator component.", 
+                EditorUtility.DisplayDialog("Animator has no AnimatorController.",
+                    "Add an AnimatorController to the Animator component.",
                     "Ok");
                 return null;
             }
-     
+
             var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(runtimeController));
             if (controller == null)
             {
-                EditorUtility.DisplayDialog("Could not get AnimatorController.", 
-                    "This shouldn't happen... don't know why this would happen.", 
+                EditorUtility.DisplayDialog("Could not get AnimatorController.",
+                    "This shouldn't happen... don't know why this would happen.",
                     "Ok");
                 return null;
             }
 
             return controller;
         }
-        
+
         public void EncryptAvatar()
         {
             if (ParameterRenamedValues.Count == 0 && !string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId))
@@ -171,11 +171,11 @@ namespace Kanna.Protecc
             }
 
             var newName = gameObject.name.Trim() + "_Encrypted";
-            
+
             // delete old GO, do as such in case its disabled
             var scene = SceneManager.GetActiveScene();
             var sceneRoots = scene.GetRootGameObjects();
-            foreach(var oldGameObject in sceneRoots)
+            foreach (var oldGameObject in sceneRoots)
             {
                 if (oldGameObject.name.Trim() == newName)
                 {
@@ -187,7 +187,7 @@ namespace Kanna.Protecc
             var encodedGameObject = Instantiate(gameObject);
             encodedGameObject.name = newName;
             encodedGameObject.SetActive(true);
-            
+
             var data = new KannaProteccData(_bitKeys.Length);
             var decodeShader = KannaProteccMaterial.GenerateDecodeShader(data, _bitKeys);
 
@@ -302,12 +302,12 @@ namespace Kanna.Protecc
             KannaLogger.LogToFile($"Getting Type From FullName: {FullName}", LogLocation);
 
             return (from assembly in AppDomain.CurrentDomain.GetAssemblies()
-                from type in assembly.GetTypes()
-                where type.FullName == FullName
+                    from type in assembly.GetTypes()
+                    where type.FullName == FullName
                     select type).FirstOrDefault();
         }
 
-        bool EncryptMaterials(Material[] materials, string decodeShader,  List<Material> aggregateIgnoredMaterials)
+        bool EncryptMaterials(Material[] materials, string decodeShader, List<Material> aggregateIgnoredMaterials)
         {
             KannaLogger.LogToFile($"EncryptMaterials Start..", LogLocation);
 
@@ -316,7 +316,7 @@ namespace Kanna.Protecc
             {
                 KannaLogger.LogToFile($"Found Material: {mat?.name} With Shader: {mat?.shader.name}", LogLocation);
 
-                if (mat != null/* && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderMatch)*/)
+                if (mat != null && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderMatch))
                 {
                     KannaLogger.LogToFile($"Material: {mat.name} Has Kanna Protecc Supported Shader!", LogLocation);
 
@@ -518,14 +518,14 @@ namespace Kanna.Protecc
             if (string.IsNullOrWhiteSpace(pipelineManager.blueprintId))
             {
                 Debug.LogError("Blueprint ID not filled in!");
-                EditorUtility.DisplayDialog("Keys not written! Blueprint ID not filled in!", "You need to first populate your PipelineManager with a Blueprint ID before keys can be written. Publish your avatar to get the Blueprint ID, attach the ID through the PipelineManager then run Write Keys again.","Okay");
+                EditorUtility.DisplayDialog("Keys not written! Blueprint ID not filled in!", "You need to first populate your PipelineManager with a Blueprint ID before keys can be written. Publish your avatar to get the Blueprint ID, attach the ID through the PipelineManager then run Write Keys again.", "Okay");
                 return;
             }
 
             if (!Directory.Exists(_vrcSavedParamsPath))
             {
                 Debug.LogError("Keys not written! Could not find VRC LocalAvatarData folder!");
-                EditorUtility.DisplayDialog("Could not find VRC LocalAvatarData folder!", "Ensure the VRC Saved Params Path is point to your LocalAvatarData folder, should be at C:\\Users\\username\\AppData\\LocalLow\\VRChat\\VRChat\\LocalAvatarData\\, then run Write Keys again.","Okay");
+                EditorUtility.DisplayDialog("Could not find VRC LocalAvatarData folder!", "Ensure the VRC Saved Params Path is point to your LocalAvatarData folder, should be at C:\\Users\\username\\AppData\\LocalLow\\VRChat\\VRChat\\LocalAvatarData\\, then run Write Keys again.", "Okay");
                 return;
             }
 
@@ -569,13 +569,13 @@ namespace Kanna.Protecc
                         paramFile.animationParameters.Add(newEntry);
                     }
                 }
-                
+
                 File.WriteAllText(filePath, JsonUtility.ToJson(paramFile));
             }
-            
+
             if (DoLog)
-                EditorUtility.DisplayDialog("Successfully Wrote Keys!", "Your avatar should now just work in VRChat. If you accidentally hit 'Reset Avatar' in VRC 3.0 menu, you need to click Write Keys again.","Okay");
-            
+                EditorUtility.DisplayDialog("Successfully Wrote Keys!", "Your avatar should now just work in VRChat. If you accidentally hit 'Reset Avatar' in VRC 3.0 menu, you need to click Write Keys again.", "Okay");
+
 #else
             Debug.LogError("Can't find VRC SDK?");
             EditorUtility.DisplayDialog("Can't find VRC SDK?", "You need to isntall VRC SDK.", "Okay");
@@ -587,7 +587,7 @@ namespace Kanna.Protecc
         {
             public List<ParamFileEntry> animationParameters;
         }
-        
+
         [Serializable]
         public class ParamFileEntry
         {
@@ -610,11 +610,11 @@ namespace Kanna.Protecc
                 _bitKeys[i] = Random.Range(-1f, 1f) > 0;
             }
         }
-        
+
         [MenuItem("CONTEXT/VRCExpressionParameters/Add BitKeys")]
         static void AddBitKeys(MenuCommand command)
         {
-            var parameters = (VRCExpressionParameters) command.context;
+            var parameters = (VRCExpressionParameters)command.context;
             AddBitKeys(parameters, Instance);
         }
 
@@ -627,11 +627,11 @@ namespace Kanna.Protecc
             KannaLogger.LogToFile($"Adding BitKeys To Parameters: {parameters.name}", LogLocation);
 
             var paramList = parameters.parameters.ToList();
-            
+
             for (var i = 0; i < root._bitKeys.Length; ++i)
             {
                 var bitKeyName = root.GetBitKeyName(i);
-                
+
                 var index = Array.FindIndex(parameters.parameters, p => p.name == bitKeyName);
                 if (index != -1)
                 {
@@ -653,9 +653,9 @@ namespace Kanna.Protecc
                     paramList.Add(newParam);
                 }
             }
-            
+
             parameters.parameters = paramList.ToArray();
-            
+
             var remainingCost = VRCExpressionParameters.MAX_PARAMETER_COST - parameters.CalcTotalCost();
             KannaLogger.LogToFile($"Remaining Cost: {remainingCost}", LogLocation);
             if (remainingCost < 0)
@@ -664,25 +664,25 @@ namespace Kanna.Protecc
                 EditorUtility.DisplayDialog("Adding BitKeys took up too many parameters!", "Go to your VRCExpressionParameters and remove some unnecessary parameters to make room for the 32 BitKey bools and run this again.", "Okay");
                 return false;
             }
-            
+
             EditorUtility.SetDirty(parameters);
 
             return true;
         }
-        
+
         //[MenuItem("CONTEXT/VRCExpressionParameters/Remove BitKeys")]
         //static void RemoveBitKeys(MenuCommand command)
         //{
         //    var parameters = (VRCExpressionParameters) command.context;
         //    RemoveBitKeys(parameters);
         //}
-        
+
         //public static void RemoveBitKeys(VRCExpressionParameters parameters)
         //{
         //    var parametersList = parameters.parameters.ToList();
         //    parametersList.RemoveAll(p => p.name.Contains("BitKey") || (p.valueType == VRCExpressionParameters.ValueType.Bool && p.name.Length == 32 && p.name.All(a => !char.IsUpper(a))));
         //    parameters.parameters = parametersList.ToArray();
-            
+
         //    EditorUtility.SetDirty(parameters);
         //}
 
@@ -693,7 +693,7 @@ namespace Kanna.Protecc
             _KannaProteccController.DeleteKannaProteccObjectsFromController(GetAnimatorController());
         }
 #endif
-                    }
+    }
 
     public static class KannaExtensions
     {
@@ -755,7 +755,7 @@ namespace Kanna.Protecc
         public static List<string> FindAllShaderIncludes(this Shader shader)
         {
             var FoundIncludes = new List<string>();
-            
+
             var ShaderText = File.ReadAllText(AssetDatabase.GetAssetPath(shader));
 
             FindIncludes(ShaderText, Path.GetDirectoryName(AssetDatabase.GetAssetPath(shader)));
@@ -764,7 +764,7 @@ namespace Kanna.Protecc
             {
                 if (searchMe.IndexOf("#include ") > -1)
                 {
-                    foreach (var line in searchMe.Split(new [] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries))
+                    foreach (var line in searchMe.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries))
                     {
                         if (line.IndexOf("#include ") > -1)
                         {
@@ -1174,16 +1174,4 @@ internal static class HTMLSanitizer
 
         return result;
     }
-}
-
-
-
-
-
-
-
-
-
-
-
 }
