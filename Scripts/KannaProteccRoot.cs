@@ -294,6 +294,9 @@ namespace Kanna.Protecc
 
             IsProtected = true;
 
+            DestroyImmediate(encodedGameObject);
+            newobj.name = newobj.name.Replace("_Encrypted_Obfuscated", "_KannaProteccted");
+
             EditorUtility.DisplayDialog("Successfully Encrypted!", $"{(string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId) ? "" : "Keys were automatically written. ")}Your avatar should be ready to upload!", "Okay");
         }
 
