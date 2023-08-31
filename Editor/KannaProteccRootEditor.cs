@@ -537,6 +537,10 @@ namespace Kanna.Protecc
                         {
                             KannaProteccRoot.excludeParamNames.Add(@".*RealFeel.*");
                         }
+                        else if (Regex.IsMatch(param.name, @"VFH\/.*")) // VRCFT
+                        {
+                            KannaProteccRoot.excludeParamNames.Add(@"VFH\/.*");
+                        }
                     }
                 }
             }
