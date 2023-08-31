@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 using UnityEditorInternal;
@@ -516,9 +517,57 @@ namespace Kanna.Protecc
 
             _excludeParamNamesPropertyList.DoLayoutList();
 
+            if (GUILayout.Button(new GUIContent("Auto Detect", "Attempts to automatically detect parameters for OSC for well known projects like VRCFT.")))
+            {
+                var expressions = KannaProteccRoot.gameObject.GetComponent<VRCAvatarDescriptor>().expressionParameters.parameters;
+
+                foreach (var param in expressions)
+                {
+                    if (KannaProteccRoot.excludeParamNames.All(o => !Regex.IsMatch(param.name, o)))
+                    {
+                        if (Regex.IsMatch(param.name, @".*(FT\/|v2\/|Tracking).*")) // VRCFT
+                        {
+                            KannaProteccRoot.excludeParamNames.Add(@".*(FT\/|v2\/|Tracking).*");
+                        }
+                        else if (Regex.IsMatch(param.name, @".*(Go\/|(?i)go.*loco).*")) // VRCFT
+                        {
+                            KannaProteccRoot.excludeParamNames.Add(@".*(Go\/|(?i)go.*loco).*");
+                        }
+                        else if (Regex.IsMatch(param.name, @".*RealFeel.*")) // VRCFT
+                        {
+                            KannaProteccRoot.excludeParamNames.Add(@".*RealFeel.*");
+                        }
+                    }
+                }
+            }
+
             EditorGUILayout.Space();
 
             _excludeAnimatorLayersPropertyList.DoLayoutList();
+
+            if (GUILayout.Button(new GUIContent("Auto Detect", "Attempts to automatically detect animators needing excluded, like GoGoLoco.")))
+            {
+                var descriptor = KannaProteccRoot.gameObject.GetComponent<VRCAvatarDescriptor>();
+
+                var layers = descriptor.baseAnimationLayers.Concat(descriptor.specialAnimationLayers);
+
+                foreach (var layer in layers)
+                {
+                    if (layer.animatorController == null || layer.animatorController.name == null || KannaProteccRoot.excludeAnimatorLayers.Contains((KannaProteccRoot.AnimLayerType)layer.type))
+                    {
+                        continue;
+                    }
+
+                    if (Regex.IsMatch(layer.animatorController.name, @".*(FT\/|v2\/|Tracking).*")) // VRCFT
+                    {
+                        KannaProteccRoot.excludeAnimatorLayers.Add((KannaProteccRoot.AnimLayerType)layer.type);
+                    }
+                    else if (Regex.IsMatch(layer.animatorController.name, @".*(Go\/|(?i)go.*loco).*")) // VRCFT
+                    {
+                        KannaProteccRoot.excludeAnimatorLayers.Add((KannaProteccRoot.AnimLayerType)layer.type);
+                    }
+                }
+            }
 
             EditorGUILayout.Space();
 
