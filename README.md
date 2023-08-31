@@ -22,7 +22,7 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 ## Tutorial Video (Click The Image!)
 <div align="center">
   <a href="https://youtu.be/vEXrRBen3NI">
-    <img src="https://github-production-user-asset-6210df.s3.amazonaws.com/36628963/261571188-fb733d1f-229f-4bf5-afea-45812d030edc.jpg" alt="Tutorial By PxINKY"/>
+    <img src="https://github.com/BlizzyFox/AntiRip/assets/105831522/aa6ff9c1-ff3b-48b9-9a0c-3f4613a7b640" alt="Tutorial By PxINKY"/>
   </a>
 </div>
 
@@ -30,17 +30,22 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 1. [Caveats of this System](#caveats-of-this-system)
 
-2. [Supported Shaders](#supported-shaders)
+1. [Supported Shaders](#supported-shaders)
 
-3. [Usage Instructions](#quick-start-guide)
 
-4. [How secure is this?](#how-secure-is-this)
+1. [Usage Instructions](#quick-start-guide)
 
-5. [Support](#support)
+1. [How secure is this?](#how-secure-is-this)
 
-6. [Roadmap](#roadmap)
+1. [Support](#support)
 
-7. [Hall Of Shame](#hall-of-shame)
+1. [Roadmap](#roadmap)
+
+1. [Hall Of Shame](#hall-of-shame)
+
+1. [Advanced Usage](/Readme/ADVANCED.md)
+
+1. [FAQs](/Readme/FAQ.md)
 
 ## Caveats of this System
 
@@ -62,7 +67,12 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 | XSToon | https://github.com/Xiexe/Xiexes-Unity-Shaders |
 | GTAvaToon | https://github.com/rygo6/GTAvaToon |
 
+---
 ## Quick Start Guide
+
+<details>
+
+<summary> Click me! </summary>
 
 ### Backup your project before running these operations in case it doesn't work properly and causes difficult to fix, or impossible to fix, changes in your project.
 
@@ -70,9 +80,9 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 #### Install Kanna Protecc and a supported shader
 
-1. Ensure you are using latest [VRChat Avatars SDK](https://vrchat.com/). 
-3. Download the supported shader of your choice from [Supported Shaders](#supported-shaders), and import it into your Unity project.
-4. Click ([Download](https://github.com/PlagueVRC/AntiRip/archive/refs/heads/main.zip)). Once downloaded, extract it. Once you have the folder, put that into your assets folder of your unity project.
+1. Ensure you are using latest [VRChat Avatars SDK](https://vrchat.com/).
+2. Download the supported shader of your choice from [Supported Shaders](#supported-shaders), and import it into your Unity project.
+3. Click ([Download](https://github.com/PlagueVRC/AntiRip/archive/refs/heads/main.zip)). Once downloaded, extract it. Once you have the folder, put that into your assets folder of your unity project.
 
 #### Prep Your FBX's.
 
@@ -106,10 +116,10 @@ Be sure all of this is set correctly on your FBX's. (Legacy blend shape normals 
 #### Encrypting and Uploading
 
 1. Ensure any meshes you wish to have encrypted are using a compatible shader, such as Poiyomi.
-2. On the `KannaProteccRoot` component click the 'Protecc Avatar' button. This will produce a garbled version of your avatar with '_Encrypted_Obfuscated' appended to the name. 
+2. On the `KannaProteccRoot` component click the 'Protecc Avatar' button. This will produce a garbled version of your avatar with '_KannaProteccted' appended to the name. 
 ![Step 4](Textures/DocStepsG.png)
 <b>The mesh appearing scrambled is intended behavior.</b>
-3. Go to the VRChat SDK Menu then 'Build and Publish' your avatar which has '_Encrypted_Obfuscated' appended to the name.
+3. Go to the VRChat SDK Menu then 'Build and Publish' your avatar which has '_KannaProteccted' appended to the name.
 
 *I found some Poi 8/8.1 materials get into a weird state with Lock/Unlock and Kanna Protecc can't lock them. If you get errors that say something like 'Trying to Inject not-locked shader?!' go to the Poi 8/8.1 material it is complaining about and manually click the Lock/Unlock button to get it out of its weird state.*
 
@@ -137,6 +147,12 @@ You should now be able to edit your avatar as normal.
 
 3. Click 'Protecc Avatar' again. Follow the steps in [Encrypting and uploading](#encrypting-and-uploading)
 4. Writing keys should not be necessary unless you genereated new keys.
+
+[Back to Contents](#contents)
+
+</details>
+
+---
 
 ## How secure is this?
 
