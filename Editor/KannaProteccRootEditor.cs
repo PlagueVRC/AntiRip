@@ -200,24 +200,7 @@ namespace Kanna.Protecc
             {
                 if (KannaProteccRoot.IsProtected)
                 {
-                    for (var i = 0; i < SceneManager.sceneCount; i++)
-                    {
-                        var scene = SceneManager.GetSceneAt(i);
-
-                        foreach (var obj in scene.GetRootGameObjects())
-                        {
-                            if (obj != null && obj.name.StartsWith(KannaProteccRoot.gameObject.name) && (obj.name.EndsWith("_Encrypted") || obj.name.EndsWith("_Encrypted_Obfuscated")))
-                            {
-                                DestroyImmediate(obj);
-                            }
-                        }
-                    }
-
-                    KannaProteccRoot.gameObject.SetActive(true);
-
-                    ((KannaProteccRoot)target).obfuscator.ClearObfuscatedFiles((KannaProteccRoot)target);
-
-                    MenuUtilites.UnlockAllMaterialsInHierarchy(null);
+                    UnProtecc(KannaProteccRoot);
                 }
                 else if (!IsVRCOpen)
                 {
@@ -432,24 +415,7 @@ namespace Kanna.Protecc
 
                 if (GUILayout.Button(new GUIContent("Force Un-Protecc", "Forces Un-Protecc in case of something going wrong.")))
                 {
-                    for (var i = 0; i < SceneManager.sceneCount; i++)
-                    {
-                        var scene = SceneManager.GetSceneAt(i);
-
-                        foreach (var obj in scene.GetRootGameObjects())
-                        {
-                            if (obj != null && obj.name.StartsWith(KannaProteccRoot.gameObject.name) && (obj.name.EndsWith("_Encrypted") || obj.name.EndsWith("_Encrypted_Obfuscated")))
-                            {
-                                DestroyImmediate(obj);
-                            }
-                        }
-                    }
-
-                    KannaProteccRoot.gameObject.SetActive(true);
-
-                    ((KannaProteccRoot)target).obfuscator.ClearObfuscatedFiles((KannaProteccRoot)target);
-
-                    MenuUtilites.UnlockAllMaterialsInHierarchy(null);
+                    UnProtecc(KannaProteccRoot);
                 }
 
                 EditorGUILayout.Space();
@@ -572,6 +538,30 @@ namespace Kanna.Protecc
             EditorGUILayout.Space();
 
             serializedObject.ApplyModifiedProperties();
+        }
+
+        void UnProtecc(KannaProteccRoot root)
+        {
+            for (var i = 0; i < SceneManager.sceneCount; i++)
+            {
+                var scene = SceneManager.GetSceneAt(i);
+
+                foreach (var obj in scene.GetRootGameObjects())
+                {
+                    if (obj != null && obj.name.StartsWith(root.gameObject.name) && (obj.name.EndsWith("_Encrypted") || obj.name.EndsWith("_Encrypted_Obfuscated")))
+                    {
+                        DestroyImmediate(obj);
+                    }
+                }
+            }
+
+            root.gameObject.SetActive(true);
+
+            ((KannaProteccRoot)target).obfuscator.ClearObfuscatedFiles((KannaProteccRoot)target);
+
+            MenuUtilites.UnlockAllMaterialsInHierarchy(null);
+
+            root.DeleteKannaProteccObjectsFromController();
         }
 
         static bool FeatureToggleFoldout(bool display, string title)
