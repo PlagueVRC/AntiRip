@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,22 +38,22 @@ namespace Kanna.Protecc
 
         [Header("Set high enough so your encrypted mesh is visuall. Default = .5")]
         [Range(.6f, 5f)]
-        [SerializeField] 
+        [SerializeField]
         float _distortRatio = 5f;
 
         [Header("Ensure this is pointing to your LocalAvatarData folder!")]
-        [SerializeField] 
+        [SerializeField]
         string _vrcSavedParamsPath = string.Empty;
-        
+
         [Header("Materials in this list will also be locked and injected.")]
-        [SerializeField] 
+        [SerializeField]
         List<Material> m_AdditionalMaterials = new List<Material>();
 
         [Header("Materials in this list will be ignored.")]
-        [SerializeField] 
+        [SerializeField]
         List<Material> m_IgnoredMaterials = new List<Material>();
-        
-        [SerializeField] 
+
+        [SerializeField]
         public bool[] _bitKeys = new bool[32];
 
         public readonly string pathPrefix = "Assets/Kanna/Obfuscated Files/";
@@ -119,42 +119,42 @@ namespace Kanna.Protecc
         {
             if (transform.parent != null)
             {
-                EditorUtility.DisplayDialog("KannaProteccRoot component not on a Root GameObject.", 
-                    "The GameObject which the KannaProteccRoot component is placed on must not be the child of any other GameObject.", 
+                EditorUtility.DisplayDialog("KannaProteccRoot component not on a Root GameObject.",
+                    "The GameObject which the KannaProteccRoot component is placed on must not be the child of any other GameObject.",
                     "Ok");
                 return null;
             }
-            
+
             var animator = GetComponent<Animator>();
             if (animator == null)
             {
-                EditorUtility.DisplayDialog("No Animator.", 
-                    "Add an animator to the Avatar's root GameObject.", 
+                EditorUtility.DisplayDialog("No Animator.",
+                    "Add an animator to the Avatar's root GameObject.",
                     "Ok");
                 return null;
             }
-            
+
             var runtimeController = animator.runtimeAnimatorController;
-            if(runtimeController == null)
+            if (runtimeController == null)
             {
-                EditorUtility.DisplayDialog("Animator has no AnimatorController.", 
-                    "Add an AnimatorController to the Animator component.", 
+                EditorUtility.DisplayDialog("Animator has no AnimatorController.",
+                    "Add an AnimatorController to the Animator component.",
                     "Ok");
                 return null;
             }
-     
+
             var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(runtimeController));
             if (controller == null)
             {
-                EditorUtility.DisplayDialog("Could not get AnimatorController.", 
-                    "This shouldn't happen... don't know why this would happen.", 
+                EditorUtility.DisplayDialog("Could not get AnimatorController.",
+                    "This shouldn't happen... don't know why this would happen.",
                     "Ok");
                 return null;
             }
 
             return controller;
         }
-        
+
         public void EncryptAvatar()
         {
             if (ParameterRenamedValues.Count == 0 && !string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId))
@@ -171,11 +171,11 @@ namespace Kanna.Protecc
             }
 
             var newName = gameObject.name.Trim() + "_Encrypted";
-            
+
             // delete old GO, do as such in case its disabled
             var scene = SceneManager.GetActiveScene();
             var sceneRoots = scene.GetRootGameObjects();
-            foreach(var oldGameObject in sceneRoots)
+            foreach (var oldGameObject in sceneRoots)
             {
                 if (oldGameObject.name.Trim() == newName)
                 {
@@ -187,7 +187,7 @@ namespace Kanna.Protecc
             var encodedGameObject = Instantiate(gameObject);
             encodedGameObject.name = newName;
             encodedGameObject.SetActive(true);
-            
+
             var data = new KannaProteccData(_bitKeys.Length);
             var decodeShader = KannaProteccMaterial.GenerateDecodeShader(data, _bitKeys);
 
@@ -302,12 +302,12 @@ namespace Kanna.Protecc
             KannaLogger.LogToFile($"Getting Type From FullName: {FullName}", LogLocation);
 
             return (from assembly in AppDomain.CurrentDomain.GetAssemblies()
-                from type in assembly.GetTypes()
-                where type.FullName == FullName
+                    from type in assembly.GetTypes()
+                    where type.FullName == FullName
                     select type).FirstOrDefault();
         }
 
-        bool EncryptMaterials(Material[] materials, string decodeShader,  List<Material> aggregateIgnoredMaterials)
+        bool EncryptMaterials(Material[] materials, string decodeShader, List<Material> aggregateIgnoredMaterials)
         {
             KannaLogger.LogToFile($"EncryptMaterials Start..", LogLocation);
 
@@ -316,7 +316,7 @@ namespace Kanna.Protecc
             {
                 KannaLogger.LogToFile($"Found Material: {mat?.name} With Shader: {mat?.shader.name}", LogLocation);
 
-                if (mat != null/* && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderMatch)*/)
+                if (mat != null && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderMatch))
                 {
                     KannaLogger.LogToFile($"Material: {mat.name} Has Kanna Protecc Supported Shader!", LogLocation);
 
@@ -372,23 +372,6 @@ namespace Kanna.Protecc
                     KannaLogger.LogToFile($"Done Writing, Processing Shader Contents..", LogLocation);
 
                     var shaderText = File.ReadAllText(shaderPath);
-
-                    if (shaderText.Contains("appdata_base") || shaderText.Contains("appdata_tan") || shaderText.Contains("appdata_full"))
-                    {
-                        continue;
-                    }
-
-                    ShaderInfoLib.KannaShaderInfo shaderInfo = null;
-
-                    try
-                    {
-                        shaderInfo = ShaderInfoLib.GetShaderInfo(shaderText);
-                    }
-                    catch
-                    {
-                        
-                    }
-
                     if (!shaderText.Contains("//KannaProtecc Injected"))
                     {
                         KannaLogger.LogToFile($"{mat.shader.name} Not Yet Injected, Injecting..", LogLocation);
@@ -397,29 +380,12 @@ namespace Kanna.Protecc
                         _sb.AppendLine("//KannaProtecc Injected");
                         _sb.Append(shaderText.Replace("Shader \"", "Shader \"Kanna Protecc/"));
 
-                        if (shaderInfo != null)
-                        {
-                            _sb.ReplaceOrLog(shaderInfo.VertMethod, "#include \"KannaModelDecode.cginc\"\r\n{OrigText}"); // Vert Include Addition
+                        _sb.ReplaceOrLog(shaderMatch.UV.TextToFind, shaderMatch.UV.TextToReplaceWith);
 
-                            if (shaderInfo.UVs.Length > 0)
-                            {
-                                foreach (var uv in shaderInfo.UVs)
-                                {
-                                    var uvsplitlines = uv.Definition.Split('\n').ToList();
-                                    uvsplitlines.Insert(uvsplitlines.Count - 2, "float3 uv6: TEXCOORD6;");
-                                    uvsplitlines.Insert(uvsplitlines.Count - 2, "float3 uv7: TEXCOORD7;");
+                        _sb.ReplaceOrLog(shaderMatch.Vert.TextToFind, shaderMatch.Vert.TextToReplaceWith);
 
-                                    _sb.ReplaceOrLog(new[] { uv.Definition }, string.Join("\r\n", uvsplitlines));
-                                    _sb.ReplaceOrLog(new[] { $"const {uv.Name}" }, $"{uv.Name}"); // yeet const
-                                }
+                        _sb.ReplaceOrLog(shaderMatch.VertexSetup.TextToFind, shaderMatch.VertexSetup.TextToReplaceWith);
 
-                                _sb.ReplaceOrLog(new[] { "UNITY_SETUP_INSTANCE_ID(v);", "UNITY_SETUP_INSTANCE_ID( v );", "UNITY_SETUP_INSTANCE_ID(v );", "UNITY_SETUP_INSTANCE_ID( v);" }, $"v.{shaderInfo.UVs[0].VertexPropertyName} = modelDecode(v.{shaderInfo.UVs[0].VertexPropertyName}, v.normal, v.uv6, v.uv7);\r\n{{OrigText}}");
-                            }
-                            else
-                            {
-                                _sb.ReplaceOrLog(new[] { "UNITY_SETUP_INSTANCE_ID(v);", "UNITY_SETUP_INSTANCE_ID( v );", "UNITY_SETUP_INSTANCE_ID(v );", "UNITY_SETUP_INSTANCE_ID( v);" }, $"v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{{OrigText}}");
-                            }
-                        }
                         KannaLogger.LogToFile($"Done, Writing Shader File..", LogLocation);
 
                         shaderPath = shaderPath.Replace(Path.GetExtension(shaderPath), "") + "_Protected.shader";
@@ -445,22 +411,6 @@ namespace Kanna.Protecc
                     {
                         var includeText = File.ReadAllText(include);
 
-                        if (includeText.Contains("appdata_base") || includeText.Contains("appdata_tan") || includeText.Contains("appdata_full"))
-                        {
-                            continue;
-                        }
-
-                        ShaderInfoLib.KannaShaderInfo shaderInfo2 = null;
-
-                        try
-                        {
-                            shaderInfo2 = ShaderInfoLib.GetShaderInfo(includeText, shaderInfo.VertMethod);
-                        }
-                        catch
-                        {
-
-                        }
-
                         if (!includeText.Contains("//KannaProtecc Injected"))
                         {
                             KannaLogger.LogToFile($"Include File: {include} Not Yet Injected, Injecting..", LogLocation);
@@ -469,29 +419,14 @@ namespace Kanna.Protecc
                             _sb.AppendLine("//KannaProtecc Injected\r\n");
                             _sb.Append(includeText);
 
-                            if (shaderInfo2 != null)
-                            {
-                                _sb.ReplaceOrLog(shaderInfo2.VertMethod, "#include \"KannaModelDecode.cginc\"\r\n{OrigText}"); // Vert Include Addition
+                            if (shaderMatch.UV.ApplyToIncludes && shaderMatch.UV.ExcludeIncludes.All(o => !include.Contains(o)))
+                                _sb.ReplaceOrLog(shaderMatch.UV.TextToFind, shaderMatch.UV.TextToReplaceWith);
 
-                                if (shaderInfo2.UVs.Length > 0) 
-                                {
-                                    foreach (var uv in shaderInfo2.UVs)
-                                    {
-                                        var uvsplitlines = uv.Definition.Split('\n').ToList();
-                                        uvsplitlines.Insert(uvsplitlines.Count - 2, "float3 uv6: TEXCOORD6;");
-                                        uvsplitlines.Insert(uvsplitlines.Count - 2, "float3 uv7: TEXCOORD7;");
+                            if (shaderMatch.Vert.ApplyToIncludes && shaderMatch.Vert.ExcludeIncludes.All(o => !include.Contains(o)))
+                                _sb.ReplaceOrLog(shaderMatch.Vert.TextToFind, shaderMatch.Vert.TextToReplaceWith);
 
-                                        _sb.ReplaceOrLog(new[] { uv.Definition }, string.Join("\r\n", uvsplitlines));
-                                        _sb.ReplaceOrLog(new[] { $"const {uv.Name}" }, $"{uv.Name}"); // yeet const
-                                    }
-
-                                    _sb.ReplaceOrLog(new[] { "UNITY_SETUP_INSTANCE_ID(v);", "UNITY_SETUP_INSTANCE_ID( v );", "UNITY_SETUP_INSTANCE_ID(v );", "UNITY_SETUP_INSTANCE_ID( v);" }, $"v.{shaderInfo2.UVs[0].VertexPropertyName} = modelDecode(v.{shaderInfo2.UVs[0].VertexPropertyName}, v.normal, v.uv6, v.uv7);\r\n{{OrigText}}");
-                                }
-                                else
-                                {
-                                    _sb.ReplaceOrLog(new[] { "UNITY_SETUP_INSTANCE_ID(v);", "UNITY_SETUP_INSTANCE_ID( v );", "UNITY_SETUP_INSTANCE_ID(v );", "UNITY_SETUP_INSTANCE_ID( v);" }, $"v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{{OrigText}}");
-                                }
-                            }
+                            if (shaderMatch.VertexSetup.ApplyToIncludes && shaderMatch.VertexSetup.ExcludeIncludes.All(o => !include.Contains(o)))
+                                _sb.ReplaceOrLog(shaderMatch.VertexSetup.TextToFind, shaderMatch.VertexSetup.TextToReplaceWith);
 
                             var newFileName = include.Replace(Path.GetExtension(include), "") + $"_Protected{Path.GetExtension(include)}";
                             IncludeFileDirs.Add(newFileName);
@@ -583,14 +518,14 @@ namespace Kanna.Protecc
             if (string.IsNullOrWhiteSpace(pipelineManager.blueprintId))
             {
                 Debug.LogError("Blueprint ID not filled in!");
-                EditorUtility.DisplayDialog("Keys not written! Blueprint ID not filled in!", "You need to first populate your PipelineManager with a Blueprint ID before keys can be written. Publish your avatar to get the Blueprint ID, attach the ID through the PipelineManager then run Write Keys again.","Okay");
+                EditorUtility.DisplayDialog("Keys not written! Blueprint ID not filled in!", "You need to first populate your PipelineManager with a Blueprint ID before keys can be written. Publish your avatar to get the Blueprint ID, attach the ID through the PipelineManager then run Write Keys again.", "Okay");
                 return;
             }
 
             if (!Directory.Exists(_vrcSavedParamsPath))
             {
                 Debug.LogError("Keys not written! Could not find VRC LocalAvatarData folder!");
-                EditorUtility.DisplayDialog("Could not find VRC LocalAvatarData folder!", "Ensure the VRC Saved Params Path is point to your LocalAvatarData folder, should be at C:\\Users\\username\\AppData\\LocalLow\\VRChat\\VRChat\\LocalAvatarData\\, then run Write Keys again.","Okay");
+                EditorUtility.DisplayDialog("Could not find VRC LocalAvatarData folder!", "Ensure the VRC Saved Params Path is point to your LocalAvatarData folder, should be at C:\\Users\\username\\AppData\\LocalLow\\VRChat\\VRChat\\LocalAvatarData\\, then run Write Keys again.", "Okay");
                 return;
             }
 
@@ -634,13 +569,13 @@ namespace Kanna.Protecc
                         paramFile.animationParameters.Add(newEntry);
                     }
                 }
-                
+
                 File.WriteAllText(filePath, JsonUtility.ToJson(paramFile));
             }
-            
+
             if (DoLog)
-                EditorUtility.DisplayDialog("Successfully Wrote Keys!", "Your avatar should now just work in VRChat. If you accidentally hit 'Reset Avatar' in VRC 3.0 menu, you need to click Write Keys again.","Okay");
-            
+                EditorUtility.DisplayDialog("Successfully Wrote Keys!", "Your avatar should now just work in VRChat. If you accidentally hit 'Reset Avatar' in VRC 3.0 menu, you need to click Write Keys again.", "Okay");
+
 #else
             Debug.LogError("Can't find VRC SDK?");
             EditorUtility.DisplayDialog("Can't find VRC SDK?", "You need to isntall VRC SDK.", "Okay");
@@ -652,7 +587,7 @@ namespace Kanna.Protecc
         {
             public List<ParamFileEntry> animationParameters;
         }
-        
+
         [Serializable]
         public class ParamFileEntry
         {
@@ -675,11 +610,11 @@ namespace Kanna.Protecc
                 _bitKeys[i] = Random.Range(-1f, 1f) > 0;
             }
         }
-        
+
         [MenuItem("CONTEXT/VRCExpressionParameters/Add BitKeys")]
         static void AddBitKeys(MenuCommand command)
         {
-            var parameters = (VRCExpressionParameters) command.context;
+            var parameters = (VRCExpressionParameters)command.context;
             AddBitKeys(parameters, Instance);
         }
 
@@ -692,11 +627,11 @@ namespace Kanna.Protecc
             KannaLogger.LogToFile($"Adding BitKeys To Parameters: {parameters.name}", LogLocation);
 
             var paramList = parameters.parameters.ToList();
-            
+
             for (var i = 0; i < root._bitKeys.Length; ++i)
             {
                 var bitKeyName = root.GetBitKeyName(i);
-                
+
                 var index = Array.FindIndex(parameters.parameters, p => p.name == bitKeyName);
                 if (index != -1)
                 {
@@ -718,9 +653,9 @@ namespace Kanna.Protecc
                     paramList.Add(newParam);
                 }
             }
-            
+
             parameters.parameters = paramList.ToArray();
-            
+
             var remainingCost = VRCExpressionParameters.MAX_PARAMETER_COST - parameters.CalcTotalCost();
             KannaLogger.LogToFile($"Remaining Cost: {remainingCost}", LogLocation);
             if (remainingCost < 0)
@@ -729,25 +664,25 @@ namespace Kanna.Protecc
                 EditorUtility.DisplayDialog("Adding BitKeys took up too many parameters!", "Go to your VRCExpressionParameters and remove some unnecessary parameters to make room for the 32 BitKey bools and run this again.", "Okay");
                 return false;
             }
-            
+
             EditorUtility.SetDirty(parameters);
 
             return true;
         }
-        
+
         //[MenuItem("CONTEXT/VRCExpressionParameters/Remove BitKeys")]
         //static void RemoveBitKeys(MenuCommand command)
         //{
         //    var parameters = (VRCExpressionParameters) command.context;
         //    RemoveBitKeys(parameters);
         //}
-        
+
         //public static void RemoveBitKeys(VRCExpressionParameters parameters)
         //{
         //    var parametersList = parameters.parameters.ToList();
         //    parametersList.RemoveAll(p => p.name.Contains("BitKey") || (p.valueType == VRCExpressionParameters.ValueType.Bool && p.name.Length == 32 && p.name.All(a => !char.IsUpper(a))));
         //    parameters.parameters = parametersList.ToArray();
-            
+
         //    EditorUtility.SetDirty(parameters);
         //}
 
@@ -758,7 +693,7 @@ namespace Kanna.Protecc
             _KannaProteccController.DeleteKannaProteccObjectsFromController(GetAnimatorController());
         }
 #endif
-                    }
+    }
 
     public static class KannaExtensions
     {
@@ -820,7 +755,7 @@ namespace Kanna.Protecc
         public static List<string> FindAllShaderIncludes(this Shader shader)
         {
             var FoundIncludes = new List<string>();
-            
+
             var ShaderText = File.ReadAllText(AssetDatabase.GetAssetPath(shader));
 
             FindIncludes(ShaderText, Path.GetDirectoryName(AssetDatabase.GetAssetPath(shader)));
@@ -829,7 +764,7 @@ namespace Kanna.Protecc
             {
                 if (searchMe.IndexOf("#include ") > -1)
                 {
-                    foreach (var line in searchMe.Split(new [] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries))
+                    foreach (var line in searchMe.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries))
                     {
                         if (line.IndexOf("#include ") > -1)
                         {
@@ -1228,7 +1163,7 @@ internal static class HTMLSanitizer
             return "";
         }
 
-        string removeChars = "&^$#@!()+-,:;<>’\'-_*/\\";
+        string removeChars = "&^$#@!()+-,:;<>ï¿½\'-_*/\\";
 
         string result = htmlshit;
 
@@ -1238,239 +1173,5 @@ internal static class HTMLSanitizer
         }
 
         return result;
-    }
-}
-
-public class ShaderInfoLib
-{
-    public class KannaShaderInfo
-    {
-        public string[] VertMethod;
-        public UV[] UVs;
-    }
-
-    public class UV
-    {
-        public string Name;
-        public string Definition;
-        public string VertexPropertyName;
-    }
-
-    public static KannaShaderInfo GetShaderInfo(string contents, string[] vertsToAppend = null)
-    {
-        var verts = new List<string>();
-        var uvs = new List<UV>();
-
-        if (vertsToAppend != null)
-        {
-            verts.AddRange(vertsToAppend);
-        }
-
-        var subshader = contents.IndexOf("subshader", StringComparison.OrdinalIgnoreCase);
-
-        var subshaderregion = contents.Substring(subshader == -1 ? 0 : subshader);
-
-    AddVert:
-        try
-        {
-            var vert = GetDefinitionOfMethod(subshaderregion, "vert");
-
-            verts.Add(vert);
-
-            subshaderregion = subshaderregion.Substring(subshaderregion.IndexOf(vert, StringComparison.Ordinal) + vert.Length);
-
-            goto AddVert;
-        }
-        catch (Exception e)
-        {
-
-        }
-
-        foreach (var vert in verts)
-        {
-            try
-            {
-                var uvtypename = "";
-
-                try
-                {
-                    var afterbrace = vert.IndexOf("(", StringComparison.OrdinalIgnoreCase) + 1;
-
-                    var uvstart1 = vert.Substring(afterbrace);
-                    var uvstart = uvstart1.Substring(0, uvstart1.IndexOf("\r\n", StringComparison.OrdinalIgnoreCase));
-
-                    if (!uvstart.Contains(")"))
-                    {
-                        throw new Exception();
-                    }
-
-                    var isgay = uvstart.Contains("const");
-
-                    if (isgay)
-                    {
-                        uvstart = uvstart.Substring(uvstart.IndexOf(" ", StringComparison.OrdinalIgnoreCase) + 1);
-                    }
-
-                    uvtypename = uvstart.Substring(0, uvstart.IndexOf(" ", StringComparison.OrdinalIgnoreCase));
-
-                    if (uvtypename.Contains("#"))
-                    {
-                        throw new Exception();
-                    }
-                }
-                catch
-                {
-                    var afterbrace = vert.IndexOf("(", StringComparison.OrdinalIgnoreCase) + 1;
-
-                    var uvstart1 = vert.Substring(afterbrace);
-                    var uvstart = uvstart1.Substring(0, uvstart1.IndexOf(")", StringComparison.OrdinalIgnoreCase));
-
-                    var splituv = uvstart.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
-                    foreach (var str in splituv)
-                    {
-                        if (string.IsNullOrWhiteSpace(str) || str.Contains("#"))
-                        {
-                            continue;
-                        }
-
-                        var brr = str.TrimStart();
-
-                        var isgay = brr.StartsWith("const");
-
-                        if (isgay)
-                        {
-                            brr = brr.Substring(brr.IndexOf(" ", StringComparison.OrdinalIgnoreCase) + 1);
-                        }
-
-                        if (!isgay)
-                        {
-                            uvtypename = brr.Substring(0, brr.Contains(" ") ? brr.IndexOf(" ", StringComparison.OrdinalIgnoreCase) : brr.Length);
-                            break;
-                        }
-                    }
-                }
-
-                var vertindenting = "";
-
-                foreach (var character in vert)
-                {
-                    if (char.IsWhiteSpace(character))
-                    {
-                        vertindenting += character;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-
-                var indexofstruct = contents.IndexOf($"{vertindenting}struct {uvtypename}", StringComparison.OrdinalIgnoreCase);
-
-                if (indexofstruct == -1)
-                {
-                    indexofstruct = contents.IndexOf($"struct {uvtypename}", StringComparison.OrdinalIgnoreCase);
-                }
-
-                if (indexofstruct != -1)
-                {
-                    var contentsafteruvdef = contents.Substring(GetLineStartIndex(contents, indexofstruct));
-
-                    var uv = contentsafteruvdef.Substring(0, contentsafteruvdef.IndexOf("};", StringComparison.OrdinalIgnoreCase) + 2);
-
-                    var reeee = uv.RegexIndexOf("float(3|4)(\\r|\\n|\\s)*?(.*?)(\\r|\\n|\\s)*?:(.|\\s)*?POSITION\\d?(.|\\s)*?", RegexOptions.None);
-
-                    var onelinednospacesuv = uv.Substring(reeee.Item1, reeee.Item2);
-
-                    var brrline = onelinednospacesuv.Replace(" ", "").Replace("\t", "").Replace("\r", "").Replace("\n", "");
-
-                    var prop = brrline.Substring(brrline.IndexOf("float", StringComparison.OrdinalIgnoreCase) + "float".Length + 1, (brrline.IndexOf("POSITION", StringComparison.Ordinal) - (brrline.IndexOf("float", StringComparison.OrdinalIgnoreCase) + "float".Length + 1)) - 1);
-
-                    uvs.Add(new UV
-                    {
-                        Name = uvtypename,
-                        Definition = uv,
-                        VertexPropertyName = prop
-                    });
-                }
-            }
-            catch
-            {
-            }
-        }
-
-        return new KannaShaderInfo
-        {
-            VertMethod = verts.ToArray(),
-            UVs = uvs.ToArray()
-        };
-    }
-
-    private static string GetDefinitionOfMethod(string region, string methodname)
-    {
-        var location = region.RegexIndexOf(
-            $" {methodname}" +
-                   $"\\s*?" +
-                   $"\\(" +
-                   $"(.|\\s)" +
-                   $"*?" +
-                   $"\\)", RegexOptions.IgnoreCase);
-
-        var textvertandafter = region.Substring(GetLineStartIndex(region, location.Item1));
-
-        var closebracetofind = "\n" + GetLineContainingMatch(textvertandafter, "{").Replace("{", "}");
-
-        var match = textvertandafter.Substring(0, textvertandafter.IndexOf(closebracetofind, StringComparison.OrdinalIgnoreCase) + closebracetofind.Length);
-
-        return match;
-    }
-
-    private static int GetLineStartIndex(string input, int currentIndex)
-    {
-        var lineStartIndex = input.LastIndexOf('\n', currentIndex);
-
-        if (lineStartIndex == -1)
-        {
-            lineStartIndex = input.LastIndexOf('\r', currentIndex);
-        }
-
-        return lineStartIndex + 1;
-    }
-
-    private static string GetLineContainingMatch(string input, string searchTerm)
-    {
-        var startIndex = input.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase);
-
-        if (startIndex >= 0)
-        {
-            var lineStartIndex = input.LastIndexOf('\n', startIndex) + 1;
-            var lineEndIndex = input.IndexOf('\n', startIndex);
-            if (lineEndIndex == -1)
-            {
-                lineEndIndex = input.Length - 1;
-            }
-
-            var matchedLine = input.Substring(lineStartIndex, lineEndIndex - lineStartIndex);
-            return matchedLine;
-        }
-
-        return null;
-    }
-}
-
-public static class Ext
-{
-    public static (int, int) RegexIndexOf(this string input, string pattern, RegexOptions comparisonType)
-    {
-        var index = (-1, -1);
-
-        var match = Regex.Match(input, pattern, comparisonType);
-
-        if (match.Success)
-        {
-            index = (match.Index, match.Value.Length);
-        }
-
-        return index;
     }
 }
