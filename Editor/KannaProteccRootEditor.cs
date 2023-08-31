@@ -562,11 +562,7 @@ namespace Kanna.Protecc
                         continue;
                     }
 
-                    if (Regex.IsMatch(layer.animatorController.name, @".*(FT\/|v2\/|Tracking).*")) // VRCFT
-                    {
-                        KannaProteccRoot.excludeAnimatorLayers.Add((KannaProteccRoot.AnimLayerType)layer.type);
-                    }
-                    else if (Regex.IsMatch(layer.animatorController.name, @".*(Go\/|(?i)go.*loco).*")) // VRCFT
+                    if (Regex.IsMatch(layer.animatorController.name, @".*(?i)go.*loco.*")) // VRCFT
                     {
                         KannaProteccRoot.excludeAnimatorLayers.Add((KannaProteccRoot.AnimLayerType)layer.type);
                     }
