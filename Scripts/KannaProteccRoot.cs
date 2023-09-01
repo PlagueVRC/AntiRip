@@ -297,6 +297,8 @@ namespace Kanna.Protecc
             DestroyImmediate(encodedGameObject);
             newobj.name = newobj.name.Replace("_Encrypted_Obfuscated", "_KannaProteccted");
 
+            KannaLogger.WriteLogsToFile(LogLocation);
+
             EditorUtility.DisplayDialog("Successfully Encrypted!", $"{(string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId) ? "" : "Keys were automatically written. ")}Your avatar should be ready to upload!", "Okay");
         }
 
@@ -1159,11 +1161,16 @@ public class KannaLogger
             LogCache.Clear();
         }
 
-        CollapsibleID = 0;
-
         LogCache.Add(entry);
 
+        return entry;
+    }
+
+    public static void WriteLogsToFile(string path)
+    {
         var html = LogStart;
+
+        CollapsibleID = 0;
 
         foreach (var log in LogCache)
         {
@@ -1173,8 +1180,6 @@ public class KannaLogger
         html += LogEnd;
 
         File.WriteAllText(path, html);
-
-        return entry;
     }
 
     private static int CollapsibleID;
