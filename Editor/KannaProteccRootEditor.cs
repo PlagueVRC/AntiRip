@@ -46,7 +46,7 @@ namespace Kanna.Protecc
         void OnEnable()
         {
             IsVRCOpen = Process.GetProcessesByName("VRChat").Length > 0;
-            EncryptedObjExists = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("Encrypted"));
+            EncryptedObjExists = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("_KannaProteccted"));
 
             m_DistortRatioProperty = serializedObject.FindProperty("_distortRatio");
             m_KeysProperty = serializedObject.FindProperty("_bitKeys");
@@ -217,7 +217,7 @@ namespace Kanna.Protecc
 
             if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Write Keys" : "Close VRChat To Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10f), GUILayout.Width((Screen.width / 2f) - 20f)))
             {
-                KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name.Trim() + "_Encrypted_Obfuscated").GetComponent<VRCAvatarDescriptor>().expressionParameters, true, true);
+                KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name.Trim() + "_KannaProteccted").GetComponent<VRCAvatarDescriptor>().expressionParameters, true, true);
             }
 
             GUI.enabled = true;
@@ -548,7 +548,7 @@ namespace Kanna.Protecc
 
                 foreach (var obj in scene.GetRootGameObjects())
                 {
-                    if (obj != null && obj.name.StartsWith(root.gameObject.name) && (obj.name.EndsWith("_Encrypted") || obj.name.EndsWith("_Encrypted_Obfuscated")))
+                    if (obj != null && obj.name.StartsWith(root.gameObject.name) && obj.name.EndsWith("_KannaProteccted"))
                     {
                         DestroyImmediate(obj);
                     }
