@@ -1115,7 +1115,7 @@ public class KannaLogger
     private static int CollapsibleID;
     private static string CreateLogHTML(LogEntry log)
     {
-        var output = $"\t<div class=\"AvatarInformation{log.type}\">\r\n\t\t\t<h2>{log.text}</h2>\r\n\t\t\t<div class=\"wrap-collabsible\">\r\n\t\t\t\t<input id=\"collapsible{CollapsibleID}\" class=\"toggle\" type=\"checkbox\">\r\n\t\t\t\t\t<label for=\"collapsible{CollapsibleID}\" class=\"lbl-toggle\">Stack Trace</label>\r\n\t\t\t\t\t<div class=\"collapsible-content\">\r\n\t\t\t\t\t\t<div class=\"content-inner\">\r\n\t\t\t\t\t\t<p>{JsonConvert.SerializeObject(log.Stack, Formatting.Indented).Replace("\r\n", "</br>")}</p>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t</br>\t\t\r\n\t\t</div>\r\n\t";
+        var output = $"\t<div class=\"AvatarInformation{log.type}\">\r\n\t\t\t<h2>[{log.time}]: {log.text}</h2>\r\n\t\t\t<div class=\"wrap-collabsible\">\r\n\t\t\t\t<input id=\"collapsible{CollapsibleID}\" class=\"toggle\" type=\"checkbox\">\r\n\t\t\t\t\t<label for=\"collapsible{CollapsibleID}\" class=\"lbl-toggle\">Stack Trace</label>\r\n\t\t\t\t\t<div class=\"collapsible-content\">\r\n\t\t\t\t\t\t<div class=\"content-inner\">\r\n\t\t\t\t\t\t<p>{JsonConvert.SerializeObject(log.Stack, Formatting.Indented).Replace("\r\n", "</br>")}</p>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t</br>\t\t\r\n\t\t</div>\r\n\t";
 
         CollapsibleID++;
 
