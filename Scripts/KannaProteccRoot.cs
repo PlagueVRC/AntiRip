@@ -320,16 +320,14 @@ namespace Kanna.Protecc
             var materialEncrypted = false;
             foreach (var mat in materials)
             {
-                KannaLogger.LogToFile($"Found Material: {mat?.name} With Shader: {mat?.shader.name}", LogLocation);
-
-                if (mat != null/* && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderMatch)*/)
+                if (mat != null && mat.shader != null/* && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderMatch)*/)
                 {
-                    if (mat.shader == null || mat.shader.name.Contains("Kanna Protecc"))
+                    if (mat.shader.name.Contains("Kanna Protecc"))
                     {
                         continue;
                     }
 
-                    KannaLogger.LogToFile($"Material: {mat.name} Has Kanna Protecc Supported Shader!", LogLocation);
+                    KannaLogger.LogToFile($"Found Supported Material: {mat.name} With Shader: {mat.shader.name}", LogLocation);
 
                     var shadersupportslocking = false;
 
@@ -1292,7 +1290,7 @@ public class ShaderInfoLib
 
             goto AddVert;
         }
-        catch (Exception e)
+        catch
         {
 
         }
