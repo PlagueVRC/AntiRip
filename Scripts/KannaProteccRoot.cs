@@ -168,6 +168,7 @@ namespace Kanna.Protecc
             if (File.Exists(LogLocation))
             {
                 File.Delete(LogLocation); // Remove Old Log
+                KannaLogger.LogCache.Clear();
             }
 
             var newName = gameObject.name.Trim() + "_Encrypted";
@@ -1079,7 +1080,7 @@ public class KannaLogger
         public int LineNumber;
     }
 
-    private static List<LogEntry> LogCache = new List<LogEntry>();
+    public static List<LogEntry> LogCache = new List<LogEntry>();
 
     public static LogEntry LogToFile(string text, string path, LogType type = LogType.Log, bool DebugLog = true)
     {
@@ -1097,11 +1098,6 @@ public class KannaLogger
         }
 
         var entry = FormatLog(text, type);
-
-        if (!File.Exists(path))
-        {
-            LogCache.Clear();
-        }
 
         LogCache.Add(entry);
 
