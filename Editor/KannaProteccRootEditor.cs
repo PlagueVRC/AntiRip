@@ -177,6 +177,8 @@ namespace Kanna.Protecc
 
             var origColor = GUI.backgroundColor;
 
+            GUILayout.Label("Universal Shader Support Branch");
+
             if (GUILayout.Button(new GUIContent(HeaderTexture, "Visit my Discord for help!"), EditorStyles.label, GUILayout.Height(Screen.width / 8f)))
             {
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
