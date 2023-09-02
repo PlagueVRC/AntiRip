@@ -324,6 +324,7 @@ namespace Kanna.Protecc
                 {
                     if (mat.shader.name.Contains("Kanna Protecc"))
                     {
+                        materialEncrypted = true;
                         continue;
                     }
 
