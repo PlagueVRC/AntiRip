@@ -123,10 +123,15 @@ namespace Kanna.Protecc
 
             KannaLogger.LogToFile($"Creating Encrypted Mesh..", KannaProteccRoot.LogLocation);
 
-            var encryptedMeshPath = Path.GetDirectoryName(existingMeshPath) != null
-                ? (Path.Combine(Path.GetDirectoryName(existingMeshPath),
-                    $"{GUID.Generate()}.asset"))
-                : $"{GUID.Generate()}.asset";
+            if (string.IsNullOrEmpty(KannaProteccRoot.Instance.path))
+                KannaProteccRoot.Instance.path = KannaProteccRoot.Instance.pathPrefix + KannaProteccRoot.Instance.gameObject.name.Trim();
+
+            if (!AssetDatabase.IsValidFolder(KannaProteccRoot.Instance.path))
+            {
+                Obfuscator.CreateFolder(KannaProteccRoot.Instance.path);
+            }
+
+            var encryptedMeshPath = Path.Combine(KannaProteccRoot.Instance.path, $"{GUID.Generate()}.asset");
 
             KannaLogger.LogToFile($"Encrypted Mesh Path: {encryptedMeshPath}", KannaProteccRoot.LogLocation);
 
