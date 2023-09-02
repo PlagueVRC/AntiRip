@@ -154,7 +154,7 @@ namespace Kanna.Protecc
             };
 
             // transfer sub meshes
-            for (var meshIndex = 0; meshIndex < mesh.subMeshCount; meshIndex++)
+            for (var meshIndex = 0; meshIndex < newMesh.subMeshCount; meshIndex++)
             {
                 try
                 {

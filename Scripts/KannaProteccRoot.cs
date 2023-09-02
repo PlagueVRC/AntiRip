@@ -216,7 +216,7 @@ namespace Kanna.Protecc
                     }
                     else
                     {
-                        KannaLogger.LogToFile($"Ignoring Encrypt On {meshFilter.o.gameObject.name} - No Materials Encrypted", LogLocation, KannaLogger.LogType.Warning);
+                        KannaLogger.LogToFile($"Ignoring Encrypt On Generic: {meshFilter.o.gameObject.name} - No Materials Encrypted", LogLocation, KannaLogger.LogType.Warning);
                     }
 
                     meshFilter.o.gameObject.SetActive(meshFilter.activeSelf);
@@ -241,7 +241,7 @@ namespace Kanna.Protecc
                     }
                     else
                     {
-                        KannaLogger.LogToFile($"Ignoring Encrypt On {skinnedMeshRenderer.o.gameObject.name} - No Materials Encrypted", LogLocation, KannaLogger.LogType.Warning);
+                        KannaLogger.LogToFile($"Ignoring Encrypt On Skinned: {skinnedMeshRenderer.o.gameObject.name} - No Materials Encrypted", LogLocation, KannaLogger.LogType.Warning);
                     }
 
                     skinnedMeshRenderer.o.gameObject.SetActive(skinnedMeshRenderer.activeSelf);
@@ -320,11 +320,16 @@ namespace Kanna.Protecc
             var materialEncrypted = false;
             foreach (var mat in materials)
             {
-                if (mat != null && mat.shader != null && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderMatch))
+                if (mat != null && mat.shader != null)
                 {
                     if (mat.shader.name.Contains("Kanna Protecc"))
                     {
                         materialEncrypted = true;
+                        continue;
+                    }
+
+                    if (!KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderMatch))
+                    {
                         continue;
                     }
 
