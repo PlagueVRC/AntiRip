@@ -557,11 +557,11 @@ namespace Kanna.Protecc
 
             root.gameObject.SetActive(true);
 
-            ((KannaProteccRoot)target).obfuscator.ClearObfuscatedFiles((KannaProteccRoot)target);
-
             MenuUtilites.UnlockAllMaterialsInHierarchy(null);
 
             root.DeleteKannaProteccObjectsFromController();
+
+            ((KannaProteccRoot)target).obfuscator.ClearObfuscatedFiles((KannaProteccRoot)target);
         }
 
         static bool FeatureToggleFoldout(bool display, string title)
