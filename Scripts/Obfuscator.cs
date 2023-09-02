@@ -98,12 +98,6 @@ namespace Kanna.Protecc
                 if (string.IsNullOrEmpty(root.path))
                     root.path = root.pathPrefix + root.gameObject.name.Trim();
 
-                if (AssetDatabase.IsValidFolder(root.path))
-                {
-                    KannaLogger.LogToFile($"Obfuscated Files Folder Already Existed, Deleting..", KannaProteccRoot.LogLocation);
-                    FileUtil.DeleteFileOrDirectory(root.path);
-                }
-
                 KannaLogger.LogToFile($"Creating Obfuscated Files Folder..", KannaProteccRoot.LogLocation);
                 CreateFolder(root.path);
 
