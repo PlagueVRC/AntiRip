@@ -447,6 +447,8 @@ namespace Kanna.Protecc
                         mat.SetOverrideTag("VRCFallback", "Hidden");
                     }
 
+                    AssetDatabase.Refresh();
+
                     KannaLogger.LogToFile($"Done Handling Injection, Handling Shader Includes..", LogLocation);
 
                     var IncludeFileDirs = new List<string>();
