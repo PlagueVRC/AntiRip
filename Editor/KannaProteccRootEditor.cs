@@ -177,7 +177,7 @@ namespace Kanna.Protecc
 
             var origColor = GUI.backgroundColor;
 
-            if (GUILayout.Button(new GUIContent(HeaderTexture, "Vist my Discord for help!"), EditorStyles.label, GUILayout.Height(Screen.width / 8f)))
+            if (GUILayout.Button(new GUIContent(HeaderTexture, "Visit my Discord for help!"), EditorStyles.label, GUILayout.Height(Screen.width / 8f)))
             {
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
