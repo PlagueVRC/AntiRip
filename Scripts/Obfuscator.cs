@@ -825,7 +825,7 @@ namespace Kanna.Protecc
             }
         }
 
-        private static void CreateFolder(string folderPath)
+        public static void CreateFolder(string folderPath)
         {
             KannaLogger.LogToFile($"Creating Folder: {folderPath}", KannaProteccRoot.LogLocation);
 
