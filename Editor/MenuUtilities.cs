@@ -54,6 +54,7 @@ namespace Kanna.Protecc
             var Mats = new List<Material>();
 
             var ProcessedMats = new List<Material>();
+            var ProcessedShaders = new List<string>();
 
             foreach (var renderer in skinnedMeshRenderers)
             {
@@ -69,6 +70,13 @@ namespace Kanna.Protecc
                         ProcessedMats.Add(material);
 
                         var path = AssetDatabase.GetAssetPath(material.shader);
+
+                        if (ProcessedShaders.Contains(path))
+                        {
+                            continue;
+                        }
+
+                        ProcessedShaders.Add(path);
 
                         if (path.Contains("_Protected.shader") && File.Exists(path.Replace("_Protected.shader", ".shader")))
                         {
@@ -113,6 +121,13 @@ namespace Kanna.Protecc
                         ProcessedMats.Add(material);
 
                         var path = AssetDatabase.GetAssetPath(material.shader);
+
+                        if (ProcessedShaders.Contains(path))
+                        {
+                            continue;
+                        }
+
+                        ProcessedShaders.Add(path);
 
                         if (path.Contains("_Protected.shader") && File.Exists(path.Replace("_Protected.shader", ".shader")))
                         {
