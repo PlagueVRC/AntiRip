@@ -60,7 +60,7 @@ namespace Kanna.Protecc
                 
                 if (renderer.sharedMaterials.Length > (SubIndex + 1))
                 {
-                    Debug.LogError($"Ignoring Mesh: {mesh.name} - SubMeshIndex Higher Than Amount Of Materials Available!");
+                    Debug.Log($"Ignoring Mesh: {mesh.name} - SubMeshIndex Higher Than Amount Of Materials Available!");
                     SubIndex = renderer.sharedMaterials.Length - 1;
                 }
                 
