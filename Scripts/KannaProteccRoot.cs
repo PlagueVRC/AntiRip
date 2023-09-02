@@ -323,6 +323,11 @@ namespace Kanna.Protecc
 
                 if (mat != null/* && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderMatch)*/)
                 {
+                    if (mat.shader == null || mat.shader.name.Contains("Kanna Protecc"))
+                    {
+                        continue;
+                    }
+
                     KannaLogger.LogToFile($"Material: {mat.name} Has Kanna Protecc Supported Shader!", LogLocation);
 
                     var shadersupportslocking = false;
