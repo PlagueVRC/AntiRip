@@ -7,7 +7,6 @@ using System.IO;
 
 using System.Linq;
 using System.Text.RegularExpressions;
-using Kanna.Protecc;
 
 using UnityEditor;
 using UnityEditor.Animations;
@@ -18,7 +17,6 @@ using UnityEngine;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
 
-using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
@@ -74,7 +72,6 @@ namespace Kanna.Protecc
         private readonly Dictionary<string, string> _filePathDic = new Dictionary<string, string>();
         private readonly List<AnimationClip> _animClipList = new List<AnimationClip>();
         private readonly HashSet<string> _excludeNameSet = new HashSet<string>();
-        private uint _tempIndex;
         private List<string> IgnoredParams = new List<string>();
 
         public GameObject Obfuscate(GameObject gobj, KannaProteccRoot root)
@@ -90,7 +87,6 @@ namespace Kanna.Protecc
             _excludeNameSet.Clear();
             IgnoredParams.Clear();
             ObfuscatedMenus.Clear();
-            _tempIndex = 0;
             GC.Collect();
 
             try
@@ -207,7 +203,10 @@ namespace Kanna.Protecc
 
                 ProgressBar("ExpressionsMenu obfuscation", 8);
                 if (avatar.expressionsMenu != null)
+                {
                     avatar.expressionsMenu = ExpressionsMenuObfuscator(avatar.expressionsMenu, root);
+                    EditorUtility.SetDirty(avatar.expressionsMenu);
+                }
 
                 KannaLogger.LogToFile($"Saving Assets..", KannaProteccRoot.LogLocation);
 
@@ -252,9 +251,9 @@ namespace Kanna.Protecc
                         {
                             KannaLogger.LogToFile($"Generating New Name For {childObject.name}..", KannaProteccRoot.LogLocation);
 
-                            var newName = GUID.Generate().ToString();
+                            var newName = Utilities.GenerateRandomUniqueName();
                             while (_objectNameDic.ContainsKey(newName))
-                                newName = GUID.Generate().ToString();
+                                newName = Utilities.GenerateRandomUniqueName();
 
                             _objectNameDic.Add(childObject.name, newName);
                         }
@@ -329,7 +328,6 @@ namespace Kanna.Protecc
                 _animClipList.Clear();
                 _filePathDic.Clear();
                 _excludeNameSet.Clear();
-                _tempIndex = 0;
 
                 EditorSceneManager.SaveOpenScenes();
                 EditorUtility.ClearProgressBar();
@@ -391,7 +389,7 @@ namespace Kanna.Protecc
 
             KannaLogger.LogToFile($"Obfuscating Non-Skipped And Non-Ignored Parameters..", KannaProteccRoot.LogLocation);
 
-            var parameters = expressionParameters.parameters.ToList().Where(p => !string.IsNullOrEmpty(p.name.Trim()))
+            var parameters = expressionParameters.parameters.ToList().Where(p => !string.IsNullOrEmpty(p.name))
                 .ToList();
 
             foreach (var parameter in parameters.Where(parameter => !SkipParameterNames.Contains(parameter.name) && root.excludeParamNames.All(o => !Regex.IsMatch(parameter.name, o)) && !IgnoredParams.Contains(parameter.name)))
@@ -402,19 +400,23 @@ namespace Kanna.Protecc
                     continue;
                 }
 
-                var newName = GUID.Generate().ToString();
-                while (_parameterDic.ContainsKey(newName)) newName = GUID.Generate().ToString();
+                var newName = Utilities.GenerateRandomUniqueName();
+                while (_parameterDic.ContainsKey(newName)) newName = Utilities.GenerateRandomUniqueName();
 
-                root.ParameterRenamedValues[parameter.name] = newName;
-                _parameterDic.Add(parameter.name, newName);
+                if (parameter.name.Contains("BitKey"))
+                {
+                    root.ParameterRenamedValues[parameter.name] = newName;
+                }
+
+                _parameterDic[parameter.name] = newName;
                 parameter.name = newName;
             }
 
             parameters = expressionParameters.parameters.ToList();
             //while (120 - expressionParameters.CalcTotalCost() > 0)
             //{
-            //    var newName = GUID.Generate().ToString();
-            //    while (_parameterDic.ContainsKey(newName)) newName = GUID.Generate().ToString();
+            //    var newName = Utilities.GenerateRandomUniqueName();
+            //    while (_parameterDic.ContainsKey(newName)) newName = Utilities.GenerateRandomUniqueName();
 
             //    parameters.Add(new VRCExpressionParameters.Parameter
             //    {
@@ -429,8 +431,8 @@ namespace Kanna.Protecc
 
             //while (128 - expressionParameters.CalcTotalCost() > 0)
             //{
-            //    var newName = GUID.Generate().ToString();
-            //    while (_parameterDic.ContainsKey(newName)) newName = GUID.Generate().ToString();
+            //    var newName = Utilities.GenerateRandomUniqueName();
+            //    while (_parameterDic.ContainsKey(newName)) newName = Utilities.GenerateRandomUniqueName();
 
             //    parameters.Add(new VRCExpressionParameters.Parameter
             //    {
@@ -449,10 +451,10 @@ namespace Kanna.Protecc
 
             while ((VRCExpressionParameters.MAX_PARAMETER_COST - (expressionParameters.CalcTotalCost() + AmountToReserveForOtherThings)) > 0)
             {
-                var newName = GUID.Generate().ToString();
+                var newName = Utilities.GenerateRandomUniqueName();
 
                 while (_parameterDic.ContainsKey(newName))
-                    newName = GUID.Generate().ToString();
+                    newName = Utilities.GenerateRandomUniqueName();
 
                 parameters.Add(new VRCExpressionParameters.Parameter
                 {
@@ -485,51 +487,39 @@ namespace Kanna.Protecc
 
             var expressionsMenu = CopyAssetFile("asset", menu, root);
 
-            foreach (var control in expressionsMenu.controls)
+            for (var i = 0; i < expressionsMenu.controls.Count; i++)
             {
-                if (control.type == VRCExpressionsMenu.Control.ControlType.SubMenu && control.subMenu != null && control.subMenu != expressionsMenu && control.subMenu != menu && !_filePathDic.ContainsValue(AssetDatabase.GetAssetPath(control.subMenu)))
-                    control.subMenu = ExpressionsMenuObfuscator(control.subMenu, root);
+                var control = expressionsMenu.controls[i];
 
-                if (control.parameter != null)
-                    control.parameter.name = _parameterDic.ContainsKey(control.parameter.name)
-                        ? _parameterDic[control.parameter.name]
-                        : control.parameter.name;
+                if (!string.IsNullOrEmpty(control.parameter?.name) && _parameterDic.TryGetValue(control.parameter.name, out var value))
+                {
+                    expressionsMenu.controls[i].parameter = new VRCExpressionsMenu.Control.Parameter
+                    {
+                        name = value
+                    };
+                }
 
                 if (control.subParameters != null)
-                    foreach (var param in control.subParameters)
-                        param.name = _parameterDic.ContainsKey(param.name)
-                            ? _parameterDic[param.name]
-                            : param.name;
-            }
+                    for (var index = 0; index < control.subParameters.Length; index++)
+                    {
+                        var param = control.subParameters[index];
 
-            // When building an avatar, VRCFury will store submenus as sub assets to the main menu asset
-            // We ensure they are being obfuscated as well.
-            // Doesn't do anything if you don't use VRCFury
-            var assetPath = AssetDatabase.GetAssetPath(expressionsMenu);
-            foreach (VRCExpressionsMenu subMenu in AssetDatabase.LoadAllAssetRepresentationsAtPath(assetPath))
-            {
-                if (subMenu == null || ObfuscatedMenus.Contains(subMenu)) continue;
+                        if (string.IsNullOrEmpty(param.name) || !_parameterDic.TryGetValue(param.name, out var value2))
+                        {
+                            continue;
+                        }
 
-                var sub = ExpressionsMenuObfuscator(subMenu, root);
+                        control.subParameters[index] = new VRCExpressionsMenu.Control.Parameter
+                        {
+                            name = value2
+                        };
+                    }
 
-                foreach (var c in sub.controls)
+                if (control.type == VRCExpressionsMenu.Control.ControlType.SubMenu && control.subMenu != null && control.subMenu != expressionsMenu && control.subMenu != menu && !_filePathDic.ContainsValue(AssetDatabase.GetAssetPath(control.subMenu)))
                 {
-                    if (c.parameter != null)
-                        c.parameter.name = _parameterDic.ContainsKey(c.parameter.name)
-                            ? _parameterDic[c.parameter.name]
-                            : c.parameter.name;
-
-                    if (c.subParameters != null)
-                        foreach (var param in c.subParameters)
-                            param.name = _parameterDic.ContainsKey(param.name)
-                                ? _parameterDic[param.name]
-                                : param.name;
+                    control.subMenu = ExpressionsMenuObfuscator(control.subMenu, root);
                 }
             }
-
-            EditorUtility.SetDirty(expressionsMenu);
-            AssetDatabase.WriteImportSettingsIfDirty(AssetDatabase.GetAssetPath(expressionsMenu));
-            AssetDatabase.SaveAssets();
 
             return expressionsMenu;
         }
@@ -548,8 +538,8 @@ namespace Kanna.Protecc
                 }
                 else if (Array.FindIndex(SkipParameterNames, value => value == t.name) == -1 && Array.FindIndex(root.excludeParamNames.ToArray(), value => value == t.name) == -1 && !IgnoredParams.Contains(t.name))
                 {
-                    var newName = GUID.Generate().ToString();
-                    while (_parameterDic.ContainsKey(newName)) newName = GUID.Generate().ToString();
+                    var newName = Utilities.GenerateRandomUniqueName();
+                    while (_parameterDic.ContainsKey(newName)) newName = Utilities.GenerateRandomUniqueName();
 
                     _parameterDic.Add(t.name, newName);
                     t.name = newName;
@@ -562,8 +552,7 @@ namespace Kanna.Protecc
             var layers = animator.layers.ToList();
             foreach (var layer in layers)
             {
-                var newLayerName = GUID.Generate().ToString() + _tempIndex;
-                _tempIndex++;
+                var newLayerName = Utilities.GenerateRandomUniqueName();
                 layer.name = newLayerName;
                 layer.stateMachine = StateMachineObfuscator(layer.name, layer.stateMachine, root);
             }
@@ -599,8 +588,7 @@ namespace Kanna.Protecc
 
             var layers = controller.layers.ToList();
 
-            var newLayerName = GUID.Generate().ToString() + _tempIndex;
-            _tempIndex++;
+            var newLayerName = Utilities.GenerateRandomUniqueName();
 
             var index = layers.FindIndex(o => o.name == layer.name);
 
@@ -616,8 +604,7 @@ namespace Kanna.Protecc
 
         private ChildAnimatorStateMachine ChildStateMachineObfuscator(ChildAnimatorStateMachine stateMachine, KannaProteccRoot root)
         {
-            var newName = GUID.Generate().ToString() + _tempIndex;
-            _tempIndex++;
+            var newName = Utilities.GenerateRandomUniqueName();
             return new ChildAnimatorStateMachine
             {
                 position = new Vector3(float.NaN, float.NaN, float.NaN),
@@ -634,8 +621,8 @@ namespace Kanna.Protecc
             var behaviours = stateMachine.behaviours.ToList();
             foreach (var parameter in behaviours.OfType<VRCAvatarParameterDriver>()
                          .SelectMany(behaviour => behaviour.parameters))
-                parameter.name = _parameterDic.ContainsKey(parameter.name)
-                    ? _parameterDic[parameter.name]
+                parameter.name = _parameterDic.TryGetValue(parameter.name, out var value)
+                    ? value
                     : parameter.name;
 
             stateMachine.behaviours = behaviours.ToArray();
@@ -672,8 +659,8 @@ namespace Kanna.Protecc
                     conditions.Add(new AnimatorCondition
                     {
                         mode = condition.mode,
-                        parameter = _parameterDic.ContainsKey(condition.parameter)
-                            ? _parameterDic[condition.parameter]
+                        parameter = _parameterDic.TryGetValue(condition.parameter, out var value)
+                            ? value
                             : condition.parameter,
                         threshold = condition.threshold
                     });
@@ -691,8 +678,8 @@ namespace Kanna.Protecc
                     conditions.Add(new AnimatorCondition
                     {
                         mode = condition.mode,
-                        parameter = _parameterDic.ContainsKey(condition.parameter)
-                            ? _parameterDic[condition.parameter]
+                        parameter = _parameterDic.TryGetValue(condition.parameter, out var value)
+                            ? value
                             : condition.parameter,
                         threshold = condition.threshold
                     });
@@ -707,15 +694,14 @@ namespace Kanna.Protecc
 
         private AnimatorState AnimatorStateObfuscator(AnimatorState state, KannaProteccRoot root)
         {
-            state.name = GUID.Generate() + "_" + _tempIndex;
-            _tempIndex++;
+            state.name = Utilities.GenerateRandomUniqueName();
 
 #if VRC_SDK_VRCSDK3
             var behaviours = state.behaviours.ToList();
             foreach (var parameter in behaviours.OfType<VRCAvatarParameterDriver>()
                          .SelectMany(behaviour => behaviour.parameters))
-                parameter.name = _parameterDic.ContainsKey(parameter.name)
-                    ? _parameterDic[parameter.name]
+                parameter.name = _parameterDic.TryGetValue(parameter.name, out var value)
+                    ? value
                     : parameter.name;
 
             state.behaviours = behaviours.ToArray();
@@ -729,8 +715,8 @@ namespace Kanna.Protecc
                     conditions.Add(new AnimatorCondition
                     {
                         mode = condition.mode,
-                        parameter = _parameterDic.ContainsKey(condition.parameter)
-                            ? _parameterDic[condition.parameter]
+                        parameter = _parameterDic.TryGetValue(condition.parameter, out var value)
+                            ? value
                             : condition.parameter,
                         threshold = condition.threshold
                     });
@@ -741,23 +727,23 @@ namespace Kanna.Protecc
             state.transitions = transitions.ToArray();
 
             if (state.speedParameterActive)
-                state.speedParameter = _parameterDic.ContainsKey(state.speedParameter)
-                    ? _parameterDic[state.speedParameter]
+                state.speedParameter = _parameterDic.TryGetValue(state.speedParameter, out var value)
+                    ? value
                     : state.speedParameter;
 
             if (state.mirrorParameterActive)
-                state.mirrorParameter = _parameterDic.ContainsKey(state.mirrorParameter)
-                    ? _parameterDic[state.mirrorParameter]
+                state.mirrorParameter = _parameterDic.TryGetValue(state.mirrorParameter, out var value)
+                    ? value
                     : state.mirrorParameter;
 
             if (state.timeParameterActive)
-                state.timeParameter = _parameterDic.ContainsKey(state.timeParameter)
-                    ? _parameterDic[state.timeParameter]
+                state.timeParameter = _parameterDic.TryGetValue(state.timeParameter, out var value)
+                    ? value
                     : state.timeParameter;
 
             if (state.cycleOffsetParameterActive)
-                state.cycleOffsetParameter = _parameterDic.ContainsKey(state.cycleOffsetParameter)
-                    ? _parameterDic[state.cycleOffsetParameter]
+                state.cycleOffsetParameter = _parameterDic.TryGetValue(state.cycleOffsetParameter, out var value)
+                    ? value
                     : state.cycleOffsetParameter;
 
             if (state.motion != null) state.motion = MotionObfuscator(state.motion, root);
@@ -796,8 +782,8 @@ namespace Kanna.Protecc
                             var child = children[index];
 
                             child.motion = MotionObfuscator(child.motion, root);
-                            child.directBlendParameter = _parameterDic.ContainsKey(child.directBlendParameter)
-                                ? _parameterDic[child.directBlendParameter]
+                            child.directBlendParameter = _parameterDic.TryGetValue(child.directBlendParameter, out var value)
+                                ? value
                                 : child.directBlendParameter;
 
                             children[index] = child;
@@ -805,11 +791,11 @@ namespace Kanna.Protecc
 
                         blendTree.children = children.ToArray();
 
-                        blendTree.blendParameter = _parameterDic.ContainsKey(blendTree.blendParameter)
-                            ? _parameterDic[blendTree.blendParameter]
+                        blendTree.blendParameter = _parameterDic.TryGetValue(blendTree.blendParameter, out var value1)
+                            ? value1
                             : blendTree.blendParameter;
-                        blendTree.blendParameterY = _parameterDic.ContainsKey(blendTree.blendParameterY)
-                            ? _parameterDic[blendTree.blendParameterY]
+                        blendTree.blendParameterY = _parameterDic.TryGetValue(blendTree.blendParameterY, out var value2)
+                            ? value2
                             : blendTree.blendParameterY;
 
                         return blendTree;
@@ -838,7 +824,6 @@ namespace Kanna.Protecc
 
         private T CopyAssetFile<T>(string ext, T original, KannaProteccRoot root) where T : Object
         {
-
             var originalPath = AssetDatabase.GetAssetPath(original);
             if (string.IsNullOrEmpty(originalPath) || AssetDatabase.IsSubAsset(original) ||
                 !AssetDatabase.IsMainAsset(original))
@@ -865,6 +850,9 @@ namespace Kanna.Protecc
                 KannaLogger.LogToFile($"blyat, {newPath} no existo when loaded (CopyAsset Was Done, Then LoadAssetAtPath, Yet The Loaded Asset Was Null)", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
             }
 
+            EditorUtility.SetDirty(original);
+            EditorUtility.SetDirty(asset);
+
             return asset;
         }
 
@@ -880,8 +868,8 @@ namespace Kanna.Protecc
                 if (string.IsNullOrEmpty(fileName)) return fileName;
             }
 
-            fileName = GUID.Generate() + "_" + _tempIndex;
-            _tempIndex++;
+            fileName = GUID.Generate().ToString();
+
             return fileName;
         }
 

@@ -151,7 +151,7 @@ namespace Kanna.Protecc
 
         void AdditionalDrawHeader(Rect rect)
         {
-            EditorGUI.LabelField(rect, new GUIContent("Additional Materials", "This lets you specify additional materials to have the Kanna Protecc code injected into when you click 'EncryptAvatar'. This will let you encrypt materials used in material swaps."));
+            EditorGUI.LabelField(rect, new GUIContent("Additional Materials (Such As Material Swaps)", "This lets you specify additional materials to have the Kanna Protecc code injected into when you click 'Protecc Avatar'. This will let you encrypt materials used in material swaps."));
         }
 
         void AdditionalDrawListItems(Rect rect, int index, bool isActive, bool isFocused)
