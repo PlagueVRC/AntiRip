@@ -171,6 +171,8 @@ namespace Kanna.Protecc
                 KannaLogger.LogCache.Clear();
             }
 
+            Utilities.ResetRandomizer();
+
             var newName = gameObject.name.Trim() + "_Encrypted";
 
             // delete old GO, do as such in case its disabled
