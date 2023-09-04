@@ -557,8 +557,16 @@ namespace Kanna.Protecc
             animator.parameters = parameters.ToArray();
 
             var layers = animator.layers.ToList();
+
+            layers.Insert(0, new AnimatorControllerLayer() { avatarMask = new AvatarMask(), name = null, stateMachine = null});
+
             foreach (var layer in layers)
             {
+                if (layer?.stateMachine == null)
+                {
+                    continue;
+                }
+
                 var newLayerName = Utilities.GenerateRandomUniqueName(false);
                 layer.name = newLayerName;
                 layer.stateMachine = StateMachineObfuscator(layer.name, layer.stateMachine, root);
@@ -641,7 +649,9 @@ namespace Kanna.Protecc
             stateMachine.entryPosition = new Vector3(float.NaN, float.NaN, float.NaN);
 
             var childStates = new List<ChildAnimatorState>();
+
             foreach (var t in stateMachine.states)
+            {
                 childStates.Add(
                     new ChildAnimatorState
                     {
@@ -649,6 +659,8 @@ namespace Kanna.Protecc
                         state = AnimatorStateObfuscator(t.state, root)
                     }
                 );
+            }
+
             stateMachine.states = childStates.ToArray();
 
 
