@@ -558,8 +558,6 @@ namespace Kanna.Protecc
 
             var layers = animator.layers.ToList();
 
-            layers.Insert(0, new AnimatorControllerLayer() { avatarMask = new AvatarMask(), name = null, stateMachine = null});
-
             foreach (var layer in layers)
             {
                 if (layer?.stateMachine == null)
