@@ -122,6 +122,7 @@ Kanna Protecc allows for exceptions to be added for renaming. For maximum securi
 
 [Examples for Face tracking and GoGoLoco.](/Readme/ADVANCED.md)
 
+#### Link Animator
 
 2. Ensure your `VRCAvatarDescriptor` has an AnimatorController specified in the 'FX Playable Layer' slot. Ensure there is also an `Animator` component on this root GameObject, and that its 'Controller' slot points to the same AnimatorController in the 'FX Playable Layer' slot on the `VRCAvatarDescriptor`. 
 
