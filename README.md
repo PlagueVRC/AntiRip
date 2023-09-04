@@ -77,19 +77,25 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 #### Really do it. Close Unity, and make a full clean copy of your entire Unity Project folder. A small percentage of avatars did have odd things in their mesh that just wouldn't work, or could cause errors, and the script could leave some assets in the project in a rather messed up state.
 
-#### Install Kanna Protecc and a supported shader
+---
+
+### Install Kanna Protecc and a supported shader
 
 1. Ensure you are using latest [VRChat Avatars SDK](https://vrchat.com/).
 2. Download the supported shader of your choice from [Supported Shaders](#supported-shaders), and import it into your Unity project.
 3. Click ([Download](https://github.com/PlagueVRC/AntiRip/archive/refs/heads/main.zip)). Once downloaded, extract it. Once you have the folder, put that into your assets folder of your unity project.
 
-#### Prep Your FBX's.
+---
+
+### Prep Your FBX's.
 
 Be sure all of this is set correctly on your FBX's. (Legacy blend shape normals and read/write on too!) 
 
 ![Model](Textures/DocSteps0.png)
 
-#### Setup Kanna Protecc Component.
+---
+
+### Setup Kanna Protecc Component.
 
 1. Add the `KannaProteccRoot` component onto the root GameObject of your avatar, next to the `VRCAvatarDescriptor` component.
 
@@ -127,14 +133,19 @@ Kanna Protecc allows for exceptions to be added for renaming. For maximum securi
 
 ![Step 3](Textures/DocSteps4.png)
 
-#### Delete your old Un-Encrypted Avatar from VRC Backend!
+
+---
+
+### Delete your old Un-Encrypted Avatar from VRC Backend!
 
 <b>VRC API stores old uploads of your avatar! So if you start uploading an encrypted avatar with an ID that you previously uploaded non-encrypted, it may entirely negate any benefit this provides as rippers can just download an older version that was not encrypted.</b>
 
 1. Go into the VRChat SDK Inspector in the Unity Editor, then under 'Content Manager' find the avatar you wish to protect and delete it entirely from the VRC backend.
 2. Go to your current avatar's `Pipeline Manager` component and click the `Detach (Optional)` button so it will generate a new avatar id on upload.
 
-#### Encrypting and Uploading
+---
+
+### Encrypting and Uploading
 
 1. Ensure any meshes you wish to have encrypted are using a compatible shader, such as Poiyomi.
 2. On the `KannaProteccRoot` component click the 'Protecc Avatar' button. This will produce a garbled version of your avatar with '_KannaProteccted' appended to the name. 
@@ -144,7 +155,9 @@ Kanna Protecc allows for exceptions to be added for renaming. For maximum securi
 
 *I found some Poi 8/8.1 materials get into a weird state with Lock/Unlock and Kanna Protecc can't lock them. If you get errors that say something like 'Trying to Inject not-locked shader?!' go to the Poi 8/8.1 material it is complaining about and manually click the Lock/Unlock button to get it out of its weird state.*
 
-#### Writing Keys
+---
+
+### Writing Keys
 
 <b>Ensure VRChat is closed! Otherwise when you write keys VRChat may prevent writing!</b>
 
@@ -156,7 +169,9 @@ You only need to run 'Write Keys' once on first setup, or when you change keys.
 
 <i>If you "Reset Avatar" in game through the 3.0 menu, it will reset your keys and you will need to re-export them with the 'Write Keys' button!</i>
 
-#### Un-Encrypting, Editing and Re-uploading Your Avatar
+---
+
+### Un-Encrypting, Editing and Re-uploading Your Avatar
 
 If you wish to see your avatar again as normal and not encrypted, or make changes to your avatar: 
 
@@ -169,7 +184,9 @@ You should now be able to edit your avatar as normal.
 3. Click 'Protecc Avatar' again. Follow the steps in [Encrypting and uploading](#encrypting-and-uploading)
 4. Writing keys should not be necessary unless you genereated new keys.
 
-#### Testing the Avatar
+---
+
+### Testing the Avatar
 
 You can also [test in Unity](/Readme/ADVANCED.md/#testing-in-unity).
 
