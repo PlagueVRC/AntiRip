@@ -123,6 +123,8 @@ namespace Kanna.Protecc
                 if (avatar.expressionParameters != null)
                     avatar.expressionParameters = ExpressionParametersObfuscator(avatar.expressionParameters, root);
 
+                Utilities.ResetRandomizer();
+
                 KannaLogger.LogToFile($"Beginning baseAnimationLayers Animator Obfuscation..", KannaProteccRoot.LogLocation);
 
                 ProgressBar("baseAnimationLayers animatorController obfuscation", 5);
@@ -149,6 +151,8 @@ namespace Kanna.Protecc
                 }
 
                 avatar.baseAnimationLayers = animationLayers;
+
+                Utilities.ResetRandomizer();
 
                 KannaLogger.LogToFile($"Beginning specialAnimationLayers Animator Obfuscation..", KannaProteccRoot.LogLocation);
 
@@ -178,6 +182,8 @@ namespace Kanna.Protecc
 
                 avatar.specialAnimationLayers = specialAnimationLayers;
 
+                Utilities.ResetRandomizer();
+
                 KannaLogger.LogToFile($"Beginning Generic Animator Obfuscation..", KannaProteccRoot.LogLocation);
 
                 ProgressBar("Another animatorController obfuscation", 7);
@@ -199,6 +205,8 @@ namespace Kanna.Protecc
                     animator.runtimeAnimatorController = AnimatorObfuscator((AnimatorController)animator.runtimeAnimatorController, root);
                 }
 
+                Utilities.ResetRandomizer();
+
                 KannaLogger.LogToFile($"Beginning ExpressionsMenu Obfuscation..", KannaProteccRoot.LogLocation);
 
                 ProgressBar("ExpressionsMenu obfuscation", 8);
@@ -206,6 +214,8 @@ namespace Kanna.Protecc
                 {
                     avatar.expressionsMenu = ExpressionsMenuObfuscator(avatar.expressionsMenu, root);
                 }
+
+                Utilities.ResetRandomizer();
 
                 KannaLogger.LogToFile($"Saving Assets..", KannaProteccRoot.LogLocation);
 
@@ -250,9 +260,9 @@ namespace Kanna.Protecc
                         {
                             KannaLogger.LogToFile($"Generating New Name For {childObject.name}..", KannaProteccRoot.LogLocation);
 
-                            var newName = Utilities.GenerateRandomUniqueName();
+                            var newName = Utilities.GenerateRandomUniqueName(false);
                             while (_objectNameDic.ContainsKey(newName))
-                                newName = Utilities.GenerateRandomUniqueName();
+                                newName = Utilities.GenerateRandomUniqueName(false);
 
                             _objectNameDic.Add(childObject.name, newName);
                         }
@@ -399,8 +409,8 @@ namespace Kanna.Protecc
                     continue;
                 }
 
-                var newName = Utilities.GenerateRandomUniqueName();
-                while (_parameterDic.ContainsKey(newName)) newName = Utilities.GenerateRandomUniqueName();
+                var newName = Utilities.GenerateRandomUniqueName(true);
+                while (_parameterDic.ContainsKey(newName)) newName = Utilities.GenerateRandomUniqueName(true);
 
                 if (parameter.name.Contains("BitKey"))
                 {
@@ -450,10 +460,10 @@ namespace Kanna.Protecc
 
             while ((VRCExpressionParameters.MAX_PARAMETER_COST - (expressionParameters.CalcTotalCost() + AmountToReserveForOtherThings)) > 0)
             {
-                var newName = Utilities.GenerateRandomUniqueName();
+                var newName = Utilities.GenerateRandomUniqueName(true);
 
                 while (_parameterDic.ContainsKey(newName))
-                    newName = Utilities.GenerateRandomUniqueName();
+                    newName = Utilities.GenerateRandomUniqueName(true);
 
                 parameters.Add(new VRCExpressionParameters.Parameter
                 {
@@ -535,8 +545,8 @@ namespace Kanna.Protecc
                 }
                 else if (Array.FindIndex(SkipParameterNames, value => value == t.name) == -1 && Array.FindIndex(root.excludeParamNames.ToArray(), value => value == t.name) == -1 && !IgnoredParams.Contains(t.name))
                 {
-                    var newName = Utilities.GenerateRandomUniqueName();
-                    while (_parameterDic.ContainsKey(newName)) newName = Utilities.GenerateRandomUniqueName();
+                    var newName = Utilities.GenerateRandomUniqueName(true);
+                    while (_parameterDic.ContainsKey(newName)) newName = Utilities.GenerateRandomUniqueName(true);
 
                     _parameterDic.Add(t.name, newName);
                     t.name = newName;
@@ -549,7 +559,7 @@ namespace Kanna.Protecc
             var layers = animator.layers.ToList();
             foreach (var layer in layers)
             {
-                var newLayerName = Utilities.GenerateRandomUniqueName();
+                var newLayerName = Utilities.GenerateRandomUniqueName(false);
                 layer.name = newLayerName;
                 layer.stateMachine = StateMachineObfuscator(layer.name, layer.stateMachine, root);
             }
@@ -585,7 +595,7 @@ namespace Kanna.Protecc
 
             var layers = controller.layers.ToList();
 
-            var newLayerName = Utilities.GenerateRandomUniqueName();
+            var newLayerName = Utilities.GenerateRandomUniqueName(false);
 
             var index = layers.FindIndex(o => o.name == layer.name);
 
@@ -601,7 +611,7 @@ namespace Kanna.Protecc
 
         private ChildAnimatorStateMachine ChildStateMachineObfuscator(ChildAnimatorStateMachine stateMachine, KannaProteccRoot root)
         {
-            var newName = Utilities.GenerateRandomUniqueName();
+            var newName = Utilities.GenerateRandomUniqueName(false);
             return new ChildAnimatorStateMachine
             {
                 position = new Vector3(float.NaN, float.NaN, float.NaN),
@@ -691,7 +701,7 @@ namespace Kanna.Protecc
 
         private AnimatorState AnimatorStateObfuscator(AnimatorState state, KannaProteccRoot root)
         {
-            state.name = Utilities.GenerateRandomUniqueName();
+            state.name = Utilities.GenerateRandomUniqueName(false);
 
 #if VRC_SDK_VRCSDK3
             var behaviours = state.behaviours.ToList();
