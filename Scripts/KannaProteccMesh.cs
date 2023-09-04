@@ -60,12 +60,13 @@ namespace Kanna.Protecc
                 
                 if (renderer.sharedMaterials.Length > (SubIndex + 1))
                 {
-                    continue;
+                    Debug.Log($"Ignoring Mesh: {mesh.name} - SubMeshIndex Higher Than Amount Of Materials Available!");
+                    SubIndex = renderer.sharedMaterials.Length - 1;
                 }
                 
                 var mat = renderer.sharedMaterials[SubIndex];
 
-                if (mat == null || !mat.shader.name.StartsWith("Kanna Protecc"))
+                if (mat == null || !mat.shader.name.Contains("KannaProtecc"))
                 {
                     continue;
                 }
@@ -122,10 +123,15 @@ namespace Kanna.Protecc
 
             KannaLogger.LogToFile($"Creating Encrypted Mesh..", KannaProteccRoot.LogLocation);
 
-            var encryptedMeshPath = Path.GetDirectoryName(existingMeshPath) != null
-                ? (Path.Combine(Path.GetDirectoryName(existingMeshPath),
-                    $"{GUID.Generate()}.asset"))
-                : $"{GUID.Generate()}.asset";
+            if (string.IsNullOrEmpty(KannaProteccRoot.Instance.path))
+                KannaProteccRoot.Instance.path = KannaProteccRoot.Instance.pathPrefix + KannaProteccRoot.Instance.gameObject.name.Trim();
+
+            if (!AssetDatabase.IsValidFolder(KannaProteccRoot.Instance.path))
+            {
+                Obfuscator.CreateFolder(KannaProteccRoot.Instance.path);
+            }
+
+            var encryptedMeshPath = Path.Combine(KannaProteccRoot.Instance.path, $"{GUID.Generate()}.asset");
 
             KannaLogger.LogToFile($"Encrypted Mesh Path: {encryptedMeshPath}", KannaProteccRoot.LogLocation);
 
@@ -153,7 +159,7 @@ namespace Kanna.Protecc
             };
 
             // transfer sub meshes
-            for (var meshIndex = 0; meshIndex < mesh.subMeshCount; meshIndex++)
+            for (var meshIndex = 0; meshIndex < newMesh.subMeshCount; meshIndex++)
             {
                 try
                 {

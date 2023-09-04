@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 using UnityEditorInternal;
@@ -45,7 +46,7 @@ namespace Kanna.Protecc
         void OnEnable()
         {
             IsVRCOpen = Process.GetProcessesByName("VRChat").Length > 0;
-            EncryptedObjExists = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("Encrypted"));
+            EncryptedObjExists = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("_KannaProteccted"));
 
             m_DistortRatioProperty = serializedObject.FindProperty("_distortRatio");
             m_KeysProperty = serializedObject.FindProperty("_bitKeys");
@@ -150,7 +151,7 @@ namespace Kanna.Protecc
 
         void AdditionalDrawHeader(Rect rect)
         {
-            EditorGUI.LabelField(rect, new GUIContent("Additional Materials", "This lets you specify additional materials to have the Kanna Protecc code injected into when you click 'EncryptAvatar'. This will let you encrypt materials used in material swaps."));
+            EditorGUI.LabelField(rect, new GUIContent("Additional Materials (Such As Material Swaps)", "This lets you specify additional materials to have the Kanna Protecc code injected into when you click 'Protecc Avatar'. This will let you encrypt materials used in material swaps."));
         }
 
         void AdditionalDrawListItems(Rect rect, int index, bool isActive, bool isFocused)
@@ -176,7 +177,7 @@ namespace Kanna.Protecc
 
             var origColor = GUI.backgroundColor;
 
-            if (GUILayout.Button(new GUIContent(HeaderTexture, "Vist my Discord for help!"), EditorStyles.label, GUILayout.Height(Screen.width / 8f)))
+            if (GUILayout.Button(new GUIContent(HeaderTexture, "Visit my Discord for help!"), EditorStyles.label, GUILayout.Height(Screen.width / 8f)))
             {
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
@@ -199,24 +200,7 @@ namespace Kanna.Protecc
             {
                 if (KannaProteccRoot.IsProtected)
                 {
-                    for (var i = 0; i < SceneManager.sceneCount; i++)
-                    {
-                        var scene = SceneManager.GetSceneAt(i);
-
-                        foreach (var obj in scene.GetRootGameObjects())
-                        {
-                            if (obj != null && obj.name.StartsWith(KannaProteccRoot.gameObject.name) && (obj.name.EndsWith("_Encrypted") || obj.name.EndsWith("_Encrypted_Obfuscated")))
-                            {
-                                DestroyImmediate(obj);
-                            }
-                        }
-                    }
-
-                    KannaProteccRoot.gameObject.SetActive(true);
-
-                    ((KannaProteccRoot)target).obfuscator.ClearObfuscatedFiles((KannaProteccRoot)target);
-
-                    MenuUtilites.UnlockAllMaterialsInHierarchy(null);
+                    UnProtecc(KannaProteccRoot);
                 }
                 else if (!IsVRCOpen)
                 {
@@ -233,7 +217,7 @@ namespace Kanna.Protecc
 
             if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Write Keys" : "Close VRChat To Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10f), GUILayout.Width((Screen.width / 2f) - 20f)))
             {
-                KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name.Trim() + "_Encrypted_Obfuscated").GetComponent<VRCAvatarDescriptor>().expressionParameters, true, true);
+                KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name.Trim() + "_KannaProteccted").GetComponent<VRCAvatarDescriptor>().expressionParameters, true, true);
             }
 
             GUI.enabled = true;
@@ -431,24 +415,7 @@ namespace Kanna.Protecc
 
                 if (GUILayout.Button(new GUIContent("Force Un-Protecc", "Forces Un-Protecc in case of something going wrong.")))
                 {
-                    for (var i = 0; i < SceneManager.sceneCount; i++)
-                    {
-                        var scene = SceneManager.GetSceneAt(i);
-
-                        foreach (var obj in scene.GetRootGameObjects())
-                        {
-                            if (obj != null && obj.name.StartsWith(KannaProteccRoot.gameObject.name) && (obj.name.EndsWith("_Encrypted") || obj.name.EndsWith("_Encrypted_Obfuscated")))
-                            {
-                                DestroyImmediate(obj);
-                            }
-                        }
-                    }
-
-                    KannaProteccRoot.gameObject.SetActive(true);
-
-                    ((KannaProteccRoot)target).obfuscator.ClearObfuscatedFiles((KannaProteccRoot)target);
-
-                    MenuUtilites.UnlockAllMaterialsInHierarchy(null);
+                    UnProtecc(KannaProteccRoot);
                 }
 
                 EditorGUILayout.Space();
@@ -516,13 +483,85 @@ namespace Kanna.Protecc
 
             _excludeParamNamesPropertyList.DoLayoutList();
 
+            if (GUILayout.Button(new GUIContent("Auto Detect", "Attempts to automatically detect parameters for OSC for well known projects like VRCFT.")))
+            {
+                var expressions = KannaProteccRoot.gameObject.GetComponent<VRCAvatarDescriptor>().expressionParameters.parameters;
+
+                foreach (var param in expressions)
+                {
+                    if (KannaProteccRoot.excludeParamNames.All(o => !Regex.IsMatch(param.name, o)))
+                    {
+                        if (Regex.IsMatch(param.name, @".*(FT\/|v2\/|Tracking).*")) // VRCFT
+                        {
+                            KannaProteccRoot.excludeParamNames.Add(@".*(FT\/|v2\/|Tracking).*");
+                        }
+                        else if (Regex.IsMatch(param.name, @".*(Go\/|(?i)go.*loco).*")) // VRCFT
+                        {
+                            KannaProteccRoot.excludeParamNames.Add(@".*(Go\/|(?i)go.*loco).*");
+                        }
+                        else if (Regex.IsMatch(param.name, @".*RealFeel.*")) // VRCFT
+                        {
+                            KannaProteccRoot.excludeParamNames.Add(@".*RealFeel.*");
+                        }
+                        else if (Regex.IsMatch(param.name, @"VFH\/.*")) // VRCFT
+                        {
+                            KannaProteccRoot.excludeParamNames.Add(@"VFH\/.*");
+                        }
+                    }
+                }
+            }
+
             EditorGUILayout.Space();
 
             _excludeAnimatorLayersPropertyList.DoLayoutList();
 
+            if (GUILayout.Button(new GUIContent("Auto Detect", "Attempts to automatically detect animators needing excluded, like GoGoLoco.")))
+            {
+                var descriptor = KannaProteccRoot.gameObject.GetComponent<VRCAvatarDescriptor>();
+
+                var layers = descriptor.baseAnimationLayers.Concat(descriptor.specialAnimationLayers);
+
+                foreach (var layer in layers)
+                {
+                    if (layer.animatorController == null || layer.animatorController.name == null || KannaProteccRoot.excludeAnimatorLayers.Contains((KannaProteccRoot.AnimLayerType)layer.type))
+                    {
+                        continue;
+                    }
+
+                    if (Regex.IsMatch(layer.animatorController.name, @".*(?i)go.*loco.*")) // VRCFT
+                    {
+                        KannaProteccRoot.excludeAnimatorLayers.Add((KannaProteccRoot.AnimLayerType)layer.type);
+                    }
+                }
+            }
+
             EditorGUILayout.Space();
 
             serializedObject.ApplyModifiedProperties();
+        }
+
+        void UnProtecc(KannaProteccRoot root)
+        {
+            for (var i = 0; i < SceneManager.sceneCount; i++)
+            {
+                var scene = SceneManager.GetSceneAt(i);
+
+                foreach (var obj in scene.GetRootGameObjects())
+                {
+                    if (obj != null && obj.name.StartsWith(root.gameObject.name) && obj.name.EndsWith("_KannaProteccted"))
+                    {
+                        DestroyImmediate(obj);
+                    }
+                }
+            }
+
+            root.gameObject.SetActive(true);
+
+            MenuUtilites.UnlockAllMaterialsInHierarchy(null);
+
+            root.DeleteKannaProteccObjectsFromController();
+
+            ((KannaProteccRoot)target).obfuscator.ClearObfuscatedFiles((KannaProteccRoot)target);
         }
 
         static bool FeatureToggleFoldout(bool display, string title)
