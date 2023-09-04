@@ -47,11 +47,11 @@ namespace Kanna.Protecc
 
         [Header("Materials in this list will also be locked and injected.")]
         [SerializeField]
-        List<Material> m_AdditionalMaterials = new List<Material>();
+        public List<Material> m_AdditionalMaterials = new List<Material>();
 
         [Header("Materials in this list will be ignored.")]
         [SerializeField]
-        List<Material> m_IgnoredMaterials = new List<Material>();
+        public List<Material> m_IgnoredMaterials = new List<Material>();
 
         [SerializeField]
         public bool[] _bitKeys = new bool[32];

@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEditorInternal;
 using UnityEngine.SceneManagement;
 using VRC.SDK3.Avatars.Components;
+using Debug = UnityEngine.Debug;
 
 namespace Kanna.Protecc
 {
@@ -260,7 +261,7 @@ namespace Kanna.Protecc
 
                     var descriptor = avatar.GetComponent<VRCAvatarDescriptor>();
 
-                    var AllMaterials = new List<string>();
+                    var AllMaterials = new List<Material>();
 
                     var Anims = new List<AnimationClip>();
 
@@ -275,15 +276,16 @@ namespace Kanna.Protecc
                         {
                             foreach (var binding in bindings)
                             {
-                                if (binding != null && binding.type.Name == "Material")
+                                if (AnimationUtility.GetObjectReferenceValue(descriptor.gameObject, binding, out var obj) && obj is Material mat)
                                 {
-                                    AllMaterials.Add(binding.propertyName);
+                                    if (!KannaProteccRoot.Instance.m_AdditionalMaterials.Contains(mat))
+                                    {
+                                        KannaProteccRoot.Instance.m_AdditionalMaterials.Add(mat);
+                                    }
                                 }
                             }
                         }
                     }
-
-                    EditorUtility.DisplayDialog("Info", $"{Anims.Count} Anims\r\n{string.Join(", ", AllMaterials)}", "Okay");
                 }
                 EditorGUILayout.Space();
                 m_IgnoreList.DoLayoutList();
