@@ -11,7 +11,7 @@ This is the official repository for this project.
 
 This is free. Actually read all of this.
 
-NOTE: Rather pathetically, some are spreading the false rumor this has been bypassed. It has not been bypassed. This is from the malicious scene to try to stop this becoming too common.
+NOTE: Rather pathetically, some are spreading the false rumor this has been bypassed. [It has not been bypassed](/Readme/FAQ.md). This is from the malicious scene to try to stop this becoming too common.
 
 # Kanna Protecc
 
@@ -32,8 +32,11 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 1. [Supported Shaders](#supported-shaders)
 
+1. [Simple Usage Instructions](#quick-start-guide)
 
-1. [Usage Instructions](#quick-start-guide)
+1. [Continued Instructions](/Readme/ADVANCED.md)
+
+1. [FAQs](/Readme/FAQ.md)
 
 1. [How secure is this?](#how-secure-is-this)
 
@@ -42,10 +45,6 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 1. [Roadmap](#roadmap)
 
 1. [Hall Of Shame](#hall-of-shame)
-
-1. [Advanced Usage](/Readme/ADVANCED.md)
-
-1. [FAQs](/Readme/FAQ.md)
 
 ## Caveats of this System
 
@@ -147,6 +146,12 @@ You should now be able to edit your avatar as normal.
 
 3. Click 'Protecc Avatar' again. Follow the steps in [Encrypting and uploading](#encrypting-and-uploading)
 4. Writing keys should not be necessary unless you genereated new keys.
+
+#### Material Swaps, Face Tracking, GoGo Loco etc
+
+[Continued Instructions](/Readme/ADVANCED.md)
+
+---
 
 [Back to Contents](#contents)
 
