@@ -324,7 +324,7 @@ namespace Kanna.Protecc
             {
                 if (mat != null && mat.shader != null)
                 {
-                    if (mat.shader.name.Contains("Kanna Protecc"))
+                    if (mat.shader.name.Contains("KannaProtecc"))
                     {
                         materialEncrypted = true;
                         continue;
@@ -395,7 +395,14 @@ namespace Kanna.Protecc
 
                         _sb.Clear();
                         _sb.AppendLine("//KannaProtecc Injected");
-                        _sb.Append(shaderText.Replace("Shader \"", "Shader \"Kanna Protecc/"));
+
+                        var indexofshadername = shaderText.IndexOf("Shader \"", StringComparison.Ordinal) + "Shader \"".Length;
+
+                        var textafter = shaderText.Substring(indexofshadername);
+
+                        var shadername = textafter.Substring(0, textafter.IndexOf("\"", StringComparison.Ordinal));
+
+                        _sb.Append(shaderText.Replace($"Shader \"{shadername}\"", "Shader \"Hidden/Locked/KannaProtecc\""));
 
                         _sb.ReplaceOrLog(shaderMatch.UV.TextToFind, shaderMatch.UV.TextToReplaceWith);
 
