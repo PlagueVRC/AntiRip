@@ -1,19 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#if UNITY_EDITOR
 using UnityEditor;
-using UnityEngine;
 
 public class Utilities
 {
     private static int Length = 1;
 
-    public static string GenerateRandomUniqueName()
+    public static string GenerateRandomUniqueName(bool guid)
     {
-        var str = "Kanna_" + GUID.Generate();
+        var str = "Kanna" + (guid ? $"_{GUID.Generate()}" : "");
 
-        //str = str.PadRight(Length, '​');
+        if (!guid)
+        {
+            str = str.PadRight(Length, '\u200B'); // \u200B = ZWSP
 
-        //Length++;
+            Length++;
+        }
 
         return str;
     }
@@ -23,3 +24,4 @@ public class Utilities
         Length = 1;
     }
 }
+#endif
