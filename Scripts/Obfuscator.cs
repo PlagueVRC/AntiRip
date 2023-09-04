@@ -205,7 +205,6 @@ namespace Kanna.Protecc
                 if (avatar.expressionsMenu != null)
                 {
                     avatar.expressionsMenu = ExpressionsMenuObfuscator(avatar.expressionsMenu, root);
-                    EditorUtility.SetDirty(avatar.expressionsMenu);
                 }
 
                 KannaLogger.LogToFile($"Saving Assets..", KannaProteccRoot.LogLocation);
@@ -472,8 +471,6 @@ namespace Kanna.Protecc
 
             KannaLogger.LogToFile($"ExpressionParameters Obfuscation Finished", KannaProteccRoot.LogLocation);
 
-            EditorUtility.SetDirty(expressionParameters);
-            AssetDatabase.WriteImportSettingsIfDirty(AssetDatabase.GetAssetPath(expressionParameters));
             AssetDatabase.SaveAssets();
 
             return expressionParameters;
@@ -827,7 +824,10 @@ namespace Kanna.Protecc
             var originalPath = AssetDatabase.GetAssetPath(original);
             if (string.IsNullOrEmpty(originalPath) || AssetDatabase.IsSubAsset(original) ||
                 !AssetDatabase.IsMainAsset(original))
+            {
+                KannaLogger.LogToFile($"Ignoring Asset: {original.name}: No Path, Is Sub Asset Or Is Main Asset!", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
                 return original;
+            }
 
             KannaLogger.LogToFile($"Copying Asset: {originalPath}", KannaProteccRoot.LogLocation);
 
@@ -849,9 +849,6 @@ namespace Kanna.Protecc
             {
                 KannaLogger.LogToFile($"blyat, {newPath} no existo when loaded (CopyAsset Was Done, Then LoadAssetAtPath, Yet The Loaded Asset Was Null)", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
             }
-
-            EditorUtility.SetDirty(original);
-            EditorUtility.SetDirty(asset);
 
             return asset;
         }

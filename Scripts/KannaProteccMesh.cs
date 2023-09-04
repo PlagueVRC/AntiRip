@@ -66,7 +66,7 @@ namespace Kanna.Protecc
                 
                 var mat = renderer.sharedMaterials[SubIndex];
 
-                if (mat == null || !mat.shader.name.StartsWith("Kanna Protecc"))
+                if (mat == null || !mat.shader.name.Contains("KannaProtecc"))
                 {
                     continue;
                 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class Utilities
@@ -8,11 +9,11 @@ public class Utilities
 
     public static string GenerateRandomUniqueName()
     {
-        var str = "Kanna";
+        var str = "Kanna_" + GUID.Generate();
 
-        str = str.PadRight(Length, '​');
+        //str = str.PadRight(Length, '​');
 
-        Length++;
+        //Length++;
 
         return str;
     }
