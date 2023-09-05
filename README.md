@@ -22,7 +22,7 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 ## Tutorial Video (Click The Image!)
 <div align="center">
   <a href="https://youtu.be/vEXrRBen3NI">
-    <img src="https://github.com/BlizzyFox/AntiRip/assets/105831522/aa6ff9c1-ff3b-48b9-9a0c-3f4613a7b640" alt="Tutorial By PxINKY"/>
+    <img src="https://github-production-user-asset-6210df.s3.amazonaws.com/105831522/264494931-aa6ff9c1-ff3b-48b9-9a0c-3f4613a7b640.png" alt="Tutorial By PxINKY"/>
   </a>
 </div>
 
