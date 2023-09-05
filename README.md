@@ -102,11 +102,13 @@ Be sure all of this is set correctly on your FBX's. (Legacy blend shape normals 
 ![Steps 1](Textures/DocSteps1.png)
 
 #### Materials Settings
-![Materials](https://github.com/BlizzyFox/AntiRip/assets/105831522/1d5dd771-75e4-47c5-bb17-eed3c87dbafc)
+![Materials](https://github.com/BlizzyFox/AntiRip/assets/105831522/ef6f1dbb-ba19-454e-a331-d4c4792245fa)
 
-Any additional materials that are used in animations etc that will be applied to an encrypted mesh should be added to 'Additional Materials'. Otherwise they will not be able to display the decoded mesh. Note these are things like material swaps. <b>DO NOT PUT NORMAL NON-ADDITIONAL MATERIALS IN HERE.</b>
+*Additional Materials* is intended for materials used in animations. <b>DO NOT PUT NORMAL NON-ADDITIONAL MATERIALS IN HERE.</b>
 
-Ignored Materials allows you to use a material with a supported shader on a part of your avatar you don't want encrypted. <b> Materials in this list will not be encrypted. Do not add materials to this list that are on parts of your avatar you want to protect. </b>
+*The Auto Detect button tries to find material references in all animations! If you have material swaps setup on your avatar it should be a one click solution!*
+
+*Ignored Materials* allows you to use a material with a supported shader on a part of your avatar you don't want encrypted. <b> Materials in this list will not be encrypted. Do not add materials to this list that are on parts of your avatar you want to protect. </b>
 
 #### Custom Bit Key Length
 
@@ -114,11 +116,13 @@ You can change the 'BitKeys Length' under 'Debug' settings. This allows users wi
 
 #### Obfuscator Settings
 
-![Screenshot 2023-08-30 161535](https://github.com/BlizzyFox/AntiRip/assets/105831522/de527606-253d-4a28-aa9d-40865bdf37f0)
-
 By default Kanna Protecc Obfuscates all objects, parameter names, and animator layers on a user's avatar. Features of VRChat that users may want to take advantage of. Such as contact senders, OSC integrations, etc, often require specific names to be unaltered to maintain functionality.
 
+![Obfuscator](https://github.com/BlizzyFox/AntiRip/assets/105831522/8ebabea2-b571-4d89-9bdf-1bb453c4e967)
+
 Kanna Protecc allows for exceptions to be added for renaming. For maximum security only add exceptions for parameters that are required to be unaltered. *Note that contact parameter names not intended to interact with other avatars will function perfectly fine obfuscated. Physbone parameters also function perfectly obfuscated. Neither need to be added to exceptions.*
+
+*The Auto Detect buttons try and detect common setups like face tracking or gogoloco that require exclusions! Its a good idea to click them!*
 
 [Examples for Face tracking and GoGoLoco.](/Readme/ADVANCED.md)
 
@@ -189,7 +193,8 @@ You should now be able to edit your avatar as normal.
 
 ### Testing the Avatar
 
-You can also [test in Unity](/Readme/ADVANCED.md/#testing-in-unity).
+Entering play mode will not decrypt the protected avatar on its own.
+[Click here for how to test your avatar in play mode](/Readme/ADVANCED.md/#testing-in-unity).
 
 ---
 
