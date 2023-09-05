@@ -11,7 +11,7 @@ This is the official repository for this project.
 
 This is free. Actually read all of this.
 
-NOTE: Rather pathetically, some are spreading the false rumor this has been bypassed. It has not been bypassed. This is from the malicious scene to try to stop this becoming too common.
+NOTE: Rather pathetically, some are spreading the false rumor this has been bypassed. [It has not been bypassed](/Readme/FAQ.md). This is from the malicious scene to try to stop this becoming too common.
 
 # Kanna Protecc
 
@@ -32,8 +32,11 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 1. [Supported Shaders](#supported-shaders)
 
+1. [Simple Usage Instructions](#quick-start-guide)
 
-1. [Usage Instructions](#quick-start-guide)
+1. [Testing in Unity](/Readme/ADVANCED.md/#testing-in-unity)
+
+1. [FAQs](/Readme/FAQ.md)
 
 1. [How secure is this?](#how-secure-is-this)
 
@@ -42,10 +45,6 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 1. [Roadmap](#roadmap)
 
 1. [Hall Of Shame](#hall-of-shame)
-
-1. [Advanced Usage](/Readme/ADVANCED.md)
-
-1. [FAQs](/Readme/FAQ.md)
 
 ## Caveats of this System
 
@@ -78,23 +77,56 @@ This system will randomize all the vertices of your avatar's mesh, then write th
 
 #### Really do it. Close Unity, and make a full clean copy of your entire Unity Project folder. A small percentage of avatars did have odd things in their mesh that just wouldn't work, or could cause errors, and the script could leave some assets in the project in a rather messed up state.
 
-#### Install Kanna Protecc and a supported shader
+---
+
+### Install Kanna Protecc and a supported shader
 
 1. Ensure you are using latest [VRChat Avatars SDK](https://vrchat.com/).
 2. Download the supported shader of your choice from [Supported Shaders](#supported-shaders), and import it into your Unity project.
 3. Click ([Download](https://github.com/PlagueVRC/AntiRip/archive/refs/heads/main.zip)). Once downloaded, extract it. Once you have the folder, put that into your assets folder of your unity project.
 
-#### Prep Your FBX's.
+---
+
+### Prep Your FBX's.
 
 Be sure all of this is set correctly on your FBX's. (Legacy blend shape normals and read/write on too!) 
 
 ![Model](Textures/DocSteps0.png)
 
-#### Setup VRC Components.
+---
+
+### Setup Kanna Protecc Component.
 
 1. Add the `KannaProteccRoot` component onto the root GameObject of your avatar, next to the `VRCAvatarDescriptor` component.
 
 ![Steps 1](Textures/DocSteps1.png)
+
+#### Materials Settings
+![Materials](https://github.com/BlizzyFox/AntiRip/assets/105831522/ef6f1dbb-ba19-454e-a331-d4c4792245fa)
+
+*Additional Materials* is intended for materials used in animations. <b>DO NOT PUT NORMAL NON-ADDITIONAL MATERIALS IN HERE.</b>
+
+*The Auto Detect button tries to find material references in all animations! If you have material swaps setup on your avatar it should be a one click solution!*
+
+*Ignored Materials* allows you to use a material with a supported shader on a part of your avatar you don't want encrypted. <b> Materials in this list will not be encrypted. Do not add materials to this list that are on parts of your avatar you want to protect. </b>
+
+#### Custom Bit Key Length
+
+You can change the 'BitKeys Length' under 'Debug' settings. This allows users with fewer parameters to spare to still use Kanna Protecc. However know that using a shorter bit key reduces the security of the encryption. Its recommended that you use as large of a 'BitKeys Length' as possible.
+
+#### Obfuscator Settings
+
+By default Kanna Protecc Obfuscates all objects, parameter names, and animator layers on a user's avatar. Features of VRChat that users may want to take advantage of. Such as contact senders, OSC integrations, etc, often require specific names to be unaltered to maintain functionality.
+
+![Obfuscator](https://github.com/BlizzyFox/AntiRip/assets/105831522/8ebabea2-b571-4d89-9bdf-1bb453c4e967)
+
+Kanna Protecc allows for exceptions to be added for renaming. For maximum security only add exceptions for parameters that are required to be unaltered. *Note that contact parameter names not intended to interact with other avatars will function perfectly fine obfuscated. Physbone parameters also function perfectly obfuscated. Neither need to be added to exceptions.*
+
+*The Auto Detect buttons try and detect common setups like face tracking or gogoloco that require exclusions! Its a good idea to click them!*
+
+[Examples for Face tracking and GoGoLoco.](/Readme/ADVANCED.md)
+
+#### Link Animator
 
 2. Ensure your `VRCAvatarDescriptor` has an AnimatorController specified in the 'FX Playable Layer' slot. Ensure there is also an `Animator` component on this root GameObject, and that its 'Controller' slot points to the same AnimatorController in the 'FX Playable Layer' slot on the `VRCAvatarDescriptor`. 
 
@@ -106,14 +138,19 @@ Be sure all of this is set correctly on your FBX's. (Legacy blend shape normals 
 
 ![Step 3](Textures/DocSteps4.png)
 
-#### Delete your old Un-Encrypted Avatar from VRC Backend!
+
+---
+
+### Delete your old Un-Encrypted Avatar from VRC Backend!
 
 <b>VRC API stores old uploads of your avatar! So if you start uploading an encrypted avatar with an ID that you previously uploaded non-encrypted, it may entirely negate any benefit this provides as rippers can just download an older version that was not encrypted.</b>
 
 1. Go into the VRChat SDK Inspector in the Unity Editor, then under 'Content Manager' find the avatar you wish to protect and delete it entirely from the VRC backend.
 2. Go to your current avatar's `Pipeline Manager` component and click the `Detach (Optional)` button so it will generate a new avatar id on upload.
 
-#### Encrypting and Uploading
+---
+
+### Encrypting and Uploading
 
 1. Ensure any meshes you wish to have encrypted are using a compatible shader, such as Poiyomi.
 2. On the `KannaProteccRoot` component click the 'Protecc Avatar' button. This will produce a garbled version of your avatar with '_KannaProteccted' appended to the name. 
@@ -123,7 +160,9 @@ Be sure all of this is set correctly on your FBX's. (Legacy blend shape normals 
 
 *I found some Poi 8/8.1 materials get into a weird state with Lock/Unlock and Kanna Protecc can't lock them. If you get errors that say something like 'Trying to Inject not-locked shader?!' go to the Poi 8/8.1 material it is complaining about and manually click the Lock/Unlock button to get it out of its weird state.*
 
-#### Writing Keys
+---
+
+### Writing Keys
 
 <b>Ensure VRChat is closed! Otherwise when you write keys VRChat may prevent writing!</b>
 
@@ -135,7 +174,9 @@ You only need to run 'Write Keys' once on first setup, or when you change keys.
 
 <i>If you "Reset Avatar" in game through the 3.0 menu, it will reset your keys and you will need to re-export them with the 'Write Keys' button!</i>
 
-#### Un-Encrypting, Editing and Re-uploading Your Avatar
+---
+
+### Un-Encrypting, Editing and Re-uploading Your Avatar
 
 If you wish to see your avatar again as normal and not encrypted, or make changes to your avatar: 
 
@@ -147,6 +188,15 @@ You should now be able to edit your avatar as normal.
 
 3. Click 'Protecc Avatar' again. Follow the steps in [Encrypting and uploading](#encrypting-and-uploading)
 4. Writing keys should not be necessary unless you genereated new keys.
+
+---
+
+### Testing the Avatar
+
+Entering play mode will not decrypt the protected avatar on its own.
+[Click here for how to test your avatar in play mode](/Readme/ADVANCED.md/#testing-in-unity).
+
+---
 
 [Back to Contents](#contents)
 
