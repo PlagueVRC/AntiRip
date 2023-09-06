@@ -550,7 +550,7 @@ namespace Kanna.Protecc
 
                 foreach (var obj in scene.GetRootGameObjects())
                 {
-                    if (obj != null && obj.name.StartsWith(root.gameObject.name) && obj.name.EndsWith("_KannaProteccted"))
+                    if (obj != null && obj.name.StartsWith(root.gameObject.name) && (obj.name.EndsWith("_KannaProteccted") || obj.name.EndsWith("_Encrypted") || obj.name.EndsWith("_Encrypted_Obfuscated")))
                     {
                         DestroyImmediate(obj);
                     }
