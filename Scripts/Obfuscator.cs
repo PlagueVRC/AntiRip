@@ -16,7 +16,8 @@ using UnityEngine;
 
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
-
+using VRC.SDK3.Dynamics.Contact.Components;
+using VRC.SDK3.Dynamics.PhysBone.Components;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
@@ -122,6 +123,26 @@ namespace Kanna.Protecc
                 ProgressBar("ExpressionParameters obfuscation", 4);
                 if (avatar.expressionParameters != null)
                     avatar.expressionParameters = ExpressionParametersObfuscator(avatar.expressionParameters, root);
+
+                // Update Thingies
+                var AllContactReceivers = obj.GetComponentsInChildren<VRCContactReceiver>(true);
+                var AllPhysBones = obj.GetComponentsInChildren<VRCPhysBone>(true);
+
+                foreach (var thing in AllContactReceivers)
+                {
+                    if (thing != null && !string.IsNullOrEmpty(thing.parameter) && _parameterDic.ContainsKey(thing.parameter))
+                    {
+                        thing.parameter = _parameterDic[thing.parameter];
+                    }
+                }
+
+                foreach (var thing in AllPhysBones)
+                {
+                    if (thing != null && !string.IsNullOrEmpty(thing.parameter) && _parameterDic.ContainsKey(thing.parameter))
+                    {
+                        thing.parameter = _parameterDic[thing.parameter];
+                    }
+                }
 
                 Utilities.ResetRandomizer();
 

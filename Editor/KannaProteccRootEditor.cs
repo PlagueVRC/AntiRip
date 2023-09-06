@@ -182,7 +182,7 @@ namespace Kanna.Protecc
             {
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
-            
+
             var KannaProteccRoot = target as KannaProteccRoot;
             
             //Do the big important buttons
