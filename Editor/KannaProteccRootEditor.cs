@@ -131,7 +131,7 @@ namespace Kanna.Protecc
 
             _excludeAnimatorLayersPropertyList.drawHeaderCallback = rect =>
             {
-                EditorGUI.LabelField(rect, "Exclude Animator Layers From Obfuscation", EditorStyles.boldLabel);
+                EditorGUI.LabelField(rect, "Exclude Animator Controllers From Obfuscation", EditorStyles.boldLabel);
             };
 
             _excludeAnimatorLayersPropertyList.drawElementCallback =
