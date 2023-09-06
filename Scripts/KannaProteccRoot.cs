@@ -272,6 +272,8 @@ namespace Kanna.Protecc
 
             KannaLogger.LogToFile($"Done Refreshing, Beginning Obfuscation Stage..", LogLocation);
 
+            IsProtected = true;
+
             // Do Obfuscation
             var newobj = obfuscator.Obfuscate(encodedGameObject, this);
 
@@ -294,8 +296,6 @@ namespace Kanna.Protecc
             ValidateAnimatorController(newobj, AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(newobj.GetComponent<VRCAvatarDescriptor>().baseAnimationLayers.First(o => o.type == VRCAvatarDescriptor.AnimLayerType.FX).animatorController)));
 
             KannaLogger.LogToFile($"Done! Showing Dialog To User.", LogLocation);
-
-            IsProtected = true;
 
             DestroyImmediate(encodedGameObject);
             newobj.name = newobj.name.Replace("_Encrypted_Obfuscated", "_KannaProteccted");
