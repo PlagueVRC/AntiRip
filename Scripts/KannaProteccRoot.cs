@@ -379,6 +379,7 @@ namespace Kanna.Protecc
 
                     if (!shaderPath.Contains("Assets"))
                     {
+                        KannaLogger.LogToFile($"Ignoring Encrypt Of Shader: {mat.shader.name} As It Is Not In Assets!", LogLocation, KannaLogger.LogType.Warning);
                         continue;
                     }
 
