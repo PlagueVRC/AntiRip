@@ -116,7 +116,7 @@ namespace Kanna.Protecc
                 o.SetActive(false);
 
                 KannaLogger.LogToFile($"Removing AnimatorController From Root Animator..", KannaProteccRoot.LogLocation);
-                ProgressBar("Remove animatorController of RootAnimator", 2);
+                ProgressBar("Remove AnimatorController From Root Animator", 2);
                 var rootAnimator = obj.GetComponent<Animator>();
                 if (rootAnimator != null) rootAnimator.runtimeAnimatorController = null;
 
@@ -128,7 +128,7 @@ namespace Kanna.Protecc
 
                 KannaLogger.LogToFile($"Beginning ExpressionParameters Obfuscation..", KannaProteccRoot.LogLocation);
 
-                ProgressBar("ExpressionParameters obfuscation", 4);
+                ProgressBar("ExpressionParameters Obfuscation", 4);
                 if (avatar.expressionParameters != null)
                     avatar.expressionParameters = ExpressionParametersObfuscator(avatar.expressionParameters, root);
 
@@ -156,7 +156,7 @@ namespace Kanna.Protecc
 
                 KannaLogger.LogToFile($"Beginning baseAnimationLayers Animator Obfuscation..", KannaProteccRoot.LogLocation);
 
-                ProgressBar("baseAnimationLayers animatorController obfuscation", 5);
+                ProgressBar("BaseAnimationLayers AnimatorController Obfuscation", 5);
                 var animationLayers = avatar.baseAnimationLayers;
                 for (var i = 0; i < animationLayers.Length; ++i)
                 {
@@ -185,7 +185,7 @@ namespace Kanna.Protecc
 
                 KannaLogger.LogToFile($"Beginning specialAnimationLayers Animator Obfuscation..", KannaProteccRoot.LogLocation);
 
-                ProgressBar("specialAnimationLayers animatorController obfuscation", 6);
+                ProgressBar("SpecialAnimationLayers AnimatorController Obfuscation", 6);
                 var specialAnimationLayers = avatar.specialAnimationLayers;
                 for (var i = 0; i < specialAnimationLayers.Length; ++i)
                 {
@@ -215,7 +215,7 @@ namespace Kanna.Protecc
 
                 KannaLogger.LogToFile($"Beginning Generic Animator Obfuscation..", KannaProteccRoot.LogLocation);
 
-                ProgressBar("Another animatorController obfuscation", 7);
+                ProgressBar("Misc Animators Obfuscation", 7);
                 var otherAnimators = obj.GetComponentsInChildren<Animator>(true)
                     .Where(t => t.runtimeAnimatorController == null || t.gameObject != obj);
                 foreach (var animator in otherAnimators)
@@ -238,7 +238,7 @@ namespace Kanna.Protecc
 
                 KannaLogger.LogToFile($"Beginning ExpressionsMenu Obfuscation..", KannaProteccRoot.LogLocation);
 
-                ProgressBar("ExpressionsMenu obfuscation", 8);
+                ProgressBar("ExpressionsMenu Obfuscation", 8);
                 if (avatar.expressionsMenu != null)
                 {
                     avatar.expressionsMenu = ExpressionsMenuObfuscator(avatar.expressionsMenu, root);
@@ -251,7 +251,7 @@ namespace Kanna.Protecc
                 AssetDatabase.SaveAssets();
 
                 KannaLogger.LogToFile($"Caching All Bones Recursively Via Animators", KannaProteccRoot.LogLocation);
-                ProgressBar("Get all bones from animator", 9);
+                ProgressBar("Caching All Bones From Animator To Ignore Them In Rename", 9);
                 var animators = obj.GetComponentsInChildren<Animator>(true);
                 var enumValues = Enum.GetValues(typeof(HumanBodyBones));
                 foreach (HumanBodyBones boneId in enumValues)
@@ -275,16 +275,24 @@ namespace Kanna.Protecc
                         _excludeNameSet.Add(objectName.name);
                     }
 
-                    ProgressBar("Object name obfuscation", 10);
 
                     KannaLogger.LogToFile($"Getting Every Transform Recursively..", KannaProteccRoot.LogLocation);
                     var children = obj.GetComponentsInChildren<Transform>(true).Where(t => t != obj.transform).ToList();
 
                     KannaLogger.LogToFile($"Going Through Transforms Individually, Ignoring Root Object And Excluded Objects..", KannaProteccRoot.LogLocation);
-                    foreach (var childObject in children.Select(child => child.gameObject)
-                                 .Where(childObject => childObject.GetInstanceID() != obj.GetInstanceID() &&
-                                                       !_excludeNameSet.Contains(childObject.name)))
+
+                    var ToRename = children.Select(child => child.gameObject)
+                        .Where(childObject => childObject.GetInstanceID() != obj.GetInstanceID() &&
+                                              !_excludeNameSet.Contains(childObject.name)).ToArray();
+
+                    ProgressBar($"Obfuscating 0/{ToRename.Length} Transform Names", 10);
+
+                    for (var index = 0; index < ToRename.Length; index++)
                     {
+                        var childObject = ToRename[index];
+
+                        ProgressBar($"Obfuscating {index + 1}/{ToRename.Length} Transform Names", 10);
+
                         if (!_objectNameDic.ContainsKey(childObject.name))
                         {
                             KannaLogger.LogToFile($"Generating New Name For {childObject.name}..", KannaProteccRoot.LogLocation);
@@ -302,9 +310,13 @@ namespace Kanna.Protecc
 
                     KannaLogger.LogToFile($"Beginning Updating Of AnimationClips; Cached Previously From Animator Obfuscations..", KannaProteccRoot.LogLocation);
 
-                    ProgressBar("Update AnimationClips", 11);
-                    foreach (var clip in _animClipList)
+                    ProgressBar($"Updating 0/{_animClipList.Count} AnimationClips", 11);
+                    for (var index = 0; index < _animClipList.Count; index++)
                     {
+                        var clip = _animClipList[index];
+
+                        ProgressBar($"Updating {index + 1}/{_animClipList.Count} AnimationClips", 11);
+
                         foreach (var binding in AnimationUtility.GetCurveBindings(clip))
                         {
                             var copy = binding;
