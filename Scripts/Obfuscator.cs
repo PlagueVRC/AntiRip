@@ -7,7 +7,7 @@ using System.IO;
 
 using System.Linq;
 using System.Text.RegularExpressions;
-
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEditor.SceneManagement;
@@ -27,6 +27,13 @@ namespace Kanna.Protecc
 {
     public class Obfuscator
     {
+        public class Mapping
+        {
+            public List<(string, string, string)> RenamedValues = new List<(string, string, string)>();
+        }
+
+        public static Mapping mapping = new Mapping();
+
         private static readonly string[] SkipParameterNames =
         {
             "IsLocal",
@@ -88,6 +95,7 @@ namespace Kanna.Protecc
             _excludeNameSet.Clear();
             IgnoredParams.Clear();
             ObfuscatedMenus.Clear();
+            mapping.RenamedValues.Clear();
             GC.Collect();
 
             try
@@ -286,6 +294,7 @@ namespace Kanna.Protecc
                                 newName = Utilities.GenerateRandomUniqueName(false);
 
                             _objectNameDic.Add(childObject.name, newName);
+                            mapping.RenamedValues.Add(("Object", childObject.name, newName));
                         }
 
                         childObject.name = _objectNameDic[childObject.name];
@@ -342,6 +351,8 @@ namespace Kanna.Protecc
                 RandomizeAllSiblingOrders(obj);
 
                 KannaLogger.LogToFile($"Obfuscation Finished..", KannaProteccRoot.LogLocation);
+
+                File.WriteAllText("ObfuscationMapping.json", JsonConvert.SerializeObject(mapping, Formatting.Indented));
 
                 ProgressBar("Done!", 1, 1);
             }
@@ -439,6 +450,7 @@ namespace Kanna.Protecc
                 }
 
                 _parameterDic[parameter.name] = newName;
+                mapping.RenamedValues.Add(("Parameter", parameter.name, newName));
                 parameter.name = newName;
             }
 
@@ -569,6 +581,7 @@ namespace Kanna.Protecc
                     var newName = Utilities.GenerateRandomUniqueName(true);
                     while (_parameterDic.ContainsKey(newName)) newName = Utilities.GenerateRandomUniqueName(true);
 
+                    mapping.RenamedValues.Add(($"Animator Parameter", t.name, newName));
                     _parameterDic.Add(t.name, newName);
                     t.name = newName;
                 }
@@ -587,6 +600,7 @@ namespace Kanna.Protecc
                 }
 
                 var newLayerName = Utilities.GenerateRandomUniqueName(false);
+                mapping.RenamedValues.Add(($"Animator Layer", layer.name, newLayerName));
                 layer.name = newLayerName;
                 layer.stateMachine = StateMachineObfuscator(layer.name, layer.stateMachine, root);
             }
@@ -644,11 +658,11 @@ namespace Kanna.Protecc
                 position = new Vector3(float.NaN, float.NaN, float.NaN),
                 stateMachine = StateMachineObfuscator(newName, stateMachine.stateMachine, root),
             };
-            ;
         }
 
         private AnimatorStateMachine StateMachineObfuscator(string stateMachineName, AnimatorStateMachine stateMachine, KannaProteccRoot root)
         {
+            mapping.RenamedValues.Add(($"State Machine", stateMachine.name, stateMachineName));
             stateMachine.name = stateMachineName;
 
 #if VRC_SDK_VRCSDK3
@@ -878,6 +892,8 @@ namespace Kanna.Protecc
                 newPath = root.path + "/" + GUID.Generate() + "." + ext;
                 while (!string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(newPath)))
                     newPath = root.path + "/" + GUID.Generate() + ext;
+
+                mapping.RenamedValues.Add(($"Asset: {ext}", Path.GetFileNameWithoutExtension(originalPath), Path.GetFileNameWithoutExtension(newPath)));
 
                 AssetDatabase.CopyAsset(originalPath, newPath);
                 _filePathDic[originalPath] = newPath;
