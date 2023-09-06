@@ -412,11 +412,6 @@ namespace Kanna.Protecc
             }
             catch (Exception err)
             {
-                if (err is OperationCanceledException)
-                {
-                    obj = null;
-                }
-
                 KannaLogger.LogToFile($"{err}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
             }
             finally
