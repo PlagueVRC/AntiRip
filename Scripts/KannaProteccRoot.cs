@@ -848,14 +848,14 @@ namespace Kanna.Protecc
 
             void FindIncludes(string searchMe, string dir)
             {
-                if (searchMe.IndexOf("#include ") > -1)
+                if (searchMe.IndexOf("#include ", StringComparison.Ordinal) > -1)
                 {
                     foreach (var line in searchMe.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries))
                     {
-                        if (line.IndexOf("#include ") > -1)
+                        if (line.IndexOf("#include ", StringComparison.Ordinal) > -1)
                         {
-                            var StartIndex = line.IndexOf("#include \"") + "#include \"".Length;
-                            var EndIndex = line.LastIndexOf("\"");
+                            var StartIndex = line.IndexOf("#include \"", StringComparison.Ordinal) + "#include \"".Length;
+                            var EndIndex = line.LastIndexOf("\"", StringComparison.Ordinal);
 
                             //Debug.Log($"Making {line.Substring(StartIndex, EndIndex - StartIndex)} Relative To {dir}");
 
