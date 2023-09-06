@@ -317,7 +317,7 @@ namespace Kanna.Protecc
 
                         ProgressBar($"Updating {index + 1}/{_animClipList.Count} ({clip.name}) AnimationClips", 11);
 
-                        foreach (var binding in AnimationUtility.GetCurveBindings(clip))
+                        foreach (var binding in AnimationUtility.GetCurveBindings(clip).Concat(AnimationUtility.GetObjectReferenceCurveBindings(clip)))
                         {
                             var copy = binding;
                             var bindingPath = binding.path;
@@ -329,31 +329,23 @@ namespace Kanna.Protecc
                                     : names[i];
 
                             copy.path = string.Join("/", names);
-                            var curve = AnimationUtility.GetEditorCurve(clip, binding);
-                            AnimationUtility.SetEditorCurve(clip, binding, null);
-                            AnimationUtility.SetEditorCurve(clip, copy, curve);
+
+                            var objcurve = AnimationUtility.GetObjectReferenceCurve(clip, binding);
+
+                            if (objcurve != null && objcurve.Length > 0)
+                            {
+                                AnimationUtility.SetObjectReferenceCurve(clip, binding, null);
+                                AnimationUtility.SetObjectReferenceCurve(clip, copy, objcurve);
+                            }
+                            else
+                            {
+                                var curve = AnimationUtility.GetEditorCurve(clip, binding);
+                                AnimationUtility.SetEditorCurve(clip, binding, null);
+                                AnimationUtility.SetEditorCurve(clip, copy, curve);
+                            }
                         }
 
-                        KannaLogger.LogToFile($"Finished Direct AnimClip Bindings For Clip: {clip.name}", KannaProteccRoot.LogLocation);
-
-                        foreach (var binding in AnimationUtility.GetObjectReferenceCurveBindings(clip))
-                        {
-                            var copy = binding;
-                            var bindingPath = binding.path;
-
-                            var names = bindingPath.Split('/');
-                            for (var i = 0; i < names.Length; i++)
-                                names[i] = _objectNameDic.ContainsKey(names[i])
-                                    ? _objectNameDic[names[i]]
-                                    : names[i];
-
-                            copy.path = string.Join("/", names);
-                            var curve = AnimationUtility.GetObjectReferenceCurve(clip, binding);
-                            AnimationUtility.SetObjectReferenceCurve(clip, binding, null);
-                            AnimationUtility.SetObjectReferenceCurve(clip, copy, curve);
-                        }
-
-                        KannaLogger.LogToFile($"Finished Reference AnimClip Bindings For Clip: {clip.name}", KannaProteccRoot.LogLocation);
+                        KannaLogger.LogToFile($"Finished AnimClip Bindings For Clip: {clip.name}", KannaProteccRoot.LogLocation);
                     }
                 }
 
