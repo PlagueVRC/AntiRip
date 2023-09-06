@@ -107,7 +107,10 @@ namespace Kanna.Protecc
                 CreateFolder(root.path);
 
                 KannaLogger.LogToFile($"Cloning Avatar Object..", KannaProteccRoot.LogLocation);
-                ProgressBar("Clone Avatar Object", 1);
+                if (ProgressBar("Clone Avatar Object", 1))
+                {
+                    throw new OperationCanceledException();
+                }
                 var o = gobj;
                 var gameObjectName = o.name.Trim() + "_Obfuscated";
                 obj = Object.Instantiate(o);
@@ -116,19 +119,28 @@ namespace Kanna.Protecc
                 o.SetActive(false);
 
                 KannaLogger.LogToFile($"Removing AnimatorController From Root Animator..", KannaProteccRoot.LogLocation);
-                ProgressBar("Remove AnimatorController From Root Animator", 2);
+                if (ProgressBar("Remove AnimatorController From Root Animator", 2))
+                {
+                    throw new OperationCanceledException();
+                }
                 var rootAnimator = obj.GetComponent<Animator>();
                 if (rootAnimator != null) rootAnimator.runtimeAnimatorController = null;
 
                 KannaLogger.LogToFile($"Finding VRCAvatarDescriptor Component..", KannaProteccRoot.LogLocation);
 
-                ProgressBar("Find VRCAvatarDescriptor Component", 3);
+                if (ProgressBar("Find VRCAvatarDescriptor Component", 3))
+                {
+                    throw new OperationCanceledException();
+                }
 
                 var avatar = obj.GetComponent<VRCAvatarDescriptor>();
 
                 KannaLogger.LogToFile($"Beginning ExpressionParameters Obfuscation..", KannaProteccRoot.LogLocation);
 
-                ProgressBar("ExpressionParameters Obfuscation", 4);
+                if (ProgressBar("ExpressionParameters Obfuscation", 4))
+                {
+                    throw new OperationCanceledException();
+                }
                 if (avatar.expressionParameters != null)
                     avatar.expressionParameters = ExpressionParametersObfuscator(avatar.expressionParameters, root);
 
@@ -156,7 +168,10 @@ namespace Kanna.Protecc
 
                 KannaLogger.LogToFile($"Beginning baseAnimationLayers Animator Obfuscation..", KannaProteccRoot.LogLocation);
 
-                ProgressBar("BaseAnimationLayers AnimatorController Obfuscation", 5);
+                if (ProgressBar("BaseAnimationLayers AnimatorController Obfuscation", 5))
+                {
+                    throw new OperationCanceledException();
+                }
                 var animationLayers = avatar.baseAnimationLayers;
                 for (var i = 0; i < animationLayers.Length; ++i)
                 {
@@ -185,7 +200,10 @@ namespace Kanna.Protecc
 
                 KannaLogger.LogToFile($"Beginning specialAnimationLayers Animator Obfuscation..", KannaProteccRoot.LogLocation);
 
-                ProgressBar("SpecialAnimationLayers AnimatorController Obfuscation", 6);
+                if (ProgressBar("SpecialAnimationLayers AnimatorController Obfuscation", 6))
+                {
+                    throw new OperationCanceledException();
+                }
                 var specialAnimationLayers = avatar.specialAnimationLayers;
                 for (var i = 0; i < specialAnimationLayers.Length; ++i)
                 {
@@ -215,7 +233,10 @@ namespace Kanna.Protecc
 
                 KannaLogger.LogToFile($"Beginning Generic Animator Obfuscation..", KannaProteccRoot.LogLocation);
 
-                ProgressBar("Misc Animators Obfuscation", 7);
+                if (ProgressBar("Misc Animators Obfuscation", 7))
+                {
+                    throw new OperationCanceledException();
+                }
                 var otherAnimators = obj.GetComponentsInChildren<Animator>(true)
                     .Where(t => t.runtimeAnimatorController == null || t.gameObject != obj);
                 foreach (var animator in otherAnimators)
@@ -238,7 +259,10 @@ namespace Kanna.Protecc
 
                 KannaLogger.LogToFile($"Beginning ExpressionsMenu Obfuscation..", KannaProteccRoot.LogLocation);
 
-                ProgressBar("ExpressionsMenu Obfuscation", 8);
+                if (ProgressBar("ExpressionsMenu Obfuscation", 8))
+                {
+                    throw new OperationCanceledException();
+                }
                 if (avatar.expressionsMenu != null)
                 {
                     avatar.expressionsMenu = ExpressionsMenuObfuscator(avatar.expressionsMenu, root);
@@ -251,7 +275,10 @@ namespace Kanna.Protecc
                 AssetDatabase.SaveAssets();
 
                 KannaLogger.LogToFile($"Caching All Bones Recursively Via Animators", KannaProteccRoot.LogLocation);
-                ProgressBar("Caching All Bones From Animator To Ignore Them In Rename", 9);
+                if (ProgressBar("Caching All Bones From Animator To Ignore Them In Rename", 9))
+                {
+                    throw new OperationCanceledException();
+                }
                 var animators = obj.GetComponentsInChildren<Animator>(true);
                 var enumValues = Enum.GetValues(typeof(HumanBodyBones));
                 foreach (HumanBodyBones boneId in enumValues)
@@ -285,13 +312,19 @@ namespace Kanna.Protecc
                         .Where(childObject => childObject.GetInstanceID() != obj.GetInstanceID() &&
                                               !_excludeNameSet.Contains(childObject.name)).ToArray();
 
-                    ProgressBar($"Obfuscating 0/{ToRename.Length} Transform Names", 10);
+                    if (ProgressBar($"Obfuscating 0/{ToRename.Length} Transform Names", 10))
+                    {
+                        throw new OperationCanceledException();
+                    }
 
                     for (var index = 0; index < ToRename.Length; index++)
                     {
                         var childObject = ToRename[index];
 
-                        ProgressBar($"Obfuscating {index + 1}/{ToRename.Length} Transform Names", 10);
+                        if (ProgressBar($"Obfuscating {index + 1}/{ToRename.Length} Transform Names", 10))
+                        {
+                            throw new OperationCanceledException();
+                        }
 
                         if (!_objectNameDic.ContainsKey(childObject.name))
                         {
@@ -310,19 +343,28 @@ namespace Kanna.Protecc
 
                     KannaLogger.LogToFile($"Beginning Updating Of AnimationClips; Cached Previously From Animator Obfuscations..", KannaProteccRoot.LogLocation);
 
-                    ProgressBar($"Updating 0/{_animClipList.Count} AnimationClips", 11);
+                    if (ProgressBar($"Updating 0/{_animClipList.Count} AnimationClips", 11))
+                    {
+                        throw new OperationCanceledException();
+                    }
                     for (var index = 0; index < _animClipList.Count; index++)
                     {
                         var clip = _animClipList[index];
 
-                        ProgressBar($"Updating {index + 1}/{_animClipList.Count} AnimationClips", 11);
+                        if (ProgressBar($"Updating {index + 1}/{_animClipList.Count} AnimationClips", 11))
+                        {
+                            throw new OperationCanceledException();
+                        }
 
                         var array = AnimationUtility.GetCurveBindings(clip).Concat(AnimationUtility.GetObjectReferenceCurveBindings(clip)).ToArray();
                         for (var index1 = 0; index1 < array.Length; index1++)
                         {
                             var binding = array[index1];
 
-                            ProgressBar($"Updating {index + 1}/{_animClipList.Count} ({index1}/{array.Length}) AnimationClips", 11);
+                            if (ProgressBar($"Updating {index + 1}/{_animClipList.Count} ({index1}/{array.Length}) AnimationClips", 11))
+                            {
+                                throw new OperationCanceledException();
+                            }
 
                             var copy = binding;
                             var bindingPath = binding.path;
@@ -355,7 +397,10 @@ namespace Kanna.Protecc
                 }
 
                 KannaLogger.LogToFile($"Randomizing Sibling Order..", KannaProteccRoot.LogLocation);
-                ProgressBar("Randomizing Sibling Order", 12);
+                if (ProgressBar("Randomizing Sibling Order", 12))
+                {
+                    throw new OperationCanceledException();
+                }
 
                 RandomizeAllSiblingOrders(obj);
 
@@ -367,6 +412,11 @@ namespace Kanna.Protecc
             }
             catch (Exception err)
             {
+                if (err is OperationCanceledException)
+                {
+                    obj = null;
+                }
+
                 KannaLogger.LogToFile($"{err}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
             }
             finally
@@ -956,9 +1006,9 @@ namespace Kanna.Protecc
             EditorSceneManager.SaveOpenScenes();
         }
 
-        private static void ProgressBar(string info, float min, float max = 12)
+        private static bool ProgressBar(string info, float min, float max = 12)
         {
-            EditorUtility.DisplayProgressBar("Obfuscator", info, min / max);
+            return EditorUtility.DisplayCancelableProgressBar("Obfuscator", info, min / max);
         }
     }
 }
