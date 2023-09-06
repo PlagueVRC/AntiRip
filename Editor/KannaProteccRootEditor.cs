@@ -261,8 +261,6 @@ namespace Kanna.Protecc
 
                     var descriptor = avatar.GetComponent<VRCAvatarDescriptor>();
 
-                    var AllMaterials = new List<Material>();
-
                     var Anims = new List<AnimationClip>();
 
                     Anims.AddRange(descriptor.baseAnimationLayers.Where(p => p.animatorController != null).SelectMany(o => o.animatorController.animationClips));
