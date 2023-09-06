@@ -285,13 +285,13 @@ namespace Kanna.Protecc
                         .Where(childObject => childObject.GetInstanceID() != obj.GetInstanceID() &&
                                               !_excludeNameSet.Contains(childObject.name)).ToArray();
 
-                    ProgressBar($"Obfuscating 0/{ToRename.Length} Transform Names", 10);
+                    ProgressBar($"Obfuscating 0/{ToRename.Length} () Transform Names", 10);
 
                     for (var index = 0; index < ToRename.Length; index++)
                     {
                         var childObject = ToRename[index];
 
-                        ProgressBar($"Obfuscating {index + 1}/{ToRename.Length} Transform Names", 10);
+                        ProgressBar($"Obfuscating {index + 1}/{ToRename.Length} ({childObject.name}) Transform Names", 10);
 
                         if (!_objectNameDic.ContainsKey(childObject.name))
                         {
@@ -310,12 +310,12 @@ namespace Kanna.Protecc
 
                     KannaLogger.LogToFile($"Beginning Updating Of AnimationClips; Cached Previously From Animator Obfuscations..", KannaProteccRoot.LogLocation);
 
-                    ProgressBar($"Updating 0/{_animClipList.Count} AnimationClips", 11);
+                    ProgressBar($"Updating 0/{_animClipList.Count} () AnimationClips", 11);
                     for (var index = 0; index < _animClipList.Count; index++)
                     {
                         var clip = _animClipList[index];
 
-                        ProgressBar($"Updating {index + 1}/{_animClipList.Count} AnimationClips", 11);
+                        ProgressBar($"Updating {index + 1}/{_animClipList.Count} ({clip.name}) AnimationClips", 11);
 
                         foreach (var binding in AnimationUtility.GetCurveBindings(clip))
                         {
