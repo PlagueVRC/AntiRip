@@ -2,9 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
-
+using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
 
 namespace Kanna.Protecc
@@ -26,7 +27,7 @@ namespace Kanna.Protecc
                 var submesh = mesh.GetSubMesh(i);
 
                 // This checks if the vertex index is within the range of indices for that submesh
-                if (vertexIndex >= submesh.firstVertex && vertexIndex < submesh.firstVertex + submesh.vertexCount)
+                if (vertexIndex >= submesh.firstVertex && vertexIndex < (submesh.firstVertex + submesh.vertexCount))
                 {
                     // If yes, then store the submesh index and break the loop
                     submeshIndex = i;
@@ -56,7 +57,7 @@ namespace Kanna.Protecc
 
             for (var v = 0; v < newVertices.Length; v++)
             {
-                var SubIndex = GetSubmeshIndexForVertex(mesh, v);
+                var SubIndex = GetSubmeshIndexForVertex(mesh, v + 1);
                 
                 if (renderer.sharedMaterials.Length > (SubIndex + 1))
                 {
