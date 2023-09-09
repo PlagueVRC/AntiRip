@@ -14,30 +14,50 @@ namespace Kanna.Protecc
     {
         private static int GetSubmeshIndexForVertex(Mesh mesh, int vertexIndex)
         {
-            // This gets the number of submeshes in the mesh
-            var submeshCount = mesh.subMeshCount;
-
-            // This variable will store the submesh index for that vertex, or -1 if not found
-            var submeshIndex = -1;
-
-            // This loop goes over all the submeshes
-            for (var i = 0; i < submeshCount; i++)
+            if (vertexIndex < 0 || vertexIndex >= mesh.vertexCount)
             {
-                // This gets the submesh at index i
-                var submesh = mesh.GetSubMesh(i);
+                return -1; // Index is out of bounds
+            }
 
-                // This checks if the vertex index is within the range of indices for that submesh
-                if (vertexIndex >= submesh.firstVertex && vertexIndex < (submesh.firstVertex + submesh.vertexCount))
+            for (var submeshIndex = 0; submeshIndex < mesh.subMeshCount; submeshIndex++)
+            {
+                var submeshIndices = mesh.GetIndices(submeshIndex);
+
+                if (Array.IndexOf(submeshIndices, vertexIndex) >= 0)
                 {
-                    // If yes, then store the submesh index and break the loop
-                    submeshIndex = i;
-                    break;
+                    return submeshIndex;
                 }
             }
 
-            // This returns the result
-            return submeshIndex;
+            return -1; // Index not found in any submesh
         }
+
+        //private static int GetSubmeshIndexForVertex(Mesh mesh, int vertexIndex)
+        //{
+        //    // This gets the number of submeshes in the mesh
+        //    var submeshCount = mesh.subMeshCount;
+
+        //    // This variable will store the submesh index for that vertex, or -1 if not found
+        //    var submeshIndex = -1;
+
+        //    // This loop goes over all the submeshes
+        //    for (var i = 0; i < submeshCount; i++)
+        //    {
+        //        // This gets the submesh at index i
+        //        var submesh = mesh.GetSubMesh(i);
+
+        //        // This checks if the vertex index is within the range of indices for that submesh
+        //        if (vertexIndex >= submesh.firstVertex && vertexIndex < (submesh.firstVertex + (submesh.vertexCount - 2)))
+        //        {
+        //            // If yes, then store the submesh index and break the loop
+        //            submeshIndex = i;
+        //            break;
+        //        }
+        //    }
+
+        //    // This returns the result
+        //    return submeshIndex;
+        //}
 
         public static Mesh EncryptMesh(Renderer renderer, Mesh mesh, float distortRatio, KannaProteccData data, List<Material> IgnoredMaterials)
         {
@@ -57,20 +77,22 @@ namespace Kanna.Protecc
 
             for (var v = 0; v < newVertices.Length; v++)
             {
-                var SubIndex = GetSubmeshIndexForVertex(mesh, v + 1);
+                var SubIndex = GetSubmeshIndexForVertex(mesh, v);
                 
-                if (renderer.sharedMaterials.Length > (SubIndex + 1))
+                if (SubIndex == -1 || (SubIndex + 1) > renderer.sharedMaterials.Length)
                 {
-                    Debug.Log($"Ignoring Mesh: {mesh.name} - SubMeshIndex Higher Than Amount Of Materials Available! ({renderer.sharedMaterials.Length} > {(SubIndex + 1)})");
+                    Debug.Log($"Ignoring Mesh: {mesh.name} - SubMeshIndex Higher/Invalid Than Amount Of Materials Available! ({renderer.sharedMaterials.Length} > {(SubIndex + 1)})");
                     SubIndex = renderer.sharedMaterials.Length - 1; // Clamp to last material submesh index
                 }
                 
                 var mat = renderer.sharedMaterials[SubIndex];
 
-                if (mat == null || !mat.shader.name.Contains("KannaProtecc"))
+                if (mat == null || IgnoredMaterials.Contains(mat)  || !mat.shader.name.Contains("KannaProtecc"))
                 {
                     continue;
                 }
+
+                Debug.Log($"Resolved Material: {mat.name}: {SubIndex}");
 
                 uv7Offsets[v].x = Random.Range(minRange, maxRange);
                 uv7Offsets[v].y = Random.Range(minRange, maxRange);
