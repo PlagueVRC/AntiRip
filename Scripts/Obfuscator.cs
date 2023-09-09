@@ -939,7 +939,7 @@ namespace Kanna.Protecc
             if (string.IsNullOrEmpty(originalPath) || AssetDatabase.IsSubAsset(original) ||
                 !AssetDatabase.IsMainAsset(original))
             {
-                KannaLogger.LogToFile($"Ignoring Asset: {original.name}: No Path, Is Sub Asset Or Is Main Asset!", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
+                KannaLogger.LogToFile($"Ignoring Asset: {original.name}: No Path, Is Sub Asset Or Is Main Asset!", KannaProteccRoot.LogLocation);
                 return original;
             }
 
