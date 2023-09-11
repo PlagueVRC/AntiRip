@@ -144,26 +144,6 @@ namespace Kanna.Protecc
                 if (avatar.expressionParameters != null)
                     avatar.expressionParameters = ExpressionParametersObfuscator(avatar.expressionParameters, root);
 
-                // Update Thingies
-                var AllContactReceivers = obj.GetComponentsInChildren<VRCContactReceiver>(true);
-                var AllPhysBones = obj.GetComponentsInChildren<VRCPhysBone>(true);
-
-                foreach (var thing in AllContactReceivers)
-                {
-                    if (thing != null && !string.IsNullOrEmpty(thing.parameter) && _parameterDic.ContainsKey(thing.parameter))
-                    {
-                        thing.parameter = _parameterDic[thing.parameter];
-                    }
-                }
-
-                foreach (var thing in AllPhysBones)
-                {
-                    if (thing != null && !string.IsNullOrEmpty(thing.parameter) && _parameterDic.ContainsKey(thing.parameter))
-                    {
-                        thing.parameter = _parameterDic[thing.parameter];
-                    }
-                }
-
                 Utilities.ResetRandomizer();
 
                 KannaLogger.LogToFile($"Beginning baseAnimationLayers Animator Obfuscation..", KannaProteccRoot.LogLocation);
@@ -253,6 +233,26 @@ namespace Kanna.Protecc
                     }
 
                     animator.runtimeAnimatorController = AnimatorObfuscator((AnimatorController)animator.runtimeAnimatorController, root);
+                }
+
+                // Update Thingies
+                var AllContactReceivers = obj.GetComponentsInChildren<VRCContactReceiver>(true);
+                var AllPhysBones = obj.GetComponentsInChildren<VRCPhysBone>(true);
+
+                foreach (var thing in AllContactReceivers)
+                {
+                    if (thing != null && !string.IsNullOrEmpty(thing.parameter) && _parameterDic.ContainsKey(thing.parameter))
+                    {
+                        thing.parameter = _parameterDic[thing.parameter];
+                    }
+                }
+
+                foreach (var thing in AllPhysBones)
+                {
+                    if (thing != null && !string.IsNullOrEmpty(thing.parameter) && _parameterDic.ContainsKey(thing.parameter))
+                    {
+                        thing.parameter = _parameterDic[thing.parameter];
+                    }
                 }
 
                 Utilities.ResetRandomizer();

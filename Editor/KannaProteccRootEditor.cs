@@ -264,7 +264,9 @@ namespace Kanna.Protecc
                     Anims.AddRange(descriptor.baseAnimationLayers.Where(p => p.animatorController != null).SelectMany(o => o.animatorController.animationClips));
                     Anims.AddRange(descriptor.specialAnimationLayers.Where(p => p.animatorController != null).SelectMany(o => o.animatorController.animationClips));
 
-                    foreach (var anim in Anims.Where(q => q != null))
+                    var NativeMats = avatar.GetComponentsInChildren<Renderer>(true).SelectMany(o => o.sharedMaterials).ToArray();
+
+                    foreach (var anim in Anims.Where(anim => anim != null))
                     {
                         var bindings = AnimationUtility.GetObjectReferenceCurveBindings(anim);
 
@@ -274,9 +276,20 @@ namespace Kanna.Protecc
                             {
                                 if (AnimationUtility.GetObjectReferenceValue(descriptor.gameObject, binding, out var obj) && obj is Material mat)
                                 {
-                                    if (!KannaProteccRoot.Instance.m_AdditionalMaterials.Contains(mat))
+                                    Debug.Log($"Found Mat: {mat.name} In Anim: {anim.name}");
+
+                                    if (!NativeMats.Contains(mat))
                                     {
-                                        KannaProteccRoot.Instance.m_AdditionalMaterials.Add(mat);
+                                        if (!KannaProteccRoot.Instance.m_AdditionalMaterials.Contains(mat))
+                                        {
+                                            KannaProteccRoot.Instance.m_AdditionalMaterials.Add(mat);
+
+                                            Debug.Log($"Added Mat: {mat.name}");
+                                        }
+                                        else
+                                        {
+                                            Debug.Log($"Ignored Mat: {mat.name} - Already Added");
+                                        }
                                     }
                                 }
                             }
