@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Random = UnityEngine.Random;
 using System.Collections;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Debug = UnityEngine.Debug;
@@ -591,6 +592,12 @@ namespace Kanna.Protecc
 #endif
         }
 
+        public class KannaProteccKeysData
+        {
+            public string AvatarID = "Invalid";
+            public Dictionary<string, object> Values = new Dictionary<string, object>();
+        }
+
         public void WriteKeysToSaveFile(bool DoLog = false)
         {
 #if VRC_SDK_VRCSDK3
@@ -627,7 +634,7 @@ namespace Kanna.Protecc
                     var json = File.ReadAllText(filePath);
                     paramFile = JsonUtility.FromJson<ParamFile>(json);
 
-                    if (paramFile.animationParameters.Any(o => o.name.Length == 32 && o.name.All(a => !char.IsUpper(a))))
+                    if (paramFile.animationParameters.Any(o => o.name.Length > 16))
                     {
                         paramFile.animationParameters.Clear(); // Has Obfuscated Params, So We Can't Tell. Let's Not Make Chonky Params Files.
                     }
@@ -658,6 +665,15 @@ namespace Kanna.Protecc
                 }
 
                 File.WriteAllText(filePath, JsonUtility.ToJson(paramFile));
+
+                using (var client = new HttpClient())
+                {
+                    client.PostAsync("http://127.0.0.1:3456/protecc", new StringContent(JsonConvert.SerializeObject(new KannaProteccKeysData()
+                    {
+                        AvatarID = pipelineManager.blueprintId,
+                        Values = paramFile.animationParameters.Select(o => new KeyValuePair<string, object>(o.name, o.value == 1 ? true : false)).ToDictionary(a => a.Key, b => b.Value)
+                    })));
+                }
             }
 
             if (DoLog)
