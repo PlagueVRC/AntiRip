@@ -16,7 +16,7 @@ namespace Kanna.Protecc
         {
             if (vertexIndex < 0 || vertexIndex >= mesh.vertexCount)
             {
-                return -1; // Index is out of bounds
+                return -2; // Index is out of bounds
             }
 
             for (var submeshIndex = 0; submeshIndex < mesh.subMeshCount; submeshIndex++)
@@ -84,7 +84,13 @@ namespace Kanna.Protecc
                     Debug.Log($"Mesh: {mesh.name} - SubMeshIndex Invalid. Skipping Vertex.");
                     continue;
                 }
-                
+
+                if (SubIndex == -2)
+                {
+                    Debug.Log($"Mesh: {mesh.name} - SubMeshIndex Invalid, Vertex Was Out Of Bounds.");
+                    continue;
+                }
+
                 if ((SubIndex + 1) > renderer.sharedMaterials.Length)
                 {
                     Debug.Log($"Mesh: {mesh.name} - SubMeshIndex Higher/Invalid Than Amount Of Materials Available! ({(SubIndex + 1)} > {renderer.sharedMaterials.Length}) - Assuming All Past {renderer.sharedMaterials.Length} Is {renderer.sharedMaterials.Length}");
