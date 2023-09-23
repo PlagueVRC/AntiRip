@@ -79,16 +79,14 @@ namespace Kanna.Protecc
             {
                 var SubIndex = GetSubmeshIndexForVertex(mesh, v);
 
-                if (SubIndex == -1)
+                switch (SubIndex)
                 {
-                    Debug.Log($"Mesh: {mesh.name} - SubMeshIndex Invalid. Skipping Vertex.");
-                    continue;
-                }
-
-                if (SubIndex == -2)
-                {
-                    Debug.Log($"Mesh: {mesh.name} - SubMeshIndex Invalid, Vertex Was Out Of Bounds.");
-                    continue;
+                    case -1:
+                        Debug.Log($"Mesh: {mesh.name} - SubMeshIndex Invalid. Vertex Index Was Not Found In Any SubMesh: {v}");
+                        continue;
+                    case -2:
+                        Debug.Log($"Mesh: {mesh.name} - SubMeshIndex Invalid, Vertex Index Was Out Of Bounds: {v}");
+                        continue;
                 }
 
                 if ((SubIndex + 1) > renderer.sharedMaterials.Length)
@@ -172,8 +170,8 @@ namespace Kanna.Protecc
 
             var newMesh = new Mesh
             {
-                subMeshCount = mesh.subMeshCount,
                 vertices = newVertices,
+                subMeshCount = mesh.subMeshCount,
                 colors = mesh.colors,
                 normals = mesh.normals,
                 tangents = mesh.tangents,
