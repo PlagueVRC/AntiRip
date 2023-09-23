@@ -78,10 +78,16 @@ namespace Kanna.Protecc
             for (var v = 0; v < newVertices.Length; v++)
             {
                 var SubIndex = GetSubmeshIndexForVertex(mesh, v);
-                
-                if (SubIndex == -1 || (SubIndex + 1) > renderer.sharedMaterials.Length)
+
+                if (SubIndex == -1)
                 {
-                    Debug.Log($"Ignoring Mesh: {mesh.name} - SubMeshIndex Higher/Invalid Than Amount Of Materials Available! ({renderer.sharedMaterials.Length} > {(SubIndex + 1)})");
+                    Debug.Log($"Mesh: {mesh.name} - SubMeshIndex Invalid. Skipping Vertex.");
+                    continue;
+                }
+                
+                if ((SubIndex + 1) > renderer.sharedMaterials.Length)
+                {
+                    Debug.Log($"Mesh: {mesh.name} - SubMeshIndex Higher/Invalid Than Amount Of Materials Available! ({renderer.sharedMaterials.Length} > {(SubIndex + 1)}) - Assuming All Past {renderer.sharedMaterials.Length} Is {renderer.sharedMaterials.Length}");
                     SubIndex = renderer.sharedMaterials.Length - 1; // Clamp to last material submesh index
                 }
                 
