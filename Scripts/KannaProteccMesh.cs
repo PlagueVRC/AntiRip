@@ -87,7 +87,7 @@ namespace Kanna.Protecc
                 
                 if ((SubIndex + 1) > renderer.sharedMaterials.Length)
                 {
-                    Debug.Log($"Mesh: {mesh.name} - SubMeshIndex Higher/Invalid Than Amount Of Materials Available! ({renderer.sharedMaterials.Length} > {(SubIndex + 1)}) - Assuming All Past {renderer.sharedMaterials.Length} Is {renderer.sharedMaterials.Length}");
+                    Debug.Log($"Mesh: {mesh.name} - SubMeshIndex Higher/Invalid Than Amount Of Materials Available! ({(SubIndex + 1)} > {renderer.sharedMaterials.Length}) - Assuming All Past {renderer.sharedMaterials.Length} Is {renderer.sharedMaterials.Length}");
                     SubIndex = renderer.sharedMaterials.Length - 1; // Clamp to last material submesh index
                 }
                 
