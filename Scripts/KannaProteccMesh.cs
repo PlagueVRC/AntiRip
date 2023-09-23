@@ -168,28 +168,32 @@ namespace Kanna.Protecc
 
             KannaLogger.LogToFile($"Encrypted Mesh Path: {encryptedMeshPath}", KannaProteccRoot.LogLocation);
 
-            var newMesh = new Mesh
+            var newMesh = new Mesh();
+
+            newMesh.vertices = newVertices;
+            newMesh.colors = mesh.colors;
+            newMesh.normals = mesh.normals;
+            newMesh.tangents = mesh.tangents;
+            newMesh.bindposes = mesh.bindposes;
+            newMesh.boneWeights = mesh.boneWeights;
+            newMesh.indexFormat = mesh.indexFormat;
+            newMesh.uv = mesh.uv;
+            newMesh.uv2 = mesh.uv2;
+            newMesh.uv3 = mesh.uv3;
+            newMesh.uv4 = mesh.uv4;
+            newMesh.uv5 = mesh.uv5;
+            newMesh.uv6 = mesh.uv6;
+            newMesh.uv7 = uv7Offsets;
+            newMesh.uv8 = uv8Offsets;
+            newMesh.bounds = mesh.bounds;
+            newMesh.name = mesh.name;
+            newMesh.colors32 = mesh.colors32;
+            newMesh.subMeshCount = mesh.subMeshCount;
+
+            if (newMesh.subMeshCount != mesh.subMeshCount)
             {
-                vertices = newVertices,
-                subMeshCount = mesh.subMeshCount,
-                colors = mesh.colors,
-                normals = mesh.normals,
-                tangents = mesh.tangents,
-                bindposes = mesh.bindposes,
-                boneWeights = mesh.boneWeights,
-                indexFormat = mesh.indexFormat,
-                uv = mesh.uv,
-                uv2 = mesh.uv2,
-                uv3 = mesh.uv3,
-                uv4 = mesh.uv4,
-                uv5 = mesh.uv5,
-                uv6 = mesh.uv6,
-                uv7 = uv7Offsets,
-                uv8 = uv8Offsets,
-                bounds = mesh.bounds,
-                name = mesh.name,
-                colors32 = mesh.colors32,
-            };
+                KannaLogger.LogToFile($"SubMesh Count Mismatch On Mesh: {mesh.name}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
+            }
 
             // transfer sub meshes
             for (var meshIndex = 0; meshIndex < newMesh.subMeshCount; meshIndex++)
