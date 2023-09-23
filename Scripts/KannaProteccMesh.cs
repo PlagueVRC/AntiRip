@@ -192,7 +192,7 @@ namespace Kanna.Protecc
 
             if (newMesh.subMeshCount != mesh.subMeshCount)
             {
-                KannaLogger.LogToFile($"SubMesh Count Mismatch On Mesh: {mesh.name}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
+                KannaLogger.LogToFile($"OOPSIE WOOPSIE!! Uwu We made a fucky wucky!! A wittle fucko boingo! The code monkeys at our headquarters are working VEWY HAWD to fix this! (SubMesh Count Mismatch On Mesh: {mesh.name})", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
             }
 
             // transfer sub meshes
