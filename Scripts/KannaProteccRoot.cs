@@ -156,6 +156,13 @@ namespace Kanna.Protecc
             return controller;
         }
 
+        public static bool IsMeshSupported(Mesh mesh)
+        {
+            var existingMeshPath = AssetDatabase.GetAssetPath(mesh);
+
+            return !string.IsNullOrEmpty(existingMeshPath) && !existingMeshPath.Contains("unity default resources");
+        }
+
         public void EncryptAvatar()
         {
             if (ParameterRenamedValues.Count == 0 && !string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId))
@@ -202,7 +209,7 @@ namespace Kanna.Protecc
 
             KannaLogger.LogToFile($"Got All Meshes, Encrypting Additional Materials..", LogLocation);
 
-            EncryptMaterials(m_AdditionalMaterials.ToArray(), decodeShader, m_IgnoredMaterials);
+            EncryptMaterials(null, m_AdditionalMaterials.ToArray(), decodeShader, m_IgnoredMaterials);
 
             KannaLogger.LogToFile($"Additional Materials Encrypted, Processing MeshFilters..", LogLocation);
 
@@ -213,9 +220,9 @@ namespace Kanna.Protecc
                 {
                     meshFilter.o.gameObject.SetActive(true);
                     var materials = meshFilter.o.GetComponent<MeshRenderer>().sharedMaterials;
-                    if (EncryptMaterials(materials, decodeShader, m_IgnoredMaterials))
+                    if (EncryptMaterials(meshFilter.o.sharedMesh, materials, decodeShader, m_IgnoredMaterials))
                     {
-                        meshFilter.o.sharedMesh = KannaProteccMesh.EncryptMesh(meshFilter.o.GetComponent<MeshRenderer>(), meshFilter.o.sharedMesh, _distortRatio, data, m_IgnoredMaterials);
+                        meshFilter.o.sharedMesh = KannaProteccMesh.EncryptMesh(meshFilter.o.GetComponent<MeshRenderer>(), meshFilter.o.sharedMesh, _distortRatio, data, m_IgnoredMaterials) ?? meshFilter.o.sharedMesh;
                     }
                     else
                     {
@@ -238,9 +245,9 @@ namespace Kanna.Protecc
                 {
                     skinnedMeshRenderer.o.gameObject.SetActive(true);
                     var materials = skinnedMeshRenderer.o.sharedMaterials;
-                    if (EncryptMaterials(materials, decodeShader, m_IgnoredMaterials))
+                    if (EncryptMaterials(skinnedMeshRenderer.o.sharedMesh, materials, decodeShader, m_IgnoredMaterials))
                     {
-                        skinnedMeshRenderer.o.sharedMesh = KannaProteccMesh.EncryptMesh(skinnedMeshRenderer.o, skinnedMeshRenderer.o.sharedMesh, _distortRatio, data, m_IgnoredMaterials);
+                        skinnedMeshRenderer.o.sharedMesh = KannaProteccMesh.EncryptMesh(skinnedMeshRenderer.o, skinnedMeshRenderer.o.sharedMesh, _distortRatio, data, m_IgnoredMaterials) ?? skinnedMeshRenderer.o.sharedMesh;
                     }
                     else
                     {
@@ -316,8 +323,17 @@ namespace Kanna.Protecc
                     select type).FirstOrDefault();
         }
 
-        bool EncryptMaterials(Material[] materials, string decodeShader, List<Material> aggregateIgnoredMaterials)
+        bool EncryptMaterials(Mesh mesh, Material[] materials, string decodeShader, List<Material> aggregateIgnoredMaterials)
         {
+            if (mesh != null && !IsMeshSupported(mesh))
+            {
+                var existingMeshPath = AssetDatabase.GetAssetPath(mesh);
+
+                KannaLogger.LogToFile($"Asset For Mesh Not Found, Invalid Or Is A Built In Unity Mesh! -> {mesh.name}: {existingMeshPath ?? ""}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
+
+                return false;
+            }
+
             KannaLogger.LogToFile($"EncryptMaterials Start..", LogLocation);
 
             var materialEncrypted = false;

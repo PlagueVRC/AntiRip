@@ -65,6 +65,16 @@ namespace Kanna.Protecc
 
             KannaLogger.LogToFile($"Encrypting Mesh: {mesh.name} On Renderer: {renderer.name}", KannaProteccRoot.LogLocation);
 
+            var existingMeshPath = AssetDatabase.GetAssetPath(mesh);
+
+            if (!KannaProteccRoot.IsMeshSupported(mesh))
+            {
+                KannaLogger.LogToFile($"Asset For Mesh Not Found, Invalid Or Is A Built In Unity Mesh! -> {mesh.name}: {existingMeshPath ?? ""}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
+                return null;
+            }
+
+            KannaLogger.LogToFile($"Existing Mesh Path For {mesh.name} Is {existingMeshPath}", KannaProteccRoot.LogLocation);
+
             var newVertices = mesh.vertices;
             var normals = mesh.normals;
             var uv7Offsets = new Vector2[mesh.vertexCount];
@@ -136,16 +146,6 @@ namespace Kanna.Protecc
                 //newVertices[v] += normals[v] * (uv8Offsets[v].y * data.ComKey[6]);
                 //newVertices[v] += normals[v] * (uv8Offsets[v].x * data.ComKey[7]);
             }
-
-            var existingMeshPath = AssetDatabase.GetAssetPath(mesh);
-
-            if (string.IsNullOrEmpty(existingMeshPath) || existingMeshPath.Contains("unity default resources"))
-            {
-                KannaLogger.LogToFile($"Asset For Mesh Not Found, Invalid Or Is A Built In Unity Mesh! -> {mesh.name}: {existingMeshPath ?? ""}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
-                return null;
-            }
-
-            KannaLogger.LogToFile($"Existing Mesh Path For {mesh.name} Is {existingMeshPath}", KannaProteccRoot.LogLocation);
 
             //Do Not Care What File Type The Mesh Is, Attempt Anyway.
             //The Inline If Statement Is A Fallback Check, It Gets The Path Combined With The Filename Without Extension With Our Own Extension, If The Path Is Null, It Would Then Use Enviroment.CurrentDirectory Via Inheritance As The Path.
