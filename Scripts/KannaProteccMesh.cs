@@ -69,7 +69,7 @@ namespace Kanna.Protecc
 
             if (!KannaProteccRoot.IsMeshSupported(mesh))
             {
-                KannaLogger.LogToFile($"Asset For Mesh Not Found, Invalid Or Is A Built In Unity Mesh! -> {mesh.name}: {existingMeshPath ?? ""}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
+                KannaLogger.LogToFile($"Asset For Mesh Not Found, Invalid Or Is A Built In Unity Mesh! It Will Be Ignored! -> {mesh.name}: {existingMeshPath ?? ""}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
                 return null;
             }
 
@@ -87,27 +87,45 @@ namespace Kanna.Protecc
 
             for (var v = 0; v < newVertices.Length; v++)
             {
+                var tries = 1;
+
+                Retry:
                 var SubIndex = GetSubmeshIndexForVertex(mesh, v);
 
                 switch (SubIndex)
                 {
                     case -1:
-                        Debug.Log($"Mesh: {mesh.name} - SubMeshIndex Invalid. Vertex Index Was Not Found In Any SubMesh: {v}");
+                        KannaLogger.LogToFile($"Mesh: {mesh.name} - SubMeshIndex Invalid. Vertex Index Was Not Found In Any SubMesh: {v}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
                         continue;
                     case -2:
-                        Debug.Log($"Mesh: {mesh.name} - SubMeshIndex Invalid, Vertex Index Was Out Of Bounds: {v}");
+                        KannaLogger.LogToFile($"Mesh: {mesh.name} - SubMeshIndex Invalid, Vertex Index Was Out Of Bounds: {v}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
                         continue;
                 }
 
                 if ((SubIndex + 1) > renderer.sharedMaterials.Length)
                 {
-                    Debug.Log($"Mesh: {mesh.name} - SubMeshIndex Higher/Invalid Than Amount Of Materials Available! ({(SubIndex + 1)} > {renderer.sharedMaterials.Length}) - Assuming All Past {renderer.sharedMaterials.Length} Is {renderer.sharedMaterials.Length}");
+                    KannaLogger.LogToFile($"Mesh: {mesh.name} - SubMeshIndex Higher/Invalid Than Amount Of Materials Available! ({(SubIndex + 1)} > {renderer.sharedMaterials.Length}) - Assuming All Past {renderer.sharedMaterials.Length} Is {renderer.sharedMaterials.Length}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
                     SubIndex = renderer.sharedMaterials.Length - 1; // Clamp to last material submesh index
                 }
                 
                 var mat = renderer.sharedMaterials[SubIndex];
 
-                if (mat == null || IgnoredMaterials.Contains(mat)  || !mat.shader.name.Contains("KannaProtecc"))
+                if (mat == null)
+                {
+                    renderer.sharedMaterials = renderer.sharedMaterials.ToList().Take(renderer.sharedMaterials.Length - 1).ToArray(); // Remove Last, Since the user did a boo-boo.
+
+                    KannaLogger.LogToFile($"Mesh: {mesh.name} - User Error Detected, Extra Material Is Null, Removing Automatically And Carrying On..", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
+
+                    if (tries == 5) // Random Number Weee Wooo
+                    {
+                        continue;
+                    }
+
+                    tries++;
+                    goto Retry;
+                }
+
+                if (IgnoredMaterials.Contains(mat)  || !mat.shader.name.Contains("KannaProtecc"))
                 {
                     continue;
                 }
