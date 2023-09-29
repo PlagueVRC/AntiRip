@@ -223,22 +223,28 @@ https://trello.com/b/k88bNBvd/kanna-protecc
 ## Hall Of Shame
 
 Not only does this show they endorse ripping in sars, but also shows he is clueless; even to how this works. Not only does Kanna Protecc not make you lose the original, it also has numerous layers to make re-obtaining your original possible. Not for rippers, however. This screws them over fully.
+
 ![image](https://github.com/PlagueVRC/AntiRip/assets/36628963/459381b5-fc44-41d1-bb16-070c0e599a9b)
 
 Furthermore, one that not only makes crashers, but is completely clueless. Kanna Protecc doesn't effect any original files of your avatar, with the single exception of changing the shader on your materials; which is easily fixed.
+
 ![image](https://github.com/PlagueVRC/AntiRip/assets/36628963/5db3b237-059b-4693-bba7-c61c6fbe2b80)
 
 People who lied claiming they could bypass this yet would never put their money where their mouth is, or just terrible people in general, such as contributors to the ripping scene.
+
 ![image](https://github.com/PlagueVRC/AntiRip/assets/36628963/5048a3da-9fcd-4eca-ae7e-f077fcdd574e)
 
 Idiot dev of sars who claims he doesn't endorse ripping, meanwhile majority admins rip and AC outright told someone they can rip any avatar. Even in cool people role has people openly expressing they make and use crashers.
+
 ![image](https://github.com/PlagueVRC/AntiRip/assets/36628963/82561d83-3e39-4163-991f-f9ed9162fceb)
 Proof of admin endorsing it:
 
 https://github.com/PlagueVRC/AntiRip/assets/36628963/8fab7cab-ba16-4b34-b612-5481758c582f
 
 Member of SARS community panicking at Kanna Protecc existing:
+
 ![image](https://github.com/PlagueVRC/AntiRip/assets/36628963/4b24c38b-ae32-44f8-8aa9-937440537507)
 
 Soy boy
+
 ![image](https://github.com/PlagueVRC/AntiRip/assets/36628963/5645b5aa-a83e-4f38-a21e-53840fd31f34)
