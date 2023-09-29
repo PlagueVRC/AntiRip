@@ -75,6 +75,19 @@ namespace Kanna.Protecc
 
             KannaLogger.LogToFile($"Existing Mesh Path For {mesh.name} Is {existingMeshPath}", KannaProteccRoot.LogLocation);
 
+            bool Predicate(Material o)
+            {
+                if (o != null)
+                {
+                    return true;
+                }
+
+                KannaLogger.LogToFile($"Mesh: {mesh.name} - User Error Detected, Extra Material Is Null, Removing Automatically And Carrying On..", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
+                return false;
+            }
+
+            renderer.sharedMaterials = renderer.sharedMaterials.Where(Predicate).ToArray();
+
             var newVertices = mesh.vertices;
             var normals = mesh.normals;
             var uv7Offsets = new Vector2[mesh.vertexCount];
@@ -87,9 +100,6 @@ namespace Kanna.Protecc
 
             for (var v = 0; v < newVertices.Length; v++)
             {
-                var tries = 1;
-
-                Retry:
                 var SubIndex = GetSubmeshIndexForVertex(mesh, v);
 
                 switch (SubIndex)
@@ -110,22 +120,7 @@ namespace Kanna.Protecc
                 
                 var mat = renderer.sharedMaterials[SubIndex];
 
-                if (mat == null)
-                {
-                    renderer.sharedMaterials = renderer.sharedMaterials.ToList().Take(renderer.sharedMaterials.Length - 1).ToArray(); // Remove Last, Since the user did a boo-boo.
-
-                    KannaLogger.LogToFile($"Mesh: {mesh.name} - User Error Detected, Extra Material Is Null, Removing Automatically And Carrying On..", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
-
-                    if (tries == 5) // Random Number Weee Wooo
-                    {
-                        continue;
-                    }
-
-                    tries++;
-                    goto Retry;
-                }
-
-                if (IgnoredMaterials.Contains(mat)  || !mat.shader.name.Contains("KannaProtecc"))
+                if (mat == null || IgnoredMaterials.Contains(mat)  || !mat.shader.name.Contains("KannaProtecc"))
                 {
                     continue;
                 }
