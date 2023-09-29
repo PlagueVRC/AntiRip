@@ -24,7 +24,6 @@ namespace Kanna.Protecc
         }
 
         public string ShaderName_StartsWith;
-        public bool SupportsLocking;
 
         public KannaReplaceText UV;
         public KannaReplaceText Vert;
@@ -123,7 +122,6 @@ namespace Kanna.Protecc
             new KannaDynamicShaderData
             {
                 ShaderName_StartsWith = ".poiyomi/Poiyomi 7.3",
-                SupportsLocking = true,
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
@@ -153,7 +151,6 @@ namespace Kanna.Protecc
             new KannaDynamicShaderData
             {
                 ShaderName_StartsWith = ".poiyomi/Poiyomi 8.0",
-                SupportsLocking = true,
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
@@ -183,7 +180,6 @@ namespace Kanna.Protecc
             new KannaDynamicShaderData
             {
                 ShaderName_StartsWith = ".poiyomi/Poiyomi 8.1",
-                SupportsLocking = true,
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
@@ -213,7 +209,6 @@ namespace Kanna.Protecc
             new KannaDynamicShaderData
             {
                 ShaderName_StartsWith = ".poiyomi/Poiyomi 8.2",
-                SupportsLocking = true,
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
@@ -243,7 +238,6 @@ namespace Kanna.Protecc
             new KannaDynamicShaderData
             {
                 ShaderName_StartsWith = "UnityChanToonShader",
-                SupportsLocking = false,
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
@@ -270,7 +264,6 @@ namespace Kanna.Protecc
             new KannaDynamicShaderData
             {
                 ShaderName_StartsWith = "GeoTetra/GTAvaToon", // why you gotta have inconsistent ass syntax and naming rygo xD
-                SupportsLocking = false,
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
@@ -300,7 +293,6 @@ namespace Kanna.Protecc
             new KannaDynamicShaderData
             {
                 ShaderName_StartsWith = "Sunao Shader",
-                SupportsLocking = false,
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
@@ -327,7 +319,6 @@ namespace Kanna.Protecc
             new KannaDynamicShaderData
             {
                 ShaderName_StartsWith = "Xiexe/Toon",
-                SupportsLocking = false,
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
@@ -380,9 +371,9 @@ namespace Kanna.Protecc
         //
         // public const string AlteredUvTransfer = "o.uv[3] = v.uv3; avUv6 = v.uv6; avUv7 = v.uv7;";
 
-        public const string ModelDecodeIfndef = "#ifndef KANNAMODELDECODE\n#define KANNAMODELDECODE\n";
+        public const string ModelDecodeIfndef = "#ifndef KANNAMODELDECODE\r\n#define KANNAMODELDECODE\r\n";
         
-        public const string ModelDecodeEndif = "#endif\n";
+        public const string ModelDecodeEndif = "#endif\r\n";
         
         static string ModelShaderDecodeFirst = 
 @"float _BitKey0;
