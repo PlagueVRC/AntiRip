@@ -272,25 +272,38 @@ namespace Kanna.Protecc
                     {
                         var bindings = AnimationUtility.GetObjectReferenceCurveBindings(anim);
 
+                        Debug.Log($"Found Anim: {anim.name} With {bindings?.Length ?? 0} Bindings");
+
                         if (bindings != null && bindings.Length > 0)
                         {
                             foreach (var binding in bindings)
                             {
-                                if (AnimationUtility.GetObjectReferenceValue(descriptor.gameObject, binding, out var obj) && obj is Material mat)
+                                foreach (var frame in AnimationUtility.GetObjectReferenceCurve(anim, binding))
                                 {
-                                    Debug.Log($"Found Mat: {mat.name} In Anim: {anim.name}");
+                                    var obj = frame.value;
 
-                                    if (!NativeMats.Contains(mat))
+                                    Debug.LogWarning($"Found Obj: {obj.GetType().Name}: {obj.name} In Anim: {anim.name}");
+
+                                    if (obj is Material mat)
                                     {
-                                        if (!KannaProteccRoot.Instance.m_AdditionalMaterials.Contains(mat))
-                                        {
-                                            KannaProteccRoot.Instance.m_AdditionalMaterials.Add(mat);
+                                        Debug.LogWarning($"Found Mat: {mat.name} In Anim: {anim.name}");
 
-                                            Debug.Log($"Added Mat: {mat.name}");
+                                        if (!NativeMats.Contains(mat))
+                                        {
+                                            if (!KannaProteccRoot.Instance.m_AdditionalMaterials.Contains(mat))
+                                            {
+                                                KannaProteccRoot.Instance.m_AdditionalMaterials.Add(mat);
+
+                                                Debug.Log($"Added Mat: {mat.name}");
+                                            }
+                                            else
+                                            {
+                                                Debug.Log($"Ignored Mat: {mat.name} - Already Added");
+                                            }
                                         }
                                         else
                                         {
-                                            Debug.Log($"Ignored Mat: {mat.name} - Already Added");
+                                            Debug.Log($"Ignored Mat: {mat.name} - Not Additional");
                                         }
                                     }
                                 }
