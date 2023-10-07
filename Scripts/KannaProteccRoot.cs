@@ -345,7 +345,7 @@ namespace Kanna.Protecc
                 {
                     KannaLogger.LogToFile($"Some Shaders Support Locking And Are Not Locked, Locking..", LogLocation);
 
-                    Utilities.SetShadersLockedState(lockablemats, true);
+                    Utilities.SetAllChildShadersLockedState(true, gameObject);
                 }
             }
 
@@ -420,7 +420,7 @@ namespace Kanna.Protecc
 
                         var shadername = textafter.Substring(0, textafter.IndexOf("\"", StringComparison.Ordinal));
 
-                        _sb.Append(shaderText.Replace($"Shader \"{shadername}\"", "Shader \"Hidden/Locked/KannaProtecc\""));
+                        _sb.Append(shaderText.Replace($"Shader \"{shadername}\"", $"Shader \"{shadername}/KannaProtecc\""));
 
                         if (shaderInfo != null)
                         {
