@@ -79,7 +79,10 @@ public class Utilities
         }
 
         SaveChangeStack();
-        Optimizer.GetMethod("SetLockedForAllMaterials", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { new[] { mat }, locked ? 1 : 0, /*ShowProgressBar*/true, /*Default Values, Reflection Needs All Defined:*/false, false, null });
+        if (!(bool)Optimizer.GetMethod("SetLockedForAllMaterials", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { new[] { mat }, locked ? 1 : 0, /*ShowProgressBar*/true, /*Default Values, Reflection Needs All Defined:*/false, false, null }))
+        {
+            throw new Exception("Fuck. Thry Go WeeWoo.");
+        }
         RestoreChangeStack();
     }
 
@@ -91,7 +94,10 @@ public class Utilities
         }
 
         SaveChangeStack();
-        Optimizer.GetMethod("SetLockedForAllMaterials", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { mats, locked ? 1 : 0, /*ShowProgressBar*/true, /*Default Values, Reflection Needs All Defined:*/false, false, null });
+        if (!(bool)Optimizer.GetMethod("SetLockedForAllMaterials", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { mats, locked ? 1 : 0, /*ShowProgressBar*/true, /*Default Values, Reflection Needs All Defined:*/false, false, null }))
+        {
+            throw new Exception("Fuck. Thry Go WeeWoo.");
+        }
         RestoreChangeStack();
     }
 
@@ -125,6 +131,8 @@ public class Utilities
                 }
             }
         }
+
+        AssetDatabase.Refresh();
     }
 }
 #endif

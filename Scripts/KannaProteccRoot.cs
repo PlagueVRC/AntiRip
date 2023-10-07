@@ -335,8 +335,20 @@ namespace Kanna.Protecc
             }
 
             KannaLogger.LogToFile($"EncryptMaterials Start..", LogLocation);
-
             var materialEncrypted = false;
+
+            if (Utilities.GetThry())
+            {
+                var lockablemats = materials.Where(o => Utilities.CanShaderBeLocked(o.shader) && !Utilities.IsMaterialLocked(o)).ToArray();
+
+                if (lockablemats.Length > 0)
+                {
+                    KannaLogger.LogToFile($"Some Shaders Support Locking And Are Not Locked, Locking..", LogLocation);
+
+                    Utilities.SetShadersLockedState(lockablemats, true);
+                }
+            }
+
             foreach (var mat in materials)
             {
                 if (mat != null && mat.shader != null)
@@ -368,20 +380,7 @@ namespace Kanna.Protecc
                         continue;
                     }
 
-                    var shadersupportslocking = Utilities.CanShaderBeLocked(mat.shader);
-
-                    if (Utilities.GetThry() && shadersupportslocking && !Utilities.IsMaterialLocked(mat))
-                    {
-                        KannaLogger.LogToFile($"Shader: {mat.shader.name} Supports Locking And Is Not Locked, Locking..", LogLocation);
-
-                        Utilities.SetShaderLockedState(mat, true);
-                    }
-
-                    KannaLogger.LogToFile($"Done, Refreshing AssetDatabase..", LogLocation);
-
-                    AssetDatabase.Refresh();
-
-                    if (Utilities.GetThry() && shadersupportslocking && !Utilities.IsMaterialLocked(mat)) // Double Check
+                    if (Utilities.GetThry() && Utilities.CanShaderBeLocked(mat.shader) && !Utilities.IsMaterialLocked(mat)) // Double Check
                     {
                         KannaLogger.LogToFile($"{mat.name} {mat.shader.name} Trying To Inject Non-Locked Shader?! - Skipping!", LogLocation, KannaLogger.LogType.Error);
                         continue;
