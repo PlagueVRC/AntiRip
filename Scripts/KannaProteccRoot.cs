@@ -354,43 +354,11 @@ namespace Kanna.Protecc
 
                     KannaLogger.LogToFile($"Found Supported Material: {mat.name} With Shader: {mat.shader.name}", LogLocation);
 
-                    var shadersupportslocking = false;
-
-                    var optimizer = GetTypeFromAnyAssembly("Thry.ShaderOptimizer");
-
-                    if (optimizer != null)
-                    {
-                        shadersupportslocking = (bool)optimizer.GetMethod("IsShaderUsingThryOptimizer", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { mat.shader });
-                    }
-                    else
-                    {
-                        KannaLogger.LogToFile("Thry Is Not In Your Project, So Kanna Protecc Will Assume All Shaders Do Not Support Locking!", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
-                    }
-
-                    if (optimizer != null && shadersupportslocking && !mat.shader.name.Contains("Locked"))
-                    {
-                        KannaLogger.LogToFile($"Shader: {mat.shader.name} Supports Locking And Is Not Locked, Locking..", LogLocation);
-
-                        optimizer.GetMethod("SetLockedForAllMaterials", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { new[] { mat }, 1, true, false, false, null });
-                    }
-
-                    KannaLogger.LogToFile($"Done, Refreshing AssetDatabase..", LogLocation);
-
-                    AssetDatabase.Refresh();
-
-                    if (optimizer != null && shadersupportslocking && !mat.shader.name.Contains("Locked"))
-                    {
-                        KannaLogger.LogToFile($"{mat.name} {mat.shader.name} Trying To Inject Non-Locked Shader?! - Skipping!", LogLocation, KannaLogger.LogType.Error);
-                        continue;
-                    }
-
                     if (aggregateIgnoredMaterials.Contains(mat))
                     {
                         KannaLogger.LogToFile($"Material: {mat.name} Is In IgnoredMaterials, Skipping..", LogLocation, KannaLogger.LogType.Warning);
                         continue;
                     }
-
-                    KannaLogger.LogToFile($"Getting Shader Metadata For Shader: {mat.shader.name} And Writing KannaModelDecode", LogLocation);
 
                     var shaderPath = AssetDatabase.GetAssetPath(mat.shader);
 
@@ -399,6 +367,27 @@ namespace Kanna.Protecc
                         KannaLogger.LogToFile($"Ignoring Encrypt Of Shader: {mat.shader.name} As It Is Not In Assets!", LogLocation, KannaLogger.LogType.Warning);
                         continue;
                     }
+
+                    var shadersupportslocking = Utilities.CanShaderBeLocked(mat.shader);
+
+                    if (Utilities.GetThry() && shadersupportslocking && !Utilities.IsMaterialLocked(mat))
+                    {
+                        KannaLogger.LogToFile($"Shader: {mat.shader.name} Supports Locking And Is Not Locked, Locking..", LogLocation);
+
+                        Utilities.SetShaderLockedState(mat, true);
+                    }
+
+                    KannaLogger.LogToFile($"Done, Refreshing AssetDatabase..", LogLocation);
+
+                    AssetDatabase.Refresh();
+
+                    if (Utilities.GetThry() && shadersupportslocking && !Utilities.IsMaterialLocked(mat)) // Double Check
+                    {
+                        KannaLogger.LogToFile($"{mat.name} {mat.shader.name} Trying To Inject Non-Locked Shader?! - Skipping!", LogLocation, KannaLogger.LogType.Error);
+                        continue;
+                    }
+
+                    KannaLogger.LogToFile($"Writing KannaModelDecode For {mat.shader.name}", LogLocation);
 
                     var path = Path.GetDirectoryName(shaderPath);
                     var decodeShaderPath = Path.Combine(path, "KannaModelDecode.cginc");
