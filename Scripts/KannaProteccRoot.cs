@@ -345,7 +345,7 @@ namespace Kanna.Protecc
                 {
                     KannaLogger.LogToFile($"Some Shaders Support Locking And Are Not Locked, Locking..", LogLocation);
 
-                    Utilities.SetAllChildShadersLockedState(true, gameObject);
+                    Utilities.SetShadersLockedState(lockablemats, true);
                 }
             }
 
