@@ -84,6 +84,8 @@ namespace Kanna.Protecc
 
                             material.shader = AssetDatabase.LoadAssetAtPath<Shader>(path.Replace("_Protected.shader", ".shader"));
 
+                            AssetDatabase.Refresh();
+
                             File.Delete(path);
 
                             foreach (var include in AllIncludes)
@@ -135,6 +137,8 @@ namespace Kanna.Protecc
 
                             material.shader = AssetDatabase.LoadAssetAtPath<Shader>(path.Replace("_Protected.shader", ".shader"));
 
+                            AssetDatabase.Refresh();
+
                             File.Delete(path);
 
                             foreach (var include in AllIncludes)
@@ -155,6 +159,56 @@ namespace Kanna.Protecc
                     {
                         KannaLogger.LogToFile($"Error Unlocking renderer Material {material.name}: {e}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
                     }
+                }
+            }
+
+            foreach (var material in KannaProteccRoot.Instance.m_AdditionalMaterials)
+            {
+                if (material == null || ProcessedMats.Contains(material))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    ProcessedMats.Add(material);
+
+                    var path = AssetDatabase.GetAssetPath(material.shader);
+
+                    if (ProcessedShaders.Contains(path))
+                    {
+                        continue;
+                    }
+
+                    ProcessedShaders.Add(path);
+
+                    if (path.Contains("_Protected.shader") && File.Exists(path.Replace("_Protected.shader", ".shader")))
+                    {
+                        var AllIncludes = material.shader.FindAllShaderIncludes();
+
+                        material.shader = AssetDatabase.LoadAssetAtPath<Shader>(path.Replace("_Protected.shader", ".shader"));
+
+                        AssetDatabase.Refresh();
+
+                        File.Delete(path);
+
+                        foreach (var include in AllIncludes)
+                        {
+                            if (include.Contains("_Protected") || include.Contains("KannaModelDecode"))
+                            {
+                                File.Delete(include);
+                            }
+                        }
+                    }
+
+                    if (Utilities.CanShaderBeLocked(material.shader) && Utilities.IsMaterialLocked(material))
+                    {
+                        Mats.Add(material);
+                    }
+                }
+                catch (Exception e)
+                {
+                    KannaLogger.LogToFile($"Error Unlocking renderer Material {material.name}: {e}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
                 }
             }
             

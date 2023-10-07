@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 using Kanna.Protecc;
@@ -78,12 +79,10 @@ public class Utilities
             return;
         }
 
-        SaveChangeStack();
         if (!(bool)Optimizer.GetMethod("SetLockedForAllMaterials", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { new[] { mat }, locked ? 1 : 0, /*ShowProgressBar*/true, /*Default Values, Reflection Needs All Defined:*/false, false, null }))
         {
             throw new Exception("Fuck. Thry Go WeeWoo.");
         }
-        RestoreChangeStack();
     }
 
     public static void SetShadersLockedState(Material[] mats, bool locked)
@@ -93,46 +92,23 @@ public class Utilities
             return;
         }
 
-        SaveChangeStack();
         if (!(bool)Optimizer.GetMethod("SetLockedForAllMaterials", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { mats, locked ? 1 : 0, /*ShowProgressBar*/true, /*Default Values, Reflection Needs All Defined:*/false, false, null }))
         {
             throw new Exception("Fuck. Thry Go WeeWoo.");
         }
-        RestoreChangeStack();
     }
 
-    //This code purly exists cause Unity 2019 is a piece of shit that looses it's internal change stack on locking CAUSE FUCK IF I KNOW
-    static System.Reflection.FieldInfo changeStack = typeof(EditorGUI).GetField("s_ChangedStack", BindingFlags.Static | BindingFlags.NonPublic);
-    static int preLockStackSize = 0;
-    private static void SaveChangeStack()
+    public static void SetAllChildShadersLockedState(bool locked, params GameObject[] objects)
     {
-        if (changeStack != null)
+        if (!GetThry())
         {
-            Stack<bool> stack = (Stack<bool>)changeStack.GetValue(null);
-            if (stack != null)
-            {
-                preLockStackSize = stack.Count;
-            }
-        }
-    }
-
-    private static void RestoreChangeStack()
-    {
-        if (changeStack != null)
-        {
-            Stack<bool> stack = (Stack<bool>)changeStack.GetValue(null);
-            if (stack != null)
-            {
-                int postLockStackSize = stack.Count;
-                //Restore change stack from before lock / unlocking
-                for (int i = postLockStackSize; i < preLockStackSize; i++)
-                {
-                    EditorGUI.BeginChangeCheck();
-                }
-            }
+            return;
         }
 
-        AssetDatabase.Refresh();
+        if (!(bool)Optimizer.GetMethod("SetLockForAllChildren", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { objects, locked ? 1 : 0, /*ShowProgressBar*/true, /*Default Values, Reflection Needs All Defined:*/false, false }))
+        {
+            throw new Exception("Fuck. Thry Go WeeWoo.");
+        }
     }
 }
 #endif
