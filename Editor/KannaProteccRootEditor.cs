@@ -477,6 +477,7 @@ namespace Kanna.Protecc
                 if (keycount != ((KannaProteccRoot)target)._bitKeys.Length) // Changed
                 {
                     ((KannaProteccRoot)target)._bitKeys = new bool[keycount];
+                    KannaProteccRoot.GenerateNewKey();
                 }
 
                 GUILayout.EndHorizontal();

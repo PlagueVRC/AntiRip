@@ -167,10 +167,23 @@ namespace Kanna.Protecc
         {
             if (ParameterRenamedValues.Count == 0 && !string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId))
             {
-                if (EditorUtility.DisplayDialog("Error!", "Do Not Encrypt A Previously Non-Encrypted Avatar That Was Uploaded! Detach The Blueprint ID And Upload This To A New One!", "Okay", "Bypass Warning"))
+                if (EditorUtility.DisplayDialog("Error!", "Do Not Encrypt A Previously Non-Encrypted Avatar That Was Uploaded! Detach The Blueprint ID And Upload This To A New One!\r\nBypassing This Can Lead To Rippers Using A Older Non-Encrypted Version Of Your Avatar! Only Bypass If You Know It Was Never Uploaded Non-Encrypted!", "Okay", "Bypass Warning"))
                 {
                     return;
                 }
+            }
+
+            var descriptor = gameObject.GetComponent<VRCAvatarDescriptor>();
+
+            if ((VRCExpressionParameters.MAX_PARAMETER_COST - descriptor.expressionParameters.CalcTotalCost()) is var freespace && freespace < 32)
+            {
+                if (EditorUtility.DisplayDialog("Error!", $"You Do Not Have 32 Bits Of Free Space In Your Expression Parameters!\r\nWould You Like To Use {freespace} Keys? Note This IS a SECURITY RISK.{(freespace < 16 ? " Less Than 16 Is Especially Insecure." : "")}", "Cancel", "I Understand The Danger"))
+                {
+                    return;
+                }
+
+                _bitKeys = new bool[freespace];
+                GenerateNewKey();
             }
 
             if (File.Exists(LogLocation))
