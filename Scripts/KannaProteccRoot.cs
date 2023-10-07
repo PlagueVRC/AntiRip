@@ -282,6 +282,8 @@ namespace Kanna.Protecc
 
             IsProtected = true;
 
+            EditorSceneManager.MarkAllScenesDirty();
+
             // Do Obfuscation
             var newobj = obfuscator.Obfuscate(encodedGameObject, this);
 
@@ -290,7 +292,6 @@ namespace Kanna.Protecc
             encodedGameObject.SetActive(false); // Temp
 
             AssetDatabase.SaveAssets();
-            EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
 
             // Force unity to import things
             AssetDatabase.Refresh();
@@ -309,6 +310,12 @@ namespace Kanna.Protecc
             newobj.name = newobj.name.Replace("_Encrypted_Obfuscated", "_KannaProteccted");
 
             KannaLogger.WriteLogsToFile(LogLocation);
+
+            EditorSceneManager.MarkAllScenesDirty();
+
+            AssetDatabase.Refresh();
+            AssetDatabase.SaveAssets();
+            EditorSceneManager.SaveOpenScenes();
 
             EditorUtility.DisplayDialog("Successfully Encrypted!", $"{(string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId) ? "" : "Keys were automatically written. ")}Your avatar should be ready to upload!", "Okay");
         }

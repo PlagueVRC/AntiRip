@@ -141,8 +141,12 @@ namespace Kanna.Protecc
                 {
                     throw new OperationCanceledException();
                 }
+
                 if (avatar.expressionParameters != null)
+                {
                     avatar.expressionParameters = ExpressionParametersObfuscator(avatar.expressionParameters, root);
+                    EditorUtility.SetDirty(avatar.expressionParameters);
+                }
 
                 Utilities.ResetRandomizer();
 
@@ -172,6 +176,7 @@ namespace Kanna.Protecc
                     }
 
                     animationLayers[i].animatorController = AnimatorObfuscator(animator, root);
+                    EditorUtility.SetDirty(animationLayers[i].animatorController);
                 }
 
                 avatar.baseAnimationLayers = animationLayers;
@@ -205,6 +210,7 @@ namespace Kanna.Protecc
                     }
 
                     specialAnimationLayers[i].animatorController = AnimatorObfuscator(animator, root);
+                    EditorUtility.SetDirty(specialAnimationLayers[i].animatorController);
                 }
 
                 avatar.specialAnimationLayers = specialAnimationLayers;
@@ -233,6 +239,8 @@ namespace Kanna.Protecc
                     }
 
                     animator.runtimeAnimatorController = AnimatorObfuscator((AnimatorController)animator.runtimeAnimatorController, root);
+
+                    EditorUtility.SetDirty(animator.runtimeAnimatorController);
                 }
 
                 // Update Thingies
@@ -266,6 +274,7 @@ namespace Kanna.Protecc
                 if (avatar.expressionsMenu != null)
                 {
                     avatar.expressionsMenu = ExpressionsMenuObfuscator(avatar.expressionsMenu, root);
+                    EditorUtility.SetDirty(avatar.expressionsMenu);
                 }
 
                 Utilities.ResetRandomizer();
@@ -392,6 +401,8 @@ namespace Kanna.Protecc
                             }
                         }
 
+                        EditorUtility.SetDirty(clip);
+
                         KannaLogger.LogToFile($"Finished AnimClip Bindings For Clip: {clip.name}", KannaProteccRoot.LogLocation);
                     }
                 }
@@ -407,6 +418,8 @@ namespace Kanna.Protecc
                 KannaLogger.LogToFile($"Obfuscation Finished..", KannaProteccRoot.LogLocation);
 
                 File.WriteAllText("ObfuscationMapping.json", JsonConvert.SerializeObject(mapping, Formatting.Indented));
+
+                EditorSceneManager.MarkAllScenesDirty();
 
                 ProgressBar("Done!", 1, 1);
             }
@@ -486,6 +499,8 @@ namespace Kanna.Protecc
                 });
             }
             expressionParameters.parameters = templist.ToArray();
+
+            EditorUtility.SetDirty(expressionParameters);
 
             KannaLogger.LogToFile($"Obfuscating Non-Skipped And Non-Ignored Parameters..", KannaProteccRoot.LogLocation);
 
@@ -571,6 +586,8 @@ namespace Kanna.Protecc
             parameters = parameters.OrderBy(a => Guid.NewGuid()).ToList();
             expressionParameters.parameters = parameters.ToArray();
 
+            EditorUtility.SetDirty(expressionParameters);
+
             KannaLogger.LogToFile($"ExpressionParameters Obfuscation Finished", KannaProteccRoot.LogLocation);
 
             AssetDatabase.SaveAssets();
@@ -620,6 +637,8 @@ namespace Kanna.Protecc
                 }
             }
 
+            EditorUtility.SetDirty(expressionsMenu);
+
             return expressionsMenu;
         }
 #endif
@@ -666,6 +685,8 @@ namespace Kanna.Protecc
 
             animator.layers = layers.ToArray();
 
+            EditorUtility.SetDirty(animator);
+
             return animator;
         }
 
@@ -705,6 +726,8 @@ namespace Kanna.Protecc
             layers[index] = layer;
 
             controller.layers = layers.ToArray();
+
+            EditorUtility.SetDirty(controller);
 
             AssetDatabase.SaveAssets();
         }
@@ -878,6 +901,7 @@ namespace Kanna.Protecc
                         var animationClip = CopyAssetFile("anim", clip, root);
                         animationClip.name = GetAssetName(animationClip);
                         _animClipList.Add(animationClip);
+                        EditorUtility.SetDirty(animationClip);
                         return animationClip;
                     }
                 case BlendTree tree:
@@ -965,6 +989,8 @@ namespace Kanna.Protecc
             {
                 KannaLogger.LogToFile($"blyat, {newPath} no existo when loaded (CopyAsset Was Done, Then LoadAssetAtPath, Yet The Loaded Asset Was Null)", KannaProteccRoot.LogLocation, KannaLogger.LogType.Error);
             }
+
+            EditorUtility.SetDirty(asset);
 
             return asset;
         }
