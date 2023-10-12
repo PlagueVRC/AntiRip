@@ -177,7 +177,7 @@ namespace Kanna.Protecc
 
             if ((VRCExpressionParameters.MAX_PARAMETER_COST - descriptor.expressionParameters.CalcTotalCost()) is var freespace && freespace < 32)
             {
-                if (EditorUtility.DisplayDialog("Error!", $"You Do Not Have 32 Bits Of Free Space In Your Expression Parameters!\r\nWould You Like To Use {freespace} Keys? Note This IS a SECURITY RISK.{(freespace < 16 ? " Less Than 16 Is Especially Insecure." : "")}", "Cancel", "I Understand The Danger"))
+                if (EditorUtility.DisplayDialog("Error!", $"You Do Not Have 32 Bits Of Free Space In Your Expression Parameters!\r\nWould You Like To Use {freespace} Keys? Note This IS A SECURITY RISK.{(freespace < 16 ? " Less Than 16 Is Especially Insecure." : "")}", "Cancel", "I Understand The Danger"))
                 {
                     return;
                 }
