@@ -84,7 +84,7 @@ namespace Kanna.Protecc
 
                             material.shader = AssetDatabase.LoadAssetAtPath<Shader>(path.Replace("_Protected.shader", ".shader"));
 
-                            AssetDatabase.Refresh();
+                            EditorUtility.SetDirty(material);
 
                             File.Delete(path);
 
@@ -137,7 +137,7 @@ namespace Kanna.Protecc
 
                             material.shader = AssetDatabase.LoadAssetAtPath<Shader>(path.Replace("_Protected.shader", ".shader"));
 
-                            AssetDatabase.Refresh();
+                            EditorUtility.SetDirty(material);
 
                             File.Delete(path);
 
@@ -188,7 +188,7 @@ namespace Kanna.Protecc
 
                         material.shader = AssetDatabase.LoadAssetAtPath<Shader>(path.Replace("_Protected.shader", ".shader"));
 
-                        AssetDatabase.Refresh();
+                        EditorUtility.SetDirty(material);
 
                         File.Delete(path);
 
@@ -221,7 +221,7 @@ namespace Kanna.Protecc
             }
 
             AssetDatabase.Refresh();
-            
+
             Utilities.SetShadersLockedState(Mats.ToArray(), false);
 
             AssetDatabase.Refresh();
