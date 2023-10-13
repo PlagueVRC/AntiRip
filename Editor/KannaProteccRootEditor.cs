@@ -199,7 +199,7 @@ namespace Kanna.Protecc
                 GUI.backgroundColor = Color.green;
             }
 
-            if (GUILayout.Button(new GUIContent(!KannaProteccRoot.IsProtected ? (!IsVRCOpen ? "Protecc Avatar" : "Close VRChat To Encrypt") : "Un-Protecc Avatar", !KannaProteccRoot.IsProtected ? "Protecc's your avatar from rippers." : "Returns your avatar to its original form."), GUILayout.Height(Screen.width / 10f), GUILayout.Width((Screen.width / 2f) - 20f)))
+            if (GUILayout.Button(new GUIContent(!KannaProteccRoot.IsProtected ? (!IsVRCOpen ? "Protecc Avatar" : "Close VRChat To Encrypt") : "Un-Protecc Avatar", !KannaProteccRoot.IsProtected ? "Protecc's your avatar from rippers." : "Returns your avatar to its original form."), GUILayout.Height(Screen.width / 10f), GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f)))
             {
                 if (KannaProteccRoot.IsProtected)
                 {
@@ -218,7 +218,7 @@ namespace Kanna.Protecc
 
             GUI.enabled = EncryptedObjExists && !IsVRCOpen;
 
-            if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Write Keys" : "Close VRChat To Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10f), GUILayout.Width((Screen.width / 2f) - 20f)))
+            if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Write Keys" : "Close VRChat To Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10f), GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f)))
             {
                 KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name.Trim() + "_KannaProteccted").GetComponent<VRCAvatarDescriptor>().expressionParameters, true, true);
             }
@@ -229,7 +229,7 @@ namespace Kanna.Protecc
 
             //Do the properties
             GUILayout.BeginHorizontal();
-            GUILayout.BeginVertical(GUILayout.Width((Screen.width / 2f) - 20f));
+            GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f));
             m_DistortRatioProperty.floatValue = GUILayout.HorizontalSlider(m_DistortRatioProperty.floatValue, .6f, 5f);
             GUILayout.Space(15);
             GUILayout.BeginHorizontal();
@@ -241,7 +241,7 @@ namespace Kanna.Protecc
             GUILayout.EndVertical();
 
             GUILayout.FlexibleSpace();
-            GUILayout.BeginVertical(GUILayout.Width((Screen.width / 2f) - 20f));
+            GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f));
             GUILayout.Space(3);
             GUILayout.Label("VRC Saved Paramters Path");
             m_VrcSavedParamsPathProperty.stringValue = EditorGUILayout.TextField(m_VrcSavedParamsPathProperty.stringValue);
