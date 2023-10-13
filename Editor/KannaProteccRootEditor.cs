@@ -180,7 +180,7 @@ namespace Kanna.Protecc
 
             GUILayout.Label("Universal Shader Support Branch");
 
-            if (GUILayout.Button(new GUIContent(HeaderTexture, "Visit my Discord for help!"), EditorStyles.label, GUILayout.Height(Screen.width / 8f)))
+            if (GUILayout.Button(new GUIContent(HeaderTexture, "Visit my Discord for help!"), EditorStyles.label, GUILayout.Height(Screen.width / 8f), GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f)))
             {
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
@@ -319,13 +319,13 @@ namespace Kanna.Protecc
             GUILayout.Space(5f);
 
             //buttons for mats and key lock
-            GUILayout.BeginHorizontal();
+            GUILayout.BeginHorizontal(GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f));
 
             if (_lockKeys)
             {
-                if (GUILayout.Button(new GUIContent("Unlock BitKeys", "Allow changes to key selections"), GUILayout.Width((Screen.width) - 20f))) _lockKeys = !_lockKeys;
+                if (GUILayout.Button(new GUIContent("Unlock BitKeys", "Allow changes to key selections"))) _lockKeys = !_lockKeys;
             }
-            else if (GUILayout.Button(new GUIContent("Lock BitKeys", "Prevent changes to key selections"), GUILayout.Width((Screen.width) - 20f))) _lockKeys = !_lockKeys;
+            else if (GUILayout.Button(new GUIContent("Lock BitKeys", "Prevent changes to key selections"))) _lockKeys = !_lockKeys;
             GUILayout.EndHorizontal();
 
             //draw keys here
