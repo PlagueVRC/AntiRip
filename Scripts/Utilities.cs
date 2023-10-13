@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 
 using Kanna.Protecc;
+
 using UnityEditor;
 using UnityEngine;
 
@@ -79,10 +80,22 @@ public class Utilities
             return;
         }
 
+        //var oldqueue = mat.renderQueue;
+        //var oldrenderType = mat.GetTag("RenderType", false, "");
+
         if (!(bool)Optimizer.GetMethod("SetLockedForAllMaterials", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { new[] { mat }, locked ? 1 : 0, /*ShowProgressBar*/true, /*Default Values, Reflection Needs All Defined:*/false, false, null }))
         {
             throw new Exception("Fuck. Thry Go WeeWoo.");
         }
+
+        EditorUtility.SetDirty(mat);
+        AssetDatabase.Refresh();
+
+        //mat.SetOverrideTag("RenderType", oldrenderType);
+        //mat.renderQueue = oldqueue;
+
+        //EditorUtility.SetDirty(mat);
+        //AssetDatabase.Refresh();
     }
 
     public static void SetShadersLockedState(Material[] mats, bool locked)
@@ -92,23 +105,30 @@ public class Utilities
             return;
         }
 
+        //var olds = mats.Select(o => (o.renderQueue, o.GetTag("RenderType", false, ""))).ToArray(); // index will match
+
         if (!(bool)Optimizer.GetMethod("SetLockedForAllMaterials", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { mats, locked ? 1 : 0, /*ShowProgressBar*/true, /*Default Values, Reflection Needs All Defined:*/false, false, null }))
         {
             throw new Exception("Fuck. Thry Go WeeWoo.");
         }
-    }
 
-    public static void SetAllChildShadersLockedState(bool locked, params GameObject[] objects)
-    {
-        if (!GetThry())
+        foreach (var mat in mats)
         {
-            return;
+            EditorUtility.SetDirty(mat);
         }
 
-        if (!(bool)Optimizer.GetMethod("SetLockForAllChildren", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { objects, locked ? 1 : 0, /*ShowProgressBar*/true, /*Default Values, Reflection Needs All Defined:*/false, false }))
-        {
-            throw new Exception("Fuck. Thry Go WeeWoo.");
-        }
+        AssetDatabase.Refresh();
+
+        //for (var index = 0; index < olds.Length; index++)
+        //{
+        //    var old = olds[index];
+        //    mats[index].SetOverrideTag("RenderType", old.Item2);
+        //    mats[index].renderQueue = old.renderQueue;
+
+        //    EditorUtility.SetDirty(mats[index]);
+        //}
+
+        //AssetDatabase.Refresh();
     }
 }
 #endif
