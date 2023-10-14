@@ -571,7 +571,7 @@ namespace Kanna.Protecc
                         continue;
                     }
 
-                    if (Regex.IsMatch(layer.animatorController.name, @".*(?i)go.*loco.*") || (layer.animatorController as AnimatorController).layers.Any(a => Regex.IsMatch(a.name, @".*(?i)go.*loco.*"))) // VRCFT
+                    if (Regex.IsMatch(layer.animatorController.name, @".*(?i)go.*loco.*") || (layer.animatorController as AnimatorController).layers.Any(a => Regex.IsMatch(a.name, @".*(?i)go.*loco.*")) || Regex.IsMatch(layer.animatorController.name, @".*(?i)e tracking.*") || (layer.animatorController as AnimatorController).layers.Any(a => Regex.IsMatch(a.name, @".*(?i)e_tracking_.*"))) // VRCFT
                     {
                         KannaProteccRoot.excludeAnimatorLayers.Add((KannaProteccRoot.AnimLayerType)layer.type);
                     }
