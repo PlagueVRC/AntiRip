@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEditorInternal;
 using UnityEngine.SceneManagement;
 using VRC.SDK3.Avatars.Components;
+using AnimatorController = UnityEditor.Animations.AnimatorController;
 using Debug = UnityEngine.Debug;
 
 namespace Kanna.Protecc
@@ -572,7 +573,7 @@ namespace Kanna.Protecc
                         continue;
                     }
 
-                    if (Regex.IsMatch(layer.animatorController.name, @".*(?i)go.*loco.*")) // VRCFT
+                    if (Regex.IsMatch(layer.animatorController.name, @".*(?i)go.*loco.*") || (layer.animatorController as AnimatorController).layers.Any(a => Regex.IsMatch(a.name, @".*(?i)go.*loco.*"))) // VRCFT
                     {
                         KannaProteccRoot.excludeAnimatorLayers.Add((KannaProteccRoot.AnimLayerType)layer.type);
                     }
