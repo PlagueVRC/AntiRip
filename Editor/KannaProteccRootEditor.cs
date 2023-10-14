@@ -503,6 +503,21 @@ namespace Kanna.Protecc
                     _excludeObjectNamesPropertyList.DoLayoutList();
                 }
 
+                if (GUILayout.Button(new GUIContent("Auto-Exclude VRCFury Objects", "Tries to detect typical VRCFury objects and excludes them.")))
+                {
+                    var AllObjects = KannaProteccRoot.gameObject.GetComponentsInChildren<Transform>().Where(o => o.GetComponents<MonoBehaviour>().Any(p => p.GetType().Name.Contains("Fury")));
+
+                    Debug.Log($"{string.Join(", ", AllObjects.Select(o => o.name))}");
+
+                    foreach (var obj in AllObjects)
+                    {
+                        if (!KannaProteccRoot.excludeObjectNames.Contains(obj))
+                        {
+                            KannaProteccRoot.excludeObjectNames.Add(obj);
+                        }
+                    }
+                }
+
                 EditorGUILayout.Space();
 
                 _disableObjectNameObfuscationProperty.boolValue = !disableObjectNameToggle;
