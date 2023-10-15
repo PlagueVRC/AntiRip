@@ -3917,7 +3917,7 @@
     "pt-PT": [
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
-        "FieldValue": "Excluir objectos da renomeação"
+        "FieldValue": "Excluir objetos da renomeação"
       },
       {
         "FieldName": "ExcludeParamsLabel_Localized",
@@ -3961,11 +3961,11 @@
       },
       {
         "FieldName": "UnproteccAvatar_Localized",
-        "FieldValue": "Avatar não-protecc"
+        "FieldValue": "Desproteger o avatar."
       },
       {
         "FieldName": "ProteccFromRippersTooltip_Localized",
-        "FieldValue": "Protege o teu avatar contra os estripadores."
+        "FieldValue": "Protege o teu avatar contra rippers."
       },
       {
         "FieldName": "OriginalFormTooltip_Localized",
@@ -3973,15 +3973,15 @@
       },
       {
         "FieldName": "WriteKeys_Localized",
-        "FieldValue": "Chaves de escrita"
+        "FieldValue": "Guardar chaves."
       },
       {
         "FieldName": "CloseVRChatToWriteKeys_Localized",
-        "FieldValue": "Fechar o VRChat para escrever chaves"
+        "FieldValue": "Fechar o VRChat para guardar chaves"
       },
       {
         "FieldName": "WriteKeysTooltip_Localized",
-        "FieldValue": "Escreva as suas chaves para atributos guardados!"
+        "FieldValue": "Guardar as tuas chaves nos atributos guardados!"
       },
       {
         "FieldName": "EncryptionIntensityLabel_Localized",
@@ -3989,15 +3989,15 @@
       },
       {
         "FieldName": "EncryptionIntensityInfoLabel_Localized",
-        "FieldValue": "Defina um valor suficientemente elevado para que a sua rede encriptada seja visualmente destruída; quanto mais elevado for o valor, mais segura é. Predefinição = 5"
+        "FieldValue": "Defina um valor suficientemente elevado para que a sua malha encriptada seja visualmente destruída; quanto mais elevado for o valor, mais segura é. Predefinição = 5"
       },
       {
         "FieldName": "VRCSavedParamtersPathLabel_Localized",
-        "FieldValue": "VRC Caminho dos parâmetros guardados"
+        "FieldValue": "Local dos parametros guardados VRC"
       },
       {
         "FieldName": "EnsureLocalAvatarPathLabel_Localized",
-        "FieldValue": "Certifique-se de que está a apontar para a sua pasta LocalAvatarData!"
+        "FieldValue": "Certifique-se de que está a escolher a sua pasta LocalAvatarData!"
       },
       {
         "FieldName": "Materials_Localized",
@@ -4017,23 +4017,23 @@
       },
       {
         "FieldName": "UnlockBitKeys_Localized",
-        "FieldValue": "Desbloquear BitKeys"
+        "FieldValue": "Desbloquear Chaves"
       },
       {
         "FieldName": "UnlockBitKeysTooltip_Localized",
-        "FieldValue": "Permitir alterações às selecções de teclas"
+        "FieldValue": "Permitir alterações às selecções de chaves"
       },
       {
         "FieldName": "LockBitKeys_Localized",
-        "FieldValue": "Bloquear BitKeys"
+        "FieldValue": "Bloquear Chaves"
       },
       {
         "FieldName": "LockBitKeysTooltip_Localized",
-        "FieldValue": "Impedir alterações às selecções de teclas"
+        "FieldValue": "Impedir alterações às selecções de chaves"
       },
       {
         "FieldName": "BitKeysLabel_Localized",
-        "FieldValue": "BitKeys"
+        "FieldValue": "Chaves"
       },
       {
         "FieldName": "EncryptTheMeshLabel_Localized",
@@ -4049,23 +4049,23 @@
       },
       {
         "FieldName": "GenerateNewKeysTooltip_Localized",
-        "FieldValue": "Gera uma nova chave que substitui a antiga. Será necessário escrever as chaves novamente!"
+        "FieldValue": "Gera uma nova chave que substitui a antiga. Será necessário guardar as chaves novamente!"
       },
       {
         "FieldName": "DebugAndFix_Localized",
-        "FieldValue": "Depurar e corrigir um avatar quebrado"
+        "FieldValue": "Depurar e corrigir um avatar estragado"
       },
       {
         "FieldName": "DeleteKannaProteccObjects_Localized",
-        "FieldValue": "Eliminar objectos Kanna Protecc do controlador"
+        "FieldValue": "Eliminar objetos Kanna Protecc do controlador"
       },
       {
         "FieldName": "DeleteKannaProteccObjectsTooltip_Localized",
-        "FieldValue": "Elimina todos os objectos que o Kanna Protecc escreveu no seu controlador. Tente executar isto se algo ficar estranho com a encriptação"
+        "FieldValue": "Elimina todos os objetos que o Kanna Protecc escreveu no seu controlador. Tente executar isto se algo estiver errado com a encriptação"
       },
       {
         "FieldName": "ForceUnprotecc_Localized",
-        "FieldValue": "Força Un-Protecc"
+        "FieldValue": "Forçar Un-Protecc"
       },
       {
         "FieldName": "ForceUnprotecTooltip_Localized",
@@ -4089,7 +4089,7 @@
       },
       {
         "FieldName": "BitKeysLengthLabelField_Localized",
-        "FieldValue": "BitKeys Comprimento:"
+        "FieldValue": "Tamanho das Chaves:"
       },
       {
         "FieldName": "ObfuscatorSettingsLabelField_Localized",
@@ -4101,15 +4101,15 @@
       },
       {
         "FieldName": "AutoExcludeVRCFuryObjects_Localized",
-        "FieldValue": "Exclusão automática de objectos VRCFury"
+        "FieldValue": "Exclusão automática de objetos VRCFury"
       },
       {
         "FieldName": "AutoExcludeVRCFuryObjectsTooltip_Localized",
-        "FieldValue": "Tries to detect typical VRCFury objects and excludes them."
+        "FieldValue": "Tenta detetar objetos VRCFury e excluí-los."
       },
       {
         "FieldName": "ParameterNameObfuscationRegEx_Localized",
-        "FieldValue": "Ofuscação do nome do parâmetro (RegEx)"
+        "FieldValue": "Ofuscação do nome de parâmetro (RegEx)"
       },
       {
         "FieldName": "AutoDetectParamsTooltip_Localized",
@@ -4117,7 +4117,7 @@
       },
       {
         "FieldName": "AutoDetectAnimatorsTooltip_Localized",
-        "FieldValue": "As tentativas de detetar automaticamente os animadores que precisam de ser excluídos, como o GoGoLoco."
+        "FieldValue": "Tenta detetar automaticamente os animadores que precisam de ser excluídos, como o GoGoLoco."
       }
     ],
     "pt-BR": [
