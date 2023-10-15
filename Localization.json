@@ -5973,6 +5973,212 @@
         "FieldName": "AutoDetectAnimatorsTooltip_Localized",
         "FieldValue": "Спроби автоматичного визначення аніматорів, які потрібно виключити, наприклад, GoGoLoco."
       }
+    ],
+    "en": [
+      {
+        "FieldName": "ExcludeObjectsLabel_Localized",
+        "FieldValue": "Exclude Objects From Renaming"
+      },
+      {
+        "FieldName": "ExcludeParamsLabel_Localized",
+        "FieldValue": "Exclude Parameters From Renaming"
+      },
+      {
+        "FieldName": "ExcludeAnimsLabel_Localized",
+        "FieldValue": "Exclude Animator Controllers From Obfuscation"
+      },
+      {
+        "FieldName": "AdditionalMaterials_Localized",
+        "FieldValue": "Additional Materials (Such As Material Swaps)"
+      },
+      {
+        "FieldName": "AdditionalMaterialsTooltip_Localized",
+        "FieldValue": "This lets you specify additional materials to have the Kanna Protecc code injected into when you click 'Protecc Avatar'. This will let you encrypt materials used in material swaps."
+      },
+      {
+        "FieldName": "IgnoredMaterials_Localized",
+        "FieldValue": "Ignored Materials"
+      },
+      {
+        "FieldName": "IgnoredMaterialsTooltip_Localized",
+        "FieldValue": "These materials will be ignored by Kanna Protecc. If a mesh contains other materials that are not ignored it will still be encrypted."
+      },
+      {
+        "FieldName": "DiscordMessage_Localized",
+        "FieldValue": "Visit my Discord for help!"
+      },
+      {
+        "FieldName": "UILanguage_Localized",
+        "FieldValue": "UI Language"
+      },
+      {
+        "FieldName": "ProteccAvatar_Localized",
+        "FieldValue": "Protecc Avatar"
+      },
+      {
+        "FieldName": "CloseVRCToEncrypt_Localized",
+        "FieldValue": "Close VRChat To Encrypt"
+      },
+      {
+        "FieldName": "UnproteccAvatar_Localized",
+        "FieldValue": "Un-Protecc Avatar"
+      },
+      {
+        "FieldName": "ProteccFromRippersTooltip_Localized",
+        "FieldValue": "Protecc's your avatar from rippers."
+      },
+      {
+        "FieldName": "OriginalFormTooltip_Localized",
+        "FieldValue": "Returns your avatar to its original form."
+      },
+      {
+        "FieldName": "WriteKeys_Localized",
+        "FieldValue": "Write Keys"
+      },
+      {
+        "FieldName": "CloseVRChatToWriteKeys_Localized",
+        "FieldValue": "Close VRChat To Write Keys"
+      },
+      {
+        "FieldName": "WriteKeysTooltip_Localized",
+        "FieldValue": "Write your keys to saved attributes!"
+      },
+      {
+        "FieldName": "EncryptionIntensityLabel_Localized",
+        "FieldValue": "Encryption Intensity:"
+      },
+      {
+        "FieldName": "EncryptionIntensityInfoLabel_Localized",
+        "FieldValue": "Set high enough so your encrypted mesh is visually wrecked, the higher the value, the more secure. Default = 5"
+      },
+      {
+        "FieldName": "VRCSavedParamtersPathLabel_Localized",
+        "FieldValue": "VRC Saved Paramters Path"
+      },
+      {
+        "FieldName": "EnsureLocalAvatarPathLabel_Localized",
+        "FieldValue": "Ensure this is pointing to your LocalAvatarData folder!"
+      },
+      {
+        "FieldName": "Materials_Localized",
+        "FieldValue": "Materials"
+      },
+      {
+        "FieldName": "MaterialsTooltip_Localized",
+        "FieldValue": "By default Kanna Protecc will inject its code into any Supported materials on this avatar. Here you can adjust that behaviour to include or remove some materials."
+      },
+      {
+        "FieldName": "AutoDetect_Localized",
+        "FieldValue": "Auto Detect"
+      },
+      {
+        "FieldName": "AutoDetectMaterialsTooltip_Localized",
+        "FieldValue": "Attempts to automatically detect additional materials, such as material swaps."
+      },
+      {
+        "FieldName": "UnlockBitKeys_Localized",
+        "FieldValue": "Unlock BitKeys"
+      },
+      {
+        "FieldName": "UnlockBitKeysTooltip_Localized",
+        "FieldValue": "Allow changes to key selections"
+      },
+      {
+        "FieldName": "LockBitKeys_Localized",
+        "FieldValue": "Lock BitKeys"
+      },
+      {
+        "FieldName": "LockBitKeysTooltip_Localized",
+        "FieldValue": "Prevent changes to key selections"
+      },
+      {
+        "FieldName": "BitKeysLabel_Localized",
+        "FieldValue": "BitKeys"
+      },
+      {
+        "FieldName": "EncryptTheMeshLabel_Localized",
+        "FieldValue": "These are the keys used to encrypt the mesh."
+      },
+      {
+        "FieldName": "HiddenToPreventLabel_Localized",
+        "FieldValue": "Hidden To Prevent Accidentally Showing To Others - Unlock to show."
+      },
+      {
+        "FieldName": "GenerateNewKeys_Localized",
+        "FieldValue": "Generate New Keys"
+      },
+      {
+        "FieldName": "GenerateNewKeysTooltip_Localized",
+        "FieldValue": "Generate new key overriding old one. Will need to write keys again!"
+      },
+      {
+        "FieldName": "DebugAndFix_Localized",
+        "FieldValue": "Debug And Fixing A Broken Avatar"
+      },
+      {
+        "FieldName": "DeleteKannaProteccObjects_Localized",
+        "FieldValue": "Delete Kanna Protecc Objects From Controller"
+      },
+      {
+        "FieldName": "DeleteKannaProteccObjectsTooltip_Localized",
+        "FieldValue": "Deletes all the objects Kanna Protecc wrote to your controller. Try running this if something gets weird with encrypting"
+      },
+      {
+        "FieldName": "ForceUnprotecc_Localized",
+        "FieldValue": "Force Un-Protecc"
+      },
+      {
+        "FieldName": "ForceUnprotecTooltip_Localized",
+        "FieldValue": "Forces Un-Protecc in case of something going wrong."
+      },
+      {
+        "FieldName": "CreateTestLog_Localized",
+        "FieldValue": "Create Test Log"
+      },
+      {
+        "FieldName": "CreateTestLogTooltip_Localized",
+        "FieldValue": "Ignore Pls Lol"
+      },
+      {
+        "FieldName": "OpenLatestLog_Localized",
+        "FieldValue": "Open Latest Log"
+      },
+      {
+        "FieldName": "OpenLatestLogTooltip_Localized",
+        "FieldValue": "Opens The Latest Kanna Protecc Log"
+      },
+      {
+        "FieldName": "BitKeysLengthLabelField_Localized",
+        "FieldValue": "BitKeys Length:"
+      },
+      {
+        "FieldName": "ObfuscatorSettingsLabelField_Localized",
+        "FieldValue": "Obfuscator Settings"
+      },
+      {
+        "FieldName": "ObjectNameObfuscation_Localized",
+        "FieldValue": "Object Name Obfuscation"
+      },
+      {
+        "FieldName": "AutoExcludeVRCFuryObjects_Localized",
+        "FieldValue": "Auto-Exclude VRCFury Objects"
+      },
+      {
+        "FieldName": "AutoExcludeVRCFuryObjectsTooltip_Localized",
+        "FieldValue": "Tries to detect typical VRCFury objects and excludes them."
+      },
+      {
+        "FieldName": "ParameterNameObfuscationRegEx_Localized",
+        "FieldValue": "Parameter Name Obfuscation (RegEx)"
+      },
+      {
+        "FieldName": "AutoDetectParamsTooltip_Localized",
+        "FieldValue": "Attempts to automatically detect parameters for OSC for well known projects like VRCFT."
+      },
+      {
+        "FieldName": "AutoDetectAnimatorsTooltip_Localized",
+        "FieldValue": "Attempts to automatically detect animators needing excluded, like GoGoLoco."
+      }
     ]
   }
 }
