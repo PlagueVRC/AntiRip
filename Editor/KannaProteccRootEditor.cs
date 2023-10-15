@@ -12,6 +12,7 @@ using VRC.SDK3.Avatars.Components;
 using AnimatorController = UnityEditor.Animations.AnimatorController;
 using Debug = UnityEngine.Debug;
 using System.Reflection;
+using Newtonsoft.Json;
 
 namespace Kanna.Protecc
 {
@@ -48,10 +49,14 @@ namespace Kanna.Protecc
         private string[] Languages;
 
         Texture2D HeaderTexture;
+
+        private string AntiRipFolder;
+
         void OnEnable()
         {
-
             KannaProteccRoot.Instance = (KannaProteccRoot)target;
+
+            AntiRipFolder = Path.GetDirectoryName(Path.GetDirectoryName(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this))));
 
             Languages = typeof(Translator.Languages).GetFields(BindingFlags.NonPublic | BindingFlags.Static).Select(x => x.Name).ToArray();
 
@@ -63,7 +68,7 @@ namespace Kanna.Protecc
             m_DistortRatioProperty = serializedObject.FindProperty("_distortRatio");
             m_KeysProperty = serializedObject.FindProperty("_bitKeys");
             m_VrcSavedParamsPathProperty = serializedObject.FindProperty("_vrcSavedParamsPath");
-            HeaderTexture = (Texture2D)AssetDatabase.LoadAssetAtPath($"{Path.GetDirectoryName(Path.GetDirectoryName(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this))))}/Textures/Titlebar.png", typeof(Texture2D));
+            HeaderTexture = (Texture2D)AssetDatabase.LoadAssetAtPath($"{AntiRipFolder}/Textures/Titlebar.png", typeof(Texture2D));
             m_AdditionalMaterialsProperty = serializedObject.FindProperty("m_AdditionalMaterials");
             m_IgnoredMaterialsProperty = serializedObject.FindProperty("m_IgnoredMaterials");
 
@@ -195,6 +200,8 @@ namespace Kanna.Protecc
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
 
+            
+
             if (IsDeepLFreeAPIOpen)
             {
                 var NewLanguage = EditorGUILayout.Popup(KannaProteccRoot.UILanguage_Localized, KannaProteccRoot.SelectedLanguage, Languages);
@@ -202,6 +209,23 @@ namespace Kanna.Protecc
                 {
                     KannaProteccRoot.SelectedLanguage = NewLanguage;
                     TranslateUI();
+                }
+            }
+            else if (File.Exists($"{AntiRipFolder}\\Localization.json"))
+            {
+                var NewLanguage = EditorGUILayout.Popup(KannaProteccRoot.UILanguage_Localized, KannaProteccRoot.SelectedLanguage, Languages);
+                if (NewLanguage != KannaProteccRoot.SelectedLanguage)
+                {
+                    KannaProteccRoot.SelectedLanguage = NewLanguage;
+
+                    var SelectedLang = typeof(Translator.Languages).GetField(Languages[KannaProteccRoot.SelectedLanguage], BindingFlags.NonPublic | BindingFlags.Static).GetValue(null).ToString();
+
+                    var localizations = JsonConvert.DeserializeObject<Localizations>(File.ReadAllText($"{AntiRipFolder}\\Localization.json")).Translations[SelectedLang];
+
+                    foreach (var localization in localizations)
+                    {
+                        typeof(KannaProteccRoot).GetField(localization.FieldName, BindingFlags.Public | BindingFlags.Instance).SetValue(KannaProteccRoot, localization.FieldValue);
+                    }
                 }
             }
             else
@@ -508,6 +532,35 @@ namespace Kanna.Protecc
                 }
 
                 GUILayout.EndHorizontal();
+
+                if (Environment.UserName == "krewe" && KannaProteccRoot.SelectedLanguage != -1) // Dev
+                {
+                    if (GUILayout.Button(new GUIContent("Save Translations To JSON", "Saves Translations To JSON For Publishing")))
+                    {
+                        var SelectedLang = typeof(Translator.Languages).GetField(Languages[KannaProteccRoot.SelectedLanguage], BindingFlags.NonPublic | BindingFlags.Static).GetValue(null).ToString();
+
+                        var AllFields = typeof(KannaProteccRoot).GetFields(BindingFlags.Public | BindingFlags.Instance).Where(o => o.Name.EndsWith("_Localized"));
+
+                        var Localizations = new List<Localization>();
+
+                        foreach (var field in AllFields)
+                        {
+                            Localizations.Add(new Localization
+                            {
+                                FieldName = field.Name,
+                                FieldValue = field.GetValue(KannaProteccRoot).ToString()
+                            });
+                        }
+
+                        var AllLangLocalizations = File.Exists("Assets\\AntiRip\\Localization.json") ? JsonConvert.DeserializeObject<Localizations>(File.ReadAllText("Assets\\AntiRip\\Localization.json")) : new Localizations();
+
+                        AllLangLocalizations.Translations[SelectedLang] = Localizations;
+
+                        File.WriteAllText("Assets\\AntiRip\\Localization.json", JsonConvert.SerializeObject(AllLangLocalizations, Formatting.Indented));
+
+                        Debug.Log("Done Writing!");
+                    }
+                }
             }
             //serializedObject.ApplyModifiedProperties();
 
@@ -693,6 +746,18 @@ namespace Kanna.Protecc
 
             return display;
         }
+
+        public class Localizations
+        {
+            public Dictionary<string, List<Localization>> Translations = new Dictionary<string, List<Localization>>();
+        }
+
+        public class Localization
+        {
+            public string FieldName;
+            public string FieldValue;
+        }
+
         async void TranslateUI()
         {
             var _Instance = KannaProteccRoot.Instance;
@@ -749,6 +814,7 @@ namespace Kanna.Protecc
             _Instance.AutoDetectParamsTooltip_Localized = (await Translator.TranslateText(_Instance.AutoDetectParamsTooltip_Localized, Lang)).translated_text;
             _Instance.AutoDetectAnimatorsTooltip_Localized = (await Translator.TranslateText(_Instance.AutoDetectAnimatorsTooltip_Localized, Lang)).translated_text;
 
+            Debug.Log("Done Translating!");
         }
 
     }
