@@ -552,6 +552,10 @@ namespace Kanna.Protecc
                         {
                             KannaProteccRoot.excludeParamNames.Add(@"VFH\/.*");
                         }
+                        else if (Regex.IsMatch(param.name, @".*OSC.*")) // OSC
+                        {
+                            KannaProteccRoot.excludeParamNames.Add(@".*OSC.*");
+                        }
                     }
                 }
             }
