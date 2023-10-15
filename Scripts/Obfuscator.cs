@@ -654,7 +654,7 @@ namespace Kanna.Protecc
                 {
                     t.name = _parameterDic[t.name];
                 }
-                else if (Array.FindIndex(SkipParameterNames, value => value == t.name) == -1 && Array.FindIndex(root.excludeParamNames.ToArray(), value => value == t.name) == -1 && !IgnoredParams.Contains(t.name))
+                else if (Array.FindIndex(SkipParameterNames, value => value == t.name) == -1 && root.excludeParamNames.All(o => !Regex.IsMatch(t.name, o)) && !IgnoredParams.Contains(t.name))
                 {
                     var newName = Utilities.GenerateRandomUniqueName(true);
                     while (_parameterDic.ContainsKey(newName)) newName = Utilities.GenerateRandomUniqueName(true);
