@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 using VRC.SDK3.Avatars.Components;
 using AnimatorController = UnityEditor.Animations.AnimatorController;
 using Debug = UnityEngine.Debug;
+using System.Reflection;
 
 namespace Kanna.Protecc
 {
@@ -43,10 +44,16 @@ namespace Kanna.Protecc
 
         private bool IsVRCOpen;
         private bool EncryptedObjExists;
+        private string[] Languages;
 
         Texture2D HeaderTexture;
         void OnEnable()
         {
+
+            KannaProteccRoot.Instance = (KannaProteccRoot)target;
+
+            Languages = typeof(Translator.Languages).GetFields(BindingFlags.NonPublic | BindingFlags.Static).Select(x => x.Name).ToArray();
+
             IsVRCOpen = Process.GetProcessesByName("VRChat").Length > 0;
             EncryptedObjExists = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("_KannaProteccted"));
 
@@ -86,7 +93,7 @@ namespace Kanna.Protecc
 
             _excludeObjectNamesPropertyList.drawHeaderCallback = rect =>
             {
-                EditorGUI.LabelField(rect, "Exclude Objects From Renaming", EditorStyles.boldLabel);
+                EditorGUI.LabelField(rect, KannaProteccRoot.Instance.ExcludeObjectsLabel_Localized, EditorStyles.boldLabel);
             };
 
             _excludeObjectNamesPropertyList.drawElementCallback =
@@ -109,7 +116,7 @@ namespace Kanna.Protecc
 
             _excludeParamNamesPropertyList.drawHeaderCallback = rect =>
             {
-                EditorGUI.LabelField(rect, "Exclude Parameters From Renaming", EditorStyles.boldLabel);
+                EditorGUI.LabelField(rect, KannaProteccRoot.Instance.ExcludeParamsLabel_Localized, EditorStyles.boldLabel);
             };
 
             _excludeParamNamesPropertyList.drawElementCallback =
@@ -132,7 +139,7 @@ namespace Kanna.Protecc
 
             _excludeAnimatorLayersPropertyList.drawHeaderCallback = rect =>
             {
-                EditorGUI.LabelField(rect, "Exclude Animator Controllers From Obfuscation", EditorStyles.boldLabel);
+                EditorGUI.LabelField(rect, KannaProteccRoot.Instance.ExcludeAnimsLabel_Localized, EditorStyles.boldLabel);
             };
 
             _excludeAnimatorLayersPropertyList.drawElementCallback =
@@ -148,12 +155,11 @@ namespace Kanna.Protecc
                     element.intValue = (int)layer;
                 };
 
-            KannaProteccRoot.Instance = (KannaProteccRoot)target;
         }
 
         void AdditionalDrawHeader(Rect rect)
         {
-            EditorGUI.LabelField(rect, new GUIContent("Additional Materials (Such As Material Swaps)", "This lets you specify additional materials to have the Kanna Protecc code injected into when you click 'Protecc Avatar'. This will let you encrypt materials used in material swaps."));
+            EditorGUI.LabelField(rect, new GUIContent(KannaProteccRoot.Instance.AdditionalMaterials_Localized, KannaProteccRoot.Instance.AdditionalMaterialsTooltip_Localized));
         }
 
         void AdditionalDrawListItems(Rect rect, int index, bool isActive, bool isFocused)
@@ -164,7 +170,7 @@ namespace Kanna.Protecc
 
         void IgnoreDrawHeader(Rect rect)
         {
-            EditorGUI.LabelField(rect, new GUIContent("Ignored Materials", "These materials will be ignored by Kanna Protecc. If a mesh contains other materials that are not ignored it will still be encrypted."));
+            EditorGUI.LabelField(rect, new GUIContent(KannaProteccRoot.Instance.IgnoredMaterials_Localized, KannaProteccRoot.Instance.IgnoredMaterialsTooltip_Localized));
         }
 
         void IgnoreDrawListItems(Rect rect, int index, bool isActive, bool isFocused)
@@ -179,15 +185,22 @@ namespace Kanna.Protecc
 
             var origColor = GUI.backgroundColor;
 
+            var KannaProteccRoot = target as KannaProteccRoot;
+
             GUILayout.Label("Universal Shader Support Branch");
 
-            if (GUILayout.Button(new GUIContent(HeaderTexture, "Visit my Discord for help!"), EditorStyles.label, GUILayout.Height(Screen.width / 8f), GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f)))
+            if (GUILayout.Button(new GUIContent(HeaderTexture, KannaProteccRoot.DiscordMessage_Localized), EditorStyles.label, GUILayout.Height(Screen.width / 8f), GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f)))
             {
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
 
-            var KannaProteccRoot = target as KannaProteccRoot;
-            
+            var NewLanguage = EditorGUILayout.Popup(KannaProteccRoot.UILanguage_Localized, KannaProteccRoot.SelectedLanguage, Languages);
+            if (NewLanguage != KannaProteccRoot.SelectedLanguage)
+            {
+                KannaProteccRoot.SelectedLanguage = NewLanguage;
+                TranslateUI();
+            }
+
             //Do the big important buttons
             EditorGUILayout.Space();
             GUILayout.BeginHorizontal();
@@ -200,7 +213,7 @@ namespace Kanna.Protecc
                 GUI.backgroundColor = Color.green;
             }
 
-            if (GUILayout.Button(new GUIContent(!KannaProteccRoot.IsProtected ? (!IsVRCOpen ? "Protecc Avatar" : "Close VRChat To Encrypt") : "Un-Protecc Avatar", !KannaProteccRoot.IsProtected ? "Protecc's your avatar from rippers." : "Returns your avatar to its original form."), GUILayout.Height(Screen.width / 10f), GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f)))
+            if (GUILayout.Button(new GUIContent(!KannaProteccRoot.IsProtected ? (!IsVRCOpen ? KannaProteccRoot.ProteccAvatar_Localized : KannaProteccRoot.CloseVRCToEncrypt_Localized) : KannaProteccRoot.UnproteccAvatar_Localized, !KannaProteccRoot.IsProtected ? KannaProteccRoot.ProteccFromRippersTooltip_Localized : KannaProteccRoot.OriginalFormTooltip_Localized), GUILayout.Height(Screen.width / 10f), GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f)))
             {
                 if (KannaProteccRoot.IsProtected)
                 {
@@ -219,7 +232,7 @@ namespace Kanna.Protecc
 
             GUI.enabled = EncryptedObjExists && !IsVRCOpen;
 
-            if (GUILayout.Button(new GUIContent(!IsVRCOpen ? "Write Keys" : "Close VRChat To Write Keys", "Write your keys to saved attributes!"), GUILayout.Height(Screen.width / 10f), GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f)))
+            if (GUILayout.Button(new GUIContent(!IsVRCOpen ? KannaProteccRoot.WriteKeys_Localized : KannaProteccRoot.CloseVRChatToWriteKeys_Localized, KannaProteccRoot.WriteKeysTooltip_Localized), GUILayout.Height(Screen.width / 10f), GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f)))
             {
                 KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name.Trim() + "_KannaProteccted").GetComponent<VRCAvatarDescriptor>().expressionParameters, true, true);
             }
@@ -234,29 +247,29 @@ namespace Kanna.Protecc
             m_DistortRatioProperty.floatValue = GUILayout.HorizontalSlider(m_DistortRatioProperty.floatValue, .6f, 5f);
             GUILayout.Space(15);
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Encryption Intensity:");
+            GUILayout.Label(KannaProteccRoot.EncryptionIntensityLabel_Localized);
             GUILayout.FlexibleSpace();
             m_DistortRatioProperty.floatValue = EditorGUILayout.FloatField(m_DistortRatioProperty.floatValue);
             GUILayout.EndHorizontal();
-            GUILayout.Label("Set high enough so your encrypted mesh is visually wrecked, the higher the value, the more secure. Default = 5", EditorStyles.wordWrappedLabel);
+            GUILayout.Label(KannaProteccRoot.EncryptionIntensityInfoLabel_Localized, EditorStyles.wordWrappedLabel);
             GUILayout.EndVertical();
 
             GUILayout.FlexibleSpace();
             GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f));
             GUILayout.Space(3);
-            GUILayout.Label("VRC Saved Paramters Path");
+            GUILayout.Label(KannaProteccRoot.VRCSavedParamtersPathLabel_Localized);
             m_VrcSavedParamsPathProperty.stringValue = EditorGUILayout.TextField(m_VrcSavedParamsPathProperty.stringValue);
-            GUILayout.Label("Ensure this is pointing to your LocalAvatarData folder!", EditorStyles.wordWrappedLabel);
+            GUILayout.Label(KannaProteccRoot.EnsureLocalAvatarPathLabel_Localized, EditorStyles.wordWrappedLabel);
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
             GUILayout.Space(5f);
 
             //draw additional and ignored material lists here
-            GUILayout.Label(new GUIContent("Materials", "By default Kanna Protecc will inject its code into any Supported materials on this avatar. Here you can adjust that behaviour to include or remove some materials."), EditorStyles.boldLabel);
+            GUILayout.Label(new GUIContent(KannaProteccRoot.MaterialsTooltip_Localized, KannaProteccRoot.MaterialsTooltip_Localized), EditorStyles.boldLabel);
             using (new GUILayout.VerticalScope(EditorStyles.helpBox))
             {
                 m_AdditionalList.DoLayoutList();
-                if (GUILayout.Button(new GUIContent("Auto Detect", "Attempts to automatically detect additional materials, such as material swaps.")))
+                if (GUILayout.Button(new GUIContent(KannaProteccRoot.AutoDetect_Localized, KannaProteccRoot.AutoDetectMaterialsTooltip_Localized)))
                 {
                     var avatar = KannaProteccRoot.gameObject;
 
@@ -324,9 +337,9 @@ namespace Kanna.Protecc
 
             if (_lockKeys)
             {
-                if (GUILayout.Button(new GUIContent("Unlock BitKeys", "Allow changes to key selections"))) _lockKeys = !_lockKeys;
+                if (GUILayout.Button(new GUIContent(KannaProteccRoot.UnlockBitKeys_Localized, KannaProteccRoot.UnlockBitKeysTooltip_Localized))) _lockKeys = !_lockKeys;
             }
-            else if (GUILayout.Button(new GUIContent("Lock BitKeys", "Prevent changes to key selections"))) _lockKeys = !_lockKeys;
+            else if (GUILayout.Button(new GUIContent(KannaProteccRoot.LockBitKeys_Localized, KannaProteccRoot.LockBitKeysTooltip_Localized))) _lockKeys = !_lockKeys;
             GUILayout.EndHorizontal();
 
             //draw keys here
@@ -337,13 +350,13 @@ namespace Kanna.Protecc
                 GUILayout.BeginVertical();
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
-                GUILayout.Label("BitKeys", EditorStyles.boldLabel);
+                GUILayout.Label(KannaProteccRoot.BitKeysLabel_Localized, EditorStyles.boldLabel);
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
-                GUILayout.Label("These are the keys used to encrypt the mesh.");
+                GUILayout.Label(KannaProteccRoot.EncryptTheMeshLabel_Localized);
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
 
@@ -351,7 +364,7 @@ namespace Kanna.Protecc
                 {
                     GUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
-                    GUILayout.Label("Hidden To Prevent Accidentally Showing To Others - Unlock to show.");
+                    GUILayout.Label(KannaProteccRoot.HiddenToPreventLabel_Localized);
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                 }
@@ -412,7 +425,7 @@ namespace Kanna.Protecc
 
                 //Generate key button
                 EditorGUILayout.Space();
-                if (GUILayout.Button(new GUIContent("Generate New Keys", "Generate new key overriding old one. Will need to write keys again!")))
+                if (GUILayout.Button(new GUIContent(KannaProteccRoot.GenerateNewKeys_Localized, KannaProteccRoot.GenerateNewKeysTooltip_Localized)))
                 {
                     KannaProteccRoot.GenerateNewKey();
                 }
@@ -422,7 +435,7 @@ namespace Kanna.Protecc
             GUILayout.EndHorizontal();
             EditorGUILayout.Space();
             EditorGUILayout.Separator();
-            _debugFoldout = EditorGUILayout.Foldout(_debugFoldout, "Debug And Fixing A Broken Avatar");
+            _debugFoldout = EditorGUILayout.Foldout(_debugFoldout, KannaProteccRoot.DebugAndFix_Localized);
             if (_debugFoldout)
             {
                 EditorGUILayout.Space();
@@ -433,7 +446,7 @@ namespace Kanna.Protecc
                 //    KannaProteccRoot.ValidateAnimatorController();
                 //}
 
-                if (GUILayout.Button(new GUIContent("Delete Kanna Protecc Objects From Controller", "Deletes all the objects Kanna Protecc wrote to your controller. Try running this if something gets weird with encrypting")))
+                if (GUILayout.Button(new GUIContent(KannaProteccRoot.DeleteKannaProteccObjects_Localized, KannaProteccRoot.DeleteKannaProteccObjectsTooltip_Localized)))
                 {
                     KannaProteccRoot.DeleteKannaProteccObjectsFromController();
                 }
@@ -442,14 +455,14 @@ namespace Kanna.Protecc
 
                 EditorGUILayout.Space();
 
-                if (GUILayout.Button(new GUIContent("Force Un-Protecc", "Forces Un-Protecc in case of something going wrong.")))
+                if (GUILayout.Button(new GUIContent(KannaProteccRoot.ForceUnprotecc_Localized, KannaProteccRoot.ForceUnprotecTooltip_Localized)))
                 {
                     UnProtecc(KannaProteccRoot);
                 }
 
                 EditorGUILayout.Space();
 
-                if (GUILayout.Button(new GUIContent("Create Test Log", "Ignore Pls Lol")))
+                if (GUILayout.Button(new GUIContent(KannaProteccRoot.CreateTestLog_Localized, KannaProteccRoot.CreateTestLogTooltip_Localized)))
                 {
                     if (File.Exists(KannaProteccRoot.LogLocation))
                     {
@@ -463,7 +476,7 @@ namespace Kanna.Protecc
 
                 if (File.Exists(KannaProteccRoot.LogLocation))
                 {
-                    if (GUILayout.Button(new GUIContent("Open Latest Log", "Opens The Latest Kanna Protecc Log")))
+                    if (GUILayout.Button(new GUIContent(KannaProteccRoot.OpenLatestLog_Localized, KannaProteccRoot.OpenLatestLogTooltip_Localized)))
                     {
                         Process.Start(KannaProteccRoot.LogLocation);
                     }
@@ -473,7 +486,7 @@ namespace Kanna.Protecc
 
                 GUILayout.BeginHorizontal();
 
-                EditorGUILayout.LabelField("BitKeys Length:");
+                EditorGUILayout.LabelField(KannaProteccRoot.BitKeysLengthLabelField_Localized);
 
                 var keycount = EditorGUILayout.IntField(((KannaProteccRoot)target)._bitKeys.Length);
 
@@ -489,7 +502,7 @@ namespace Kanna.Protecc
 
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField("Obfuscator Settings", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(KannaProteccRoot.ObfuscatorSettingsLabelField_Localized, EditorStyles.boldLabel);
             EditorGUILayout.Space();
 
             GUI.enabled = true;
@@ -497,14 +510,14 @@ namespace Kanna.Protecc
             if (_disableObjectNameObfuscationProperty != null)
             {
                 var disableObjectNameToggle = !_disableObjectNameObfuscationProperty.boolValue;
-                _objectNameObfuscationFoldout = !FeatureToggleFoldout(!_objectNameObfuscationFoldout, "Object Name Obfuscation", ref disableObjectNameToggle);
+                _objectNameObfuscationFoldout = !FeatureToggleFoldout(!_objectNameObfuscationFoldout, KannaProteccRoot.ObjectNameObfuscation_Localized, ref disableObjectNameToggle);
 
                 if (!_objectNameObfuscationFoldout)
                 {
                     _excludeObjectNamesPropertyList.DoLayoutList();
                 }
 
-                if (GUILayout.Button(new GUIContent("Auto-Exclude VRCFury Objects", "Tries to detect typical VRCFury objects and excludes them.")))
+                if (GUILayout.Button(new GUIContent(KannaProteccRoot.AutoExcludeVRCFuryObjects_Localized, KannaProteccRoot.AutoExcludeVRCFuryObjectsTooltip_Localized)))
                 {
                     var AllObjects = KannaProteccRoot.gameObject.GetComponentsInChildren<Transform>().Where(o => o.GetComponents<MonoBehaviour>().Any(p => p.GetType().Name.Contains("Fury")));
 
@@ -524,11 +537,11 @@ namespace Kanna.Protecc
                 _disableObjectNameObfuscationProperty.boolValue = !disableObjectNameToggle;
             }
 
-            FeatureToggleFoldout(true, "Parameter Name Obfuscation (RegEx)");
+            FeatureToggleFoldout(true, KannaProteccRoot.ParameterNameObfuscationRegEx_Localized);
 
             _excludeParamNamesPropertyList.DoLayoutList();
 
-            if (GUILayout.Button(new GUIContent("Auto Detect", "Attempts to automatically detect parameters for OSC for well known projects like VRCFT.")))
+            if (GUILayout.Button(new GUIContent(KannaProteccRoot.AutoDetect_Localized, KannaProteccRoot.AutoDetectParamsTooltip_Localized)))
             {
                 var expressions = KannaProteccRoot.gameObject.GetComponent<VRCAvatarDescriptor>().expressionParameters.parameters;
 
@@ -564,7 +577,7 @@ namespace Kanna.Protecc
 
             _excludeAnimatorLayersPropertyList.DoLayoutList();
 
-            if (GUILayout.Button(new GUIContent("Auto Detect", "Attempts to automatically detect animators needing excluded, like GoGoLoco.")))
+            if (GUILayout.Button(new GUIContent(KannaProteccRoot.AutoDetect_Localized, KannaProteccRoot.AutoDetectAnimatorsTooltip_Localized)))
             {
                 var descriptor = KannaProteccRoot.gameObject.GetComponent<VRCAvatarDescriptor>();
 
@@ -669,5 +682,63 @@ namespace Kanna.Protecc
 
             return display;
         }
+        async void TranslateUI()
+        {
+            var _Instance = KannaProteccRoot.Instance;
+            var Lang = typeof(Translator.Languages).GetField(Languages[_Instance.SelectedLanguage], BindingFlags.Static | BindingFlags.NonPublic).GetValue(null).ToString();
+            Debug.Log(Lang);
+            _Instance.ExcludeObjectsLabel_Localized = (await Translator.TranslateText(_Instance.ExcludeObjectsLabel_Localized, Lang)).translated_text;
+            _Instance.ExcludeParamsLabel_Localized = (await Translator.TranslateText(_Instance.ExcludeParamsLabel_Localized, Lang)).translated_text;
+            _Instance.ExcludeAnimsLabel_Localized = (await Translator.TranslateText(_Instance.ExcludeAnimsLabel_Localized, Lang)).translated_text;
+            _Instance.AdditionalMaterials_Localized = (await Translator.TranslateText(_Instance.AdditionalMaterials_Localized, Lang)).translated_text;
+            _Instance.AdditionalMaterialsTooltip_Localized = (await Translator.TranslateText(_Instance.AdditionalMaterialsTooltip_Localized, Lang)).translated_text;
+            _Instance.IgnoredMaterials_Localized = (await Translator.TranslateText(_Instance.IgnoredMaterials_Localized, Lang)).translated_text;
+            _Instance.IgnoredMaterialsTooltip_Localized = (await Translator.TranslateText(_Instance.IgnoredMaterialsTooltip_Localized, Lang)).translated_text;
+            _Instance.DiscordMessage_Localized = (await Translator.TranslateText(_Instance.DiscordMessage_Localized, Lang)).translated_text;
+            _Instance.UILanguage_Localized = (await Translator.TranslateText(_Instance.UILanguage_Localized, Lang)).translated_text;
+            _Instance.ProteccAvatar_Localized = (await Translator.TranslateText(_Instance.ProteccAvatar_Localized, Lang)).translated_text;
+            _Instance.CloseVRCToEncrypt_Localized = (await Translator.TranslateText(_Instance.CloseVRCToEncrypt_Localized, Lang)).translated_text;
+            _Instance.UnproteccAvatar_Localized = (await Translator.TranslateText(_Instance.UnproteccAvatar_Localized, Lang)).translated_text;
+            _Instance.ProteccFromRippersTooltip_Localized = (await Translator.TranslateText(_Instance.ProteccFromRippersTooltip_Localized, Lang)).translated_text;
+            _Instance.OriginalFormTooltip_Localized = (await Translator.TranslateText(_Instance.OriginalFormTooltip_Localized, Lang)).translated_text;
+            _Instance.WriteKeys_Localized = (await Translator.TranslateText(_Instance.WriteKeys_Localized, Lang)).translated_text;
+            _Instance.CloseVRChatToWriteKeys_Localized = (await Translator.TranslateText(_Instance.CloseVRChatToWriteKeys_Localized, Lang)).translated_text;
+            _Instance.WriteKeysTooltip_Localized = (await Translator.TranslateText(_Instance.WriteKeysTooltip_Localized, Lang)).translated_text;
+            _Instance.EncryptionIntensityLabel_Localized = (await Translator.TranslateText(_Instance.EncryptionIntensityLabel_Localized, Lang)).translated_text;
+            _Instance.EncryptionIntensityInfoLabel_Localized = (await Translator.TranslateText(_Instance.EncryptionIntensityInfoLabel_Localized, Lang)).translated_text;
+            _Instance.VRCSavedParamtersPathLabel_Localized = (await Translator.TranslateText(_Instance.VRCSavedParamtersPathLabel_Localized, Lang)).translated_text;
+            _Instance.EnsureLocalAvatarPathLabel_Localized = (await Translator.TranslateText(_Instance.EnsureLocalAvatarPathLabel_Localized, Lang)).translated_text;
+            _Instance.Materials_Localized = (await Translator.TranslateText(_Instance.Materials_Localized, Lang)).translated_text;
+            _Instance.MaterialsTooltip_Localized = (await Translator.TranslateText(_Instance.MaterialsTooltip_Localized, Lang)).translated_text;
+            _Instance.AutoDetect_Localized = (await Translator.TranslateText(_Instance.AutoDetect_Localized, Lang)).translated_text;
+            _Instance.AutoDetectMaterialsTooltip_Localized = (await Translator.TranslateText(_Instance.AutoDetectMaterialsTooltip_Localized, Lang)).translated_text;
+            _Instance.UnlockBitKeys_Localized = (await Translator.TranslateText(_Instance.UnlockBitKeys_Localized, Lang)).translated_text;
+            _Instance.UnlockBitKeysTooltip_Localized = (await Translator.TranslateText(_Instance.UnlockBitKeysTooltip_Localized, Lang)).translated_text;
+            _Instance.LockBitKeys_Localized = (await Translator.TranslateText(_Instance.LockBitKeys_Localized, Lang)).translated_text;
+            _Instance.LockBitKeysTooltip_Localized = (await Translator.TranslateText(_Instance.LockBitKeysTooltip_Localized, Lang)).translated_text;
+            _Instance.BitKeysLabel_Localized = (await Translator.TranslateText(_Instance.BitKeysLabel_Localized, Lang)).translated_text;
+            _Instance.EncryptTheMeshLabel_Localized = (await Translator.TranslateText(_Instance.EncryptTheMeshLabel_Localized, Lang)).translated_text;
+            _Instance.HiddenToPreventLabel_Localized = (await Translator.TranslateText(_Instance.HiddenToPreventLabel_Localized, Lang)).translated_text;
+            _Instance.GenerateNewKeys_Localized = (await Translator.TranslateText(_Instance.GenerateNewKeys_Localized, Lang)).translated_text;
+            _Instance.GenerateNewKeysTooltip_Localized = (await Translator.TranslateText(_Instance.GenerateNewKeysTooltip_Localized, Lang)).translated_text;
+            _Instance.DebugAndFix_Localized = (await Translator.TranslateText(_Instance.DebugAndFix_Localized, Lang)).translated_text;
+            _Instance.DeleteKannaProteccObjects_Localized = (await Translator.TranslateText(_Instance.DeleteKannaProteccObjects_Localized, Lang)).translated_text;
+            _Instance.DeleteKannaProteccObjectsTooltip_Localized = (await Translator.TranslateText(_Instance.DeleteKannaProteccObjectsTooltip_Localized, Lang)).translated_text;
+            _Instance.ForceUnprotecc_Localized = (await Translator.TranslateText(_Instance.ForceUnprotecc_Localized, Lang)).translated_text;
+            _Instance.ForceUnprotecTooltip_Localized = (await Translator.TranslateText(_Instance.ForceUnprotecTooltip_Localized, Lang)).translated_text;
+            _Instance.CreateTestLog_Localized = (await Translator.TranslateText(_Instance.CreateTestLog_Localized, Lang)).translated_text;
+            _Instance.CreateTestLogTooltip_Localized = (await Translator.TranslateText(_Instance.CreateTestLogTooltip_Localized, Lang)).translated_text;
+            _Instance.OpenLatestLog_Localized = (await Translator.TranslateText(_Instance.OpenLatestLog_Localized, Lang)).translated_text;
+            _Instance.OpenLatestLogTooltip_Localized = (await Translator.TranslateText(_Instance.OpenLatestLogTooltip_Localized, Lang)).translated_text;
+            _Instance.BitKeysLengthLabelField_Localized = (await Translator.TranslateText(_Instance.BitKeysLengthLabelField_Localized, Lang)).translated_text;
+            _Instance.ObfuscatorSettingsLabelField_Localized = (await Translator.TranslateText(_Instance.ObfuscatorSettingsLabelField_Localized, Lang)).translated_text;
+            _Instance.ObjectNameObfuscation_Localized = (await Translator.TranslateText(_Instance.ObjectNameObfuscation_Localized, Lang)).translated_text;
+            _Instance.AutoExcludeVRCFuryObjects_Localized = (await Translator.TranslateText(_Instance.AutoExcludeVRCFuryObjects_Localized, Lang)).translated_text;
+            _Instance.ParameterNameObfuscationRegEx_Localized = (await Translator.TranslateText(_Instance.ParameterNameObfuscationRegEx_Localized, Lang)).translated_text;
+            _Instance.AutoDetectParamsTooltip_Localized = (await Translator.TranslateText(_Instance.AutoDetectParamsTooltip_Localized, Lang)).translated_text;
+            _Instance.AutoDetectAnimatorsTooltip_Localized = (await Translator.TranslateText(_Instance.AutoDetectAnimatorsTooltip_Localized, Lang)).translated_text;
+
+        }
+
     }
 }

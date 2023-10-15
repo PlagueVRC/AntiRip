@@ -92,6 +92,9 @@ namespace Kanna.Protecc
         [SerializeField]
         public StringStringSerializableDictionary ParameterRenamedValues = new StringStringSerializableDictionary();
 
+        [SerializeField]
+        public int SelectedLanguage = -1;
+
         public string GetBitKeyName(int id, int LimitRenameLength = -1)
         {
             return ParameterRenamedValues.Any(o => o.Key == $"BitKey{id}") ? (LimitRenameLength == -1 ? ParameterRenamedValues.First(o => o.Key == $"BitKey{id}").Value : ParameterRenamedValues.First(o => o.Key == $"BitKey{id}").Value.Substring(0, LimitRenameLength)) : $"BitKey{id}";
@@ -819,6 +822,117 @@ namespace Kanna.Protecc
             _KannaProteccController.InitializeCount(_bitKeys.Length);
             _KannaProteccController.DeleteKannaProteccObjectsFromController(GetAnimatorController());
         }
+
+
+        [SerializeField]
+        public string ExcludeObjectsLabel_Localized = "Exclude Objects From Renaming";
+        [SerializeField]
+        public string ExcludeParamsLabel_Localized = "Exclude Parameters From Renaming";
+        [SerializeField]
+        public string ExcludeAnimsLabel_Localized = "Exclude Animator Controllers From Obfuscation";
+
+        // -- \\
+
+        [SerializeField]
+        public string AdditionalMaterials_Localized = "Additional Materials (Such As Material Swaps)";
+        [SerializeField]
+        public string AdditionalMaterialsTooltip_Localized = "This lets you specify additional materials to have the Kanna Protecc code injected into when you click 'Protecc Avatar'. This will let you encrypt materials used in material swaps.";
+        [SerializeField]
+        public string IgnoredMaterials_Localized = "Ignored Materials";
+        [SerializeField]
+        public string IgnoredMaterialsTooltip_Localized = "These materials will be ignored by Kanna Protecc. If a mesh contains other materials that are not ignored it will still be encrypted.";
+
+        // -- \\
+
+        [SerializeField]
+        public string DiscordMessage_Localized = "Visit my Discord for help!";
+        [SerializeField]
+        public string UILanguage_Localized = "UI Language";
+        [SerializeField]
+        public string ProteccAvatar_Localized = "Protecc Avatar";
+        [SerializeField]
+        public string CloseVRCToEncrypt_Localized = "Close VRChat To Encrypt";
+        [SerializeField]
+        public string UnproteccAvatar_Localized = "Un-Protecc Avatar";
+        [SerializeField]
+        public string ProteccFromRippersTooltip_Localized = "Protecc's your avatar from rippers.";
+        [SerializeField]
+        public string OriginalFormTooltip_Localized = "Returns your avatar to its original form.";
+        [SerializeField]
+        public string WriteKeys_Localized = "Write Keys";
+        [SerializeField]
+        public string CloseVRChatToWriteKeys_Localized = "Close VRChat To Write Keys";
+        [SerializeField]
+        public string WriteKeysTooltip_Localized = "Write your keys to saved attributes!";
+        [SerializeField]
+        public string EncryptionIntensityLabel_Localized = "Encryption Intensity:";
+        [SerializeField]
+        public string EncryptionIntensityInfoLabel_Localized = "Set high enough so your encrypted mesh is visually wrecked, the higher the value, the more secure. Default = 5";
+        [SerializeField]
+        public string VRCSavedParamtersPathLabel_Localized = "VRC Saved Paramters Path";
+        [SerializeField]
+        public string EnsureLocalAvatarPathLabel_Localized = "Ensure this is pointing to your LocalAvatarData folder!";
+        [SerializeField]
+        public string Materials_Localized = "Materials";
+        [SerializeField]
+        public string MaterialsTooltip_Localized  = "By default Kanna Protecc will inject its code into any Supported materials on this avatar. Here you can adjust that behaviour to include or remove some materials.";
+        [SerializeField]
+        public string AutoDetect_Localized = "Auto Detect";
+        [SerializeField]
+        public string AutoDetectMaterialsTooltip_Localized = "Attempts to automatically detect additional materials, such as material swaps.";
+        [SerializeField]
+        public string UnlockBitKeys_Localized = "Unlock BitKeys";
+        [SerializeField]
+        public string UnlockBitKeysTooltip_Localized = "Allow changes to key selections";
+        [SerializeField]
+        public string LockBitKeys_Localized = "Lock BitKeys";
+        [SerializeField]
+        public string LockBitKeysTooltip_Localized = "Prevent changes to key selections";
+        [SerializeField]
+        public string BitKeysLabel_Localized = "BitKeys";
+        [SerializeField]
+        public string EncryptTheMeshLabel_Localized = "These are the keys used to encrypt the mesh.";
+        [SerializeField]
+        public string HiddenToPreventLabel_Localized = "Hidden To Prevent Accidentally Showing To Others - Unlock to show.";
+        [SerializeField]
+        public string GenerateNewKeys_Localized = "Generate New Keys";
+        [SerializeField]
+        public string GenerateNewKeysTooltip_Localized = "Generate new key overriding old one. Will need to write keys again!";
+        [SerializeField]
+        public string DebugAndFix_Localized = "Debug And Fixing A Broken Avatar";
+        [SerializeField]
+        public string DeleteKannaProteccObjects_Localized = "Delete Kanna Protecc Objects From Controller";
+        [SerializeField]
+        public string DeleteKannaProteccObjectsTooltip_Localized = "Deletes all the objects Kanna Protecc wrote to your controller. Try running this if something gets weird with encrypting";
+        [SerializeField]
+        public string ForceUnprotecc_Localized = "Force Un-Protecc";
+        [SerializeField]
+        public string ForceUnprotecTooltip_Localized = "Forces Un-Protecc in case of something going wrong.";
+        [SerializeField]
+        public string CreateTestLog_Localized = "Create Test Log";
+        [SerializeField]
+        public string CreateTestLogTooltip_Localized = "Ignore Pls Lol";
+        [SerializeField]
+        public string OpenLatestLog_Localized = "Open Latest Log";
+        [SerializeField]
+        public string OpenLatestLogTooltip_Localized = "Opens The Latest Kanna Protecc Log";
+        [SerializeField]
+        public string BitKeysLengthLabelField_Localized = "BitKeys Length:";
+        [SerializeField]
+        public string ObfuscatorSettingsLabelField_Localized = "Obfuscator Settings";
+        [SerializeField]
+        public string ObjectNameObfuscation_Localized = "Object Name Obfuscation";
+        [SerializeField]
+        public string AutoExcludeVRCFuryObjects_Localized = "Auto-Exclude VRCFury Objects";
+        [SerializeField]
+        public string AutoExcludeVRCFuryObjectsTooltip_Localized = "Tries to detect typical VRCFury objects and excludes them.";
+        [SerializeField]
+        public string ParameterNameObfuscationRegEx_Localized = "Parameter Name Obfuscation (RegEx)";
+        [SerializeField]
+        public string AutoDetectParamsTooltip_Localized = "Attempts to automatically detect parameters for OSC for well known projects like VRCFT.";
+        [SerializeField]
+        public string AutoDetectAnimatorsTooltip_Localized = "Attempts to automatically detect animators needing excluded, like GoGoLoco.";
+
 #endif
     }
 
