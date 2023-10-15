@@ -60,6 +60,11 @@ namespace Kanna.Protecc
 
             Languages = typeof(Translator.Languages).GetFields(BindingFlags.NonPublic | BindingFlags.Static).Select(x => x.Name).ToArray();
 
+            if (KannaProteccRoot.Instance.SelectedLanguage == -1)
+            {
+                KannaProteccRoot.Instance.SelectedLanguage = Languages.Length - 1; // Last Is English
+            }
+
             IsDeepLFreeAPIOpen = Process.GetProcessesByName("chrome")?.FirstOrDefault()?.MainModule?.FileName?.Contains("playwright") ?? false;
 
             IsVRCOpen = Process.GetProcessesByName("VRChat").Length > 0;
@@ -202,12 +207,10 @@ namespace Kanna.Protecc
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
 
-            
-
             if (IsDeepLFreeAPIOpen)
             {
                 var NewLanguage = EditorGUILayout.Popup(KannaProteccRoot.UILanguage_Localized, KannaProteccRoot.SelectedLanguage, Languages);
-                if (NewLanguage != KannaProteccRoot.SelectedLanguage)
+                if (NewLanguage != KannaProteccRoot.SelectedLanguage && KannaProteccRoot.SelectedLanguage != (Languages.Length - 1))
                 {
                     KannaProteccRoot.SelectedLanguage = NewLanguage;
                     TranslateUI();
@@ -763,6 +766,12 @@ namespace Kanna.Protecc
         async void TranslateUI()
         {
             var _Instance = KannaProteccRoot.Instance;
+
+            if (_Instance.SelectedLanguage == -1)
+            {
+
+            }
+
             var Lang = typeof(Translator.Languages).GetField(Languages[_Instance.SelectedLanguage], BindingFlags.Static | BindingFlags.NonPublic).GetValue(null).ToString();
             Debug.Log(Lang);
             _Instance.ExcludeObjectsLabel_Localized = (await Translator.TranslateText(_Instance.ExcludeObjectsLabel_Localized, Lang)).translated_text;

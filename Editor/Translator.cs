@@ -44,6 +44,7 @@ public class Translator
         internal static readonly string Swedish = "sv";
         internal static readonly string Turkish = "tr";
         internal static readonly string Ukrainian = "uk";
+        internal static readonly string English = "en";
     }
 
     public class TranslationResult
