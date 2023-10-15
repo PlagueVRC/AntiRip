@@ -44,6 +44,7 @@ namespace Kanna.Protecc
 
         private bool IsVRCOpen;
         private bool EncryptedObjExists;
+        private bool IsDeepLFreeAPIOpen;
         private string[] Languages;
 
         Texture2D HeaderTexture;
@@ -53,6 +54,8 @@ namespace Kanna.Protecc
             KannaProteccRoot.Instance = (KannaProteccRoot)target;
 
             Languages = typeof(Translator.Languages).GetFields(BindingFlags.NonPublic | BindingFlags.Static).Select(x => x.Name).ToArray();
+
+            IsDeepLFreeAPIOpen = Process.GetProcessesByName("chrome")?.FirstOrDefault()?.MainModule?.FileName?.Contains("playwright") ?? false;
 
             IsVRCOpen = Process.GetProcessesByName("VRChat").Length > 0;
             EncryptedObjExists = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("_KannaProteccted"));
@@ -194,11 +197,21 @@ namespace Kanna.Protecc
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
 
-            var NewLanguage = EditorGUILayout.Popup(KannaProteccRoot.UILanguage_Localized, KannaProteccRoot.SelectedLanguage, Languages);
-            if (NewLanguage != KannaProteccRoot.SelectedLanguage)
+            if (IsDeepLFreeAPIOpen)
             {
-                KannaProteccRoot.SelectedLanguage = NewLanguage;
-                TranslateUI();
+                var NewLanguage = EditorGUILayout.Popup(KannaProteccRoot.UILanguage_Localized, KannaProteccRoot.SelectedLanguage, Languages);
+                if (NewLanguage != KannaProteccRoot.SelectedLanguage)
+                {
+                    KannaProteccRoot.SelectedLanguage = NewLanguage;
+                    TranslateUI();
+                }
+            }
+            else
+            {
+                if (GUILayout.Button(new GUIContent("UI Language Translator Missing! Hover For Details!", "DeepLFreeAPI Not Found! Install For Localizing! Click To Open GitHub Link To DeepLFreeAPI!")))
+                {
+                    Process.Start("https://github.com/MistressPlague/DeepLFreeLocalAPI");
+                }
             }
 
             //Do the big important buttons
