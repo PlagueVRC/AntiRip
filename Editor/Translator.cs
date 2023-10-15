@@ -18,8 +18,6 @@ public class Translator
         internal static readonly string Czech = "cs";
         internal static readonly string Danish = "da";
         internal static readonly string Dutch = "nl";
-        internal static readonly string EnglishUS = "en-US";
-        internal static readonly string EnglishUK = "en-UK";
         internal static readonly string Estonian = "et";
         internal static readonly string Finnish = "fi";
         internal static readonly string French = "fr";
