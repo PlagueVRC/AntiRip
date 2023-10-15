@@ -538,15 +538,15 @@ namespace Kanna.Protecc
                         {
                             KannaProteccRoot.excludeParamNames.Add(@".*(FT\/|v2\/|Tracking).*");
                         }
-                        else if (Regex.IsMatch(param.name, @".*(Go\/|(?i)go.*loco).*")) // VRCFT
+                        else if (Regex.IsMatch(param.name, @".*(Go\/|(?i)go.*loco).*")) // Gogo Loco
                         {
                             KannaProteccRoot.excludeParamNames.Add(@".*(Go\/|(?i)go.*loco).*");
                         }
-                        else if (Regex.IsMatch(param.name, @".*RealFeel.*")) // VRCFT
+                        else if (Regex.IsMatch(param.name, @".*RealFeel.*")) // RealFeel
                         {
                             KannaProteccRoot.excludeParamNames.Add(@".*RealFeel.*");
                         }
-                        else if (Regex.IsMatch(param.name, @"VFH\/.*")) // VRCFT
+                        else if (Regex.IsMatch(param.name, @"VFH\/.*")) // VFH
                         {
                             KannaProteccRoot.excludeParamNames.Add(@"VFH\/.*");
                         }
