@@ -524,7 +524,7 @@ namespace Kanna.Protecc
                 _disableObjectNameObfuscationProperty.boolValue = !disableObjectNameToggle;
             }
 
-            FeatureToggleFoldout(true, "Parameter Name Obfuscation");
+            FeatureToggleFoldout(true, "Parameter Name Obfuscation (RegEx)");
 
             _excludeParamNamesPropertyList.DoLayoutList();
 
