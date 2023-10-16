@@ -362,7 +362,7 @@ namespace Kanna.Protecc
 
             if (Utilities.GetThry())
             {
-                var lockablemats = materials.Where(o => Utilities.CanShaderBeLocked(o.shader) && !Utilities.IsMaterialLocked(o)).ToArray();
+                var lockablemats = materials.Where(o => !o.shader.name.Contains("KannaProtecc") && !aggregateIgnoredMaterials.Contains(o) && Utilities.CanShaderBeLocked(o.shader) && !Utilities.IsMaterialLocked(o)).ToArray();
 
                 if (lockablemats.Length > 0)
                 {

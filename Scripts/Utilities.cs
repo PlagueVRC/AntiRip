@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 
 using Kanna.Protecc;
-
 using UnityEditor;
 using UnityEngine;
 
@@ -82,7 +81,6 @@ public class Utilities
 
         //var oldqueue = mat.renderQueue;
         //var oldrenderType = mat.GetTag("RenderType", false, "");
-
         if (!(bool)Optimizer.GetMethod("SetLockedForAllMaterials", BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { new[] { mat }, locked ? 1 : 0, /*ShowProgressBar*/true, /*Default Values, Reflection Needs All Defined:*/false, false, null }))
         {
             throw new Exception("Fuck. Thry Go WeeWoo.");
