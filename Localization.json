@@ -1445,31 +1445,31 @@
     "fr": [
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
-        "FieldValue": "Exclure des objets du renommage"
+        "FieldValue": "Objets qui ne seront pas renommés lors de l'obfuscation"
       },
       {
         "FieldName": "ExcludeParamsLabel_Localized",
-        "FieldValue": "Exclure les paramètres du changement de nom"
+        "FieldValue": "Paramètres qui ne seront pas renommés lors de l'obfuscation"
       },
       {
         "FieldName": "ExcludeAnimsLabel_Localized",
-        "FieldValue": "Exclure les contrôleurs d'animation de l'obfuscation"
+        "FieldValue": "AnimatorControllers à ne pas obfusquer"
       },
       {
         "FieldName": "AdditionalMaterials_Localized",
-        "FieldValue": "Matériaux supplémentaires (tels que les échanges de matériaux)"
+        "FieldValue": "Matériaux supplémentaires à encrypter (utile pour les échanges de matériaux)"
       },
       {
         "FieldName": "AdditionalMaterialsTooltip_Localized",
-        "FieldValue": "Ceci vous permet de spécifier des matériaux supplémentaires dans lesquels le code Kanna Protecc sera injecté lorsque vous cliquerez sur \"Protecc Avatar\". Cela vous permettra de crypter les matériaux utilisés dans les échanges de matériaux."
+        "FieldValue": "Rajoutez ici tous les matériaux supplémentaires qui ne sont pas sur l'avatar visé mais que vous voulez quand même encrypter. Cela permet d'encrypter les matériaux utilisés quand vous faites, par exemple, un échange de matériaux dans une animation."
       },
       {
         "FieldName": "IgnoredMaterials_Localized",
-        "FieldValue": "Matériaux ignorés"
+        "FieldValue": "Matériaux qui ne seront pas encryptés"
       },
       {
         "FieldName": "IgnoredMaterialsTooltip_Localized",
-        "FieldValue": "Ces matériaux seront ignorés par Kanna Protecc. Si un maillage contient d'autres matériaux qui ne sont pas ignorés, il sera quand même crypté."
+        "FieldValue": "Ces matériaux seront ignorés par Kanna Protecc. Si un mesh contient un mélange de matériaux encryptés et non encyptés, tous les matériaux de ce mesh seront quand même encryptés"
       },
       {
         "FieldName": "DiscordMessage_Localized",
@@ -1477,7 +1477,7 @@
       },
       {
         "FieldName": "UILanguage_Localized",
-        "FieldValue": "Langue de l'interface utilisateur"
+        "FieldValue": "Langue de l'interface"
       },
       {
         "FieldName": "ProteccAvatar_Localized",
@@ -1485,31 +1485,31 @@
       },
       {
         "FieldName": "CloseVRCToEncrypt_Localized",
-        "FieldValue": "Fermer VRChat pour crypter"
+        "FieldValue": "Fermez VRChat avant d'encrypter !"
       },
       {
         "FieldName": "UnproteccAvatar_Localized",
-        "FieldValue": "Avatar non protégé"
+        "FieldValue": "Déprotéger l'avatar"
       },
       {
         "FieldName": "ProteccFromRippersTooltip_Localized",
-        "FieldValue": "Protégez votre avatar contre les pirates."
+        "FieldValue": "Protège votre avatar contre les méchants voleurs."
       },
       {
         "FieldName": "OriginalFormTooltip_Localized",
-        "FieldValue": "Retourne votre avatar à sa forme originale."
+        "FieldValue": "Enlève l'encryption sur votre avatar"
       },
       {
         "FieldName": "WriteKeys_Localized",
-        "FieldValue": "Clés d'écriture"
+        "FieldValue": "Ecrire les clés d'encryption"
       },
       {
         "FieldName": "CloseVRChatToWriteKeys_Localized",
-        "FieldValue": "Fermer VRChat pour écrire des clés"
+        "FieldValue": "Fermez VRChat avant d'écrire les clés"
       },
       {
         "FieldName": "WriteKeysTooltip_Localized",
-        "FieldValue": "Écrivez vos clés pour les attributs sauvegardés !"
+        "FieldValue": "Écrit les clés d'encryption de l'avatar dans les fichiers de VRChat !"
       },
       {
         "FieldName": "EncryptionIntensityLabel_Localized",
@@ -1517,15 +1517,15 @@
       },
       {
         "FieldName": "EncryptionIntensityInfoLabel_Localized",
-        "FieldValue": "La valeur est suffisamment élevée pour que votre maillage crypté soit visuellement détruit. Plus la valeur est élevée, plus le maillage est sécurisé. Valeur par défaut = 5"
+        "FieldValue": "Mettre une valeur suffisamment élevée pour que les mesh encryptés ne ressemblent à rien. Plus la valeur est élevée, plus le mesh est sécurisé. Valeur par défaut = 5"
       },
       {
         "FieldName": "VRCSavedParamtersPathLabel_Localized",
-        "FieldValue": "Chemin des paramètres sauvegardés du CRV"
+        "FieldValue": "Chemin vers le dossier qui stocke les paramètres sauvegardés dans VRC"
       },
       {
         "FieldName": "EnsureLocalAvatarPathLabel_Localized",
-        "FieldValue": "Assurez-vous qu'il pointe vers votre dossier LocalAvatarData !"
+        "FieldValue": "Assurez-vous qu'il pointe vers le dossier LocalAvatarData !"
       },
       {
         "FieldName": "Materials_Localized",
@@ -1533,7 +1533,7 @@
       },
       {
         "FieldName": "MaterialsTooltip_Localized",
-        "FieldValue": "Par défaut, Kanna Protecc injectera son code dans tous les matériaux soutenus sur cet avatar. Vous pouvez ici ajuster ce comportement pour inclure ou supprimer certains matériaux."
+        "FieldValue": "Par défaut, Kanna Protecc va encrypter tous les matériaux dans cet avatar. Vous pouvez ici lui indiquer d'inclure ou de supprimer certains matériaux."
       },
       {
         "FieldName": "AutoDetect_Localized",
@@ -1541,87 +1541,87 @@
       },
       {
         "FieldName": "AutoDetectMaterialsTooltip_Localized",
-        "FieldValue": "Tente de détecter automatiquement les matériaux supplémentaires, tels que les échanges de matériaux."
+        "FieldValue": "Tente de détecter automatiquement les matériaux supplémentaires, notamment pour les échanges de matériaux."
       },
       {
         "FieldName": "UnlockBitKeys_Localized",
-        "FieldValue": "Déverrouiller les BitKeys"
+        "FieldValue": "Déverrouiller les bits d'encryption"
       },
       {
         "FieldName": "UnlockBitKeysTooltip_Localized",
-        "FieldValue": "Autoriser la modification des sélections clés"
+        "FieldValue": "Autorise la modification des bits d'encryption"
       },
       {
         "FieldName": "LockBitKeys_Localized",
-        "FieldValue": "Verrouiller les BitKeys"
+        "FieldValue": "Verrouiller les bits d'encryption"
       },
       {
         "FieldName": "LockBitKeysTooltip_Localized",
-        "FieldValue": "Empêcher la modification des sélections de clés"
+        "FieldValue": "Empêche la modification des bits d'encryption"
       },
       {
         "FieldName": "BitKeysLabel_Localized",
-        "FieldValue": "BitKeys"
+        "FieldValue": "Bits d'encryption"
       },
       {
         "FieldName": "EncryptTheMeshLabel_Localized",
-        "FieldValue": "Il s'agit des clés utilisées pour crypter le maillage."
+        "FieldValue": "Il s'agit de la clé utilisée pour encrypter vos meshes."
       },
       {
         "FieldName": "HiddenToPreventLabel_Localized",
-        "FieldValue": "Caché pour éviter d'être montré accidentellement à d'autres personnes - Déverrouiller pour montrer."
+        "FieldValue": "Cachée afin d'éviter de la révéler accidentellement - Déverrouillez pour la modifier."
       },
       {
         "FieldName": "GenerateNewKeys_Localized",
-        "FieldValue": "Générer de nouvelles clés"
+        "FieldValue": "Générer une nouvelle clé aléatoirement"
       },
       {
         "FieldName": "GenerateNewKeysTooltip_Localized",
-        "FieldValue": "Générer une nouvelle clé qui remplace l'ancienne. Il faudra réécrire les clés !"
+        "FieldValue": "Génère une nouvelle clé qui remplace l'ancienne. Il faudra réécrire les clés !"
       },
       {
         "FieldName": "DebugAndFix_Localized",
-        "FieldValue": "Débogage et réparation d'un avatar cassé"
+        "FieldValue": "Débuggage et réparation d'un avatar cassé"
       },
       {
         "FieldName": "DeleteKannaProteccObjects_Localized",
-        "FieldValue": "Supprimer les objets Kanna Protecc du contrôleur"
+        "FieldValue": "Supprimer les objets Kanna Protecc du Controller"
       },
       {
         "FieldName": "DeleteKannaProteccObjectsTooltip_Localized",
-        "FieldValue": "Supprime tous les objets que Kanna Protecc a écrit dans votre contrôleur. Essayez d'exécuter ceci si quelque chose se passe bizarrement avec l'encryptage"
+        "FieldValue": "Supprime tous les objets que Kanna Protecc a écrit dans votre Controller. Essayez d'exécuter ceci si l'encryption produit des résultats bizarres."
       },
       {
         "FieldName": "ForceUnprotecc_Localized",
-        "FieldValue": "Force Un-Protecc"
+        "FieldValue": "Forcer une déprotection"
       },
       {
         "FieldName": "ForceUnprotecTooltip_Localized",
-        "FieldValue": "Force Un-Protecc en cas de problème."
+        "FieldValue": "Force une déprotection de l'avatar en cas de problème."
       },
       {
         "FieldName": "CreateTestLog_Localized",
-        "FieldValue": "Créer un journal de test"
+        "FieldValue": "Créer un journal de logging de test"
       },
       {
         "FieldName": "CreateTestLogTooltip_Localized",
-        "FieldValue": "Ignorer Pls Lol"
+        "FieldValue": "Ignorez ça svp mdr"
       },
       {
         "FieldName": "OpenLatestLog_Localized",
-        "FieldValue": "Ouvrir le dernier journal"
+        "FieldValue": "Ouvrir le dernier journal de logging"
       },
       {
         "FieldName": "OpenLatestLogTooltip_Localized",
-        "FieldValue": "Ouvre le dernier journal de bord de Kanna Protecc"
+        "FieldValue": "Ouvre le dernier journal de logging de Kanna Protecc"
       },
       {
         "FieldName": "BitKeysLengthLabelField_Localized",
-        "FieldValue": "BitKeys Longueur :"
+        "FieldValue": "Longueur de la clé d'encryption :"
       },
       {
         "FieldName": "ObfuscatorSettingsLabelField_Localized",
-        "FieldValue": "Paramètres de l'Obfuscator"
+        "FieldValue": "Paramètres d'obfuscation"
       },
       {
         "FieldName": "ObjectNameObfuscation_Localized",
@@ -1633,19 +1633,19 @@
       },
       {
         "FieldName": "AutoExcludeVRCFuryObjectsTooltip_Localized",
-        "FieldValue": "Tries to detect typical VRCFury objects and excludes them."
+        "FieldValue": "Essaie de détecter et exclure les objets avec VRCFury."
       },
       {
         "FieldName": "ParameterNameObfuscationRegEx_Localized",
-        "FieldValue": "Obfuscation du nom du paramètre (RegEx)"
+        "FieldValue": "Obfuscation du nom des paramètres (supporte le RegEx)"
       },
       {
         "FieldName": "AutoDetectParamsTooltip_Localized",
-        "FieldValue": "Tentatives de détection automatique des paramètres de l'OSC pour des projets bien connus tels que VRCFT."
+        "FieldValue": "Essaie de détecter automatiquement des paramètres à exclure (pour l'OSC) pour des projets bien connus tels que VRCFT."
       },
       {
         "FieldName": "AutoDetectAnimatorsTooltip_Localized",
-        "FieldValue": "Les tentatives de détection automatique des animateurs nécessitant une exclusion, comme GoGoLoco."
+        "FieldValue": "Essaie de détecter automatiquement des animateurs nécessitant d'être exclus, comme GoGoLoco."
       }
     ],
     "de": [
