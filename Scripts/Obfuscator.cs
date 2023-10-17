@@ -512,9 +512,9 @@ namespace Kanna.Protecc
 
             foreach (var parameter in parameters.Where(parameter => !SkipParameterNames.Contains(parameter.name) && root.excludeParamNames.All(o => !Regex.IsMatch(parameter.name, o)) && !IgnoredParams.Contains(parameter.name)))
             {
-                if (_parameterDic.ContainsKey(parameter.name))
+                if (_parameterDic.ContainsKey(parameter.name.RemoveAllPhysBone()))
                 {
-                    parameter.name = _parameterDic[parameter.name];
+                    parameter.name = _parameterDic[parameter.name.RemoveAllPhysBone()] + parameter.name.GetPhysBoneEnding();
                     continue;
                 }
 
@@ -526,8 +526,8 @@ namespace Kanna.Protecc
                     root.ParameterRenamedValues[parameter.name] = newName;
                 }
 
-                _parameterDic[parameter.name] = newName;
-                mapping.RenamedValues.Add(("Parameter", parameter.name, newName));
+                _parameterDic[parameter.name.RemoveAllPhysBone()] = newName;
+                mapping.RenamedValues.Add(("Parameter", parameter.name.RemoveAllPhysBone(), newName));
                 parameter.name = newName;
             }
 
@@ -610,11 +610,11 @@ namespace Kanna.Protecc
             {
                 var control = expressionsMenu.controls[i];
 
-                if (!string.IsNullOrEmpty(control.parameter?.name) && _parameterDic.TryGetValue(control.parameter.name, out var value))
+                if (!string.IsNullOrEmpty(control.parameter?.name) && _parameterDic.TryGetValue(control.parameter.name.RemoveAllPhysBone(), out var value))
                 {
                     expressionsMenu.controls[i].parameter = new VRCExpressionsMenu.Control.Parameter
                     {
-                        name = value
+                        name = value + control.parameter.name.GetPhysBoneEnding()
                     };
                 }
 
@@ -623,14 +623,14 @@ namespace Kanna.Protecc
                     {
                         var param = control.subParameters[index];
 
-                        if (string.IsNullOrEmpty(param.name) || !_parameterDic.TryGetValue(param.name, out var value2))
+                        if (string.IsNullOrEmpty(param.name) || !_parameterDic.TryGetValue(param.name.RemoveAllPhysBone(), out var value2))
                         {
                             continue;
                         }
 
                         control.subParameters[index] = new VRCExpressionsMenu.Control.Parameter
                         {
-                            name = value2
+                            name = value2 + param.name.GetPhysBoneEnding()
                         };
                     }
 
