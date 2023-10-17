@@ -249,17 +249,20 @@ namespace Kanna.Protecc
 
                 foreach (var thing in AllContactReceivers)
                 {
-                    if (thing != null && !string.IsNullOrEmpty(thing.parameter) && _parameterDic.ContainsKey(thing.parameter))
+                    if (thing != null && !string.IsNullOrEmpty(thing.parameter?.RemoveAllPhysBone()) && _parameterDic.ContainsKey(thing.parameter.RemoveAllPhysBone()))
                     {
-                        thing.parameter = _parameterDic[thing.parameter];
+                        thing.parameter = _parameterDic[thing.parameter.RemoveAllPhysBone()];
                     }
                 }
 
                 foreach (var thing in AllPhysBones)
                 {
-                    if (thing != null && !string.IsNullOrEmpty(thing.parameter) && _parameterDic.ContainsKey(thing.parameter))
+                    if (thing != null && !string.IsNullOrEmpty(thing.parameter))
                     {
-                        thing.parameter = _parameterDic[thing.parameter];
+                        if (thing != null && !string.IsNullOrEmpty(thing.parameter?.RemoveAllPhysBone()) && _parameterDic.ContainsKey(thing.parameter.RemoveAllPhysBone()))
+                        {
+                            thing.parameter = _parameterDic[thing.parameter.RemoveAllPhysBone()];
+                        }
                     }
                 }
 
@@ -650,18 +653,18 @@ namespace Kanna.Protecc
             var parameters = animator.parameters.ToList();
             foreach (var t in parameters)
             {
-                if (_parameterDic.ContainsKey(t.name))
+                if (_parameterDic.ContainsKey(t.name.RemoveAllPhysBone()))
                 {
-                    t.name = _parameterDic[t.name];
+                    t.name = _parameterDic[t.name.RemoveAllPhysBone()] + t.name.GetPhysBoneEnding();
                 }
-                else if (Array.FindIndex(SkipParameterNames, value => value == t.name) == -1 && root.excludeParamNames.All(o => !Regex.IsMatch(t.name, o)) && !IgnoredParams.Contains(t.name))
+                else if (Array.FindIndex(SkipParameterNames, value => value == t.name) == -1 && root.excludeParamNames.All(o => !Regex.IsMatch(t.name.RemoveAllPhysBone(), o)) && !IgnoredParams.Contains(t.name.RemoveAllPhysBone()))
                 {
                     var newName = Utilities.GenerateRandomUniqueName(true);
                     while (_parameterDic.ContainsKey(newName)) newName = Utilities.GenerateRandomUniqueName(true);
 
-                    mapping.RenamedValues.Add(($"Animator Parameter", t.name, newName));
-                    _parameterDic.Add(t.name, newName);
-                    t.name = newName;
+                    mapping.RenamedValues.Add(($"Animator Parameter", t.name.RemoveAllPhysBone(), newName));
+                    _parameterDic.Add(t.name.RemoveAllPhysBone(), newName);
+                    t.name = newName + t.name.GetPhysBoneEnding();
                 }
             }
 
@@ -697,9 +700,9 @@ namespace Kanna.Protecc
             var parameters = controller.parameters.ToList();
             foreach (var t in parameters)
             {
-                if (_parameterDic.ContainsKey(t.name))
+                if (_parameterDic.ContainsKey(t.name.RemoveAllPhysBone()))
                 {
-                    t.name = _parameterDic[t.name];
+                    t.name = _parameterDic[t.name.RemoveAllPhysBone()] + t.name.GetPhysBoneEnding();
                 }
                 else if (t.name.Contains("BitKey"))
                 {
@@ -751,8 +754,8 @@ namespace Kanna.Protecc
             var behaviours = stateMachine.behaviours.ToList();
             foreach (var parameter in behaviours.OfType<VRCAvatarParameterDriver>()
                          .SelectMany(behaviour => behaviour.parameters))
-                parameter.name = _parameterDic.TryGetValue(parameter.name, out var value)
-                    ? value
+                parameter.name = _parameterDic.TryGetValue(parameter.name.RemoveAllPhysBone(), out var value)
+                    ? value + parameter.name.GetPhysBoneEnding()
                     : parameter.name;
 
             stateMachine.behaviours = behaviours.ToArray();
@@ -793,8 +796,8 @@ namespace Kanna.Protecc
                     conditions.Add(new AnimatorCondition
                     {
                         mode = condition.mode,
-                        parameter = _parameterDic.TryGetValue(condition.parameter, out var value)
-                            ? value
+                        parameter = _parameterDic.TryGetValue(condition.parameter.RemoveAllPhysBone(), out var value)
+                            ? value + condition.parameter.GetPhysBoneEnding()
                             : condition.parameter,
                         threshold = condition.threshold
                     });
@@ -812,8 +815,8 @@ namespace Kanna.Protecc
                     conditions.Add(new AnimatorCondition
                     {
                         mode = condition.mode,
-                        parameter = _parameterDic.TryGetValue(condition.parameter, out var value)
-                            ? value
+                        parameter = _parameterDic.TryGetValue(condition.parameter.RemoveAllPhysBone(), out var value)
+                            ? value + condition.parameter.GetPhysBoneEnding()
                             : condition.parameter,
                         threshold = condition.threshold
                     });
@@ -834,8 +837,8 @@ namespace Kanna.Protecc
             var behaviours = state.behaviours.ToList();
             foreach (var parameter in behaviours.OfType<VRCAvatarParameterDriver>()
                          .SelectMany(behaviour => behaviour.parameters))
-                parameter.name = _parameterDic.TryGetValue(parameter.name, out var value)
-                    ? value
+                parameter.name = _parameterDic.TryGetValue(parameter.name.RemoveAllPhysBone(), out var value)
+                    ? value + parameter.name.GetPhysBoneEnding()
                     : parameter.name;
 
             state.behaviours = behaviours.ToArray();
@@ -849,8 +852,8 @@ namespace Kanna.Protecc
                     conditions.Add(new AnimatorCondition
                     {
                         mode = condition.mode,
-                        parameter = _parameterDic.TryGetValue(condition.parameter, out var value)
-                            ? value
+                        parameter = _parameterDic.TryGetValue(condition.parameter.RemoveAllPhysBone(), out var value)
+                            ? value + condition.parameter.GetPhysBoneEnding()
                             : condition.parameter,
                         threshold = condition.threshold
                     });
@@ -861,23 +864,23 @@ namespace Kanna.Protecc
             state.transitions = transitions.ToArray();
 
             if (state.speedParameterActive)
-                state.speedParameter = _parameterDic.TryGetValue(state.speedParameter, out var value)
-                    ? value
+                state.speedParameter = _parameterDic.TryGetValue(state.speedParameter.RemoveAllPhysBone(), out var value)
+                    ? value + state.speedParameter.GetPhysBoneEnding()
                     : state.speedParameter;
 
             if (state.mirrorParameterActive)
-                state.mirrorParameter = _parameterDic.TryGetValue(state.mirrorParameter, out var value)
-                    ? value
+                state.mirrorParameter = _parameterDic.TryGetValue(state.mirrorParameter.RemoveAllPhysBone(), out var value)
+                    ? value + state.mirrorParameter.GetPhysBoneEnding()
                     : state.mirrorParameter;
 
             if (state.timeParameterActive)
-                state.timeParameter = _parameterDic.TryGetValue(state.timeParameter, out var value)
-                    ? value
+                state.timeParameter = _parameterDic.TryGetValue(state.timeParameter.RemoveAllPhysBone(), out var value)
+                    ? value + state.timeParameter.GetPhysBoneEnding()
                     : state.timeParameter;
 
             if (state.cycleOffsetParameterActive)
-                state.cycleOffsetParameter = _parameterDic.TryGetValue(state.cycleOffsetParameter, out var value)
-                    ? value
+                state.cycleOffsetParameter = _parameterDic.TryGetValue(state.cycleOffsetParameter.RemoveAllPhysBone(), out var value)
+                    ? value + state.cycleOffsetParameter.GetPhysBoneEnding()
                     : state.cycleOffsetParameter;
 
             if (state.motion != null) state.motion = MotionObfuscator(state.motion, root);
@@ -917,8 +920,8 @@ namespace Kanna.Protecc
                             var child = children[index];
 
                             child.motion = MotionObfuscator(child.motion, root);
-                            child.directBlendParameter = _parameterDic.TryGetValue(child.directBlendParameter, out var value)
-                                ? value
+                            child.directBlendParameter = _parameterDic.TryGetValue(child.directBlendParameter.RemoveAllPhysBone(), out var value)
+                                ? value + child.directBlendParameter.GetPhysBoneEnding()
                                 : child.directBlendParameter;
 
                             children[index] = child;
@@ -926,11 +929,11 @@ namespace Kanna.Protecc
 
                         blendTree.children = children.ToArray();
 
-                        blendTree.blendParameter = _parameterDic.TryGetValue(blendTree.blendParameter, out var value1)
-                            ? value1
+                        blendTree.blendParameter = _parameterDic.TryGetValue(blendTree.blendParameter.RemoveAllPhysBone(), out var value1)
+                            ? value1 + blendTree.blendParameter.GetPhysBoneEnding()
                             : blendTree.blendParameter;
-                        blendTree.blendParameterY = _parameterDic.TryGetValue(blendTree.blendParameterY, out var value2)
-                            ? value2
+                        blendTree.blendParameterY = _parameterDic.TryGetValue(blendTree.blendParameterY.RemoveAllPhysBone(), out var value2)
+                            ? value2 + blendTree.blendParameterY.GetPhysBoneEnding()
                             : blendTree.blendParameterY;
 
                         return blendTree;
@@ -1036,6 +1039,44 @@ namespace Kanna.Protecc
         {
             return EditorUtility.DisplayCancelableProgressBar("Obfuscator", info, min / max);
         }
+    }
+}
+
+public static class ObfuscatorExt
+{
+    public static string RemoveAllPhysBone(this string text)
+    {
+        return text.RemoveAll(new[] { "_IsGrabbed", "_IsPosed", "_Angle", "_Stretch", "_Squish" });
+    }
+
+    public static string GetPhysBoneEnding(this string text)
+    {
+        return text.GetEndingMatch(new[] { "_IsGrabbed", "_IsPosed", "_Angle", "_Stretch", "_Squish" });
+    }
+
+    public static string RemoveAll(this string text, IEnumerable<string> words)
+    {
+        var result = text;
+
+        foreach (var word in words)
+        {
+            result = result.Replace(word, "");
+        }
+
+        return result;
+    }
+
+    public static string GetEndingMatch(this string text, IEnumerable<string> words)
+    {
+        foreach (var word in words)
+        {
+            if (text.EndsWith(word))
+            {
+                return word;
+            }
+        }
+
+        return "";
     }
 }
 #endif
