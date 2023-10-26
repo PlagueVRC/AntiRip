@@ -209,31 +209,31 @@
     "zh": [
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
-        "FieldValue": "排除重命名对象"
+        "FieldValue": "不重命名的对象"
       },
       {
         "FieldName": "ExcludeParamsLabel_Localized",
-        "FieldValue": "重命名时排除参数"
+        "FieldValue": "不重命名的参数"
       },
       {
         "FieldName": "ExcludeAnimsLabel_Localized",
-        "FieldValue": "将动画控制器排除在混淆之外"
+        "FieldValue": "不混淆的动画控制器"
       },
       {
         "FieldName": "AdditionalMaterials_Localized",
-        "FieldValue": "其他材料（如材料交换）"
+        "FieldValue": "额外的材质（如动画里用到的材质）"
       },
       {
         "FieldName": "AdditionalMaterialsTooltip_Localized",
-        "FieldValue": "点击 \"Protecc Avatar（保护头像）\"时，您可以指定其他材料注入 Kanna Protecc 代码。这样就可以对材料交换中使用的材料进行加密。"
+        "FieldValue": "您可以指定额外的材质，例如动画里用到的材质。当点击 \"保护模型\"时，材质将会注入 Kanna Protecc 代码。"
       },
       {
         "FieldName": "IgnoredMaterials_Localized",
-        "FieldValue": "被忽视的材料"
+        "FieldValue": "忽略的材质"
       },
       {
         "FieldName": "IgnoredMaterialsTooltip_Localized",
-        "FieldValue": "Kanna Protecc 将忽略这些材质。如果网格中包含其他未被忽略的材质，它仍会被加密。"
+        "FieldValue": "Kanna Protecc 将忽略这些材质。如果网格中包含其他未被忽略的材质，仍会被加密。"
       },
       {
         "FieldName": "DiscordMessage_Localized",
@@ -245,7 +245,7 @@
       },
       {
         "FieldName": "ProteccAvatar_Localized",
-        "FieldValue": "保护头像"
+        "FieldValue": "保护模型"
       },
       {
         "FieldName": "CloseVRCToEncrypt_Localized",
@@ -253,19 +253,19 @@
       },
       {
         "FieldName": "UnproteccAvatar_Localized",
-        "FieldValue": "非 Protecc 头像"
+        "FieldValue": "取消保护"
       },
       {
         "FieldName": "ProteccFromRippersTooltip_Localized",
-        "FieldValue": "保护你的头像不被撕裂。"
+        "FieldValue": "保护您的模型不被解包。"
       },
       {
         "FieldName": "OriginalFormTooltip_Localized",
-        "FieldValue": "将您的头像恢复到原来的样子。"
+        "FieldValue": "将您的模型恢复原样。"
       },
       {
         "FieldName": "WriteKeys_Localized",
-        "FieldValue": "书写键"
+        "FieldValue": "写入密钥"
       },
       {
         "FieldName": "CloseVRChatToWriteKeys_Localized",
@@ -285,7 +285,7 @@
       },
       {
         "FieldName": "VRCSavedParamtersPathLabel_Localized",
-        "FieldValue": "VRC 保存参数路径"
+        "FieldValue": "VRC 保存参数的路径"
       },
       {
         "FieldName": "EnsureLocalAvatarPathLabel_Localized",
@@ -293,11 +293,11 @@
       },
       {
         "FieldName": "Materials_Localized",
-        "FieldValue": "材料"
+        "FieldValue": "材质"
       },
       {
         "FieldName": "MaterialsTooltip_Localized",
-        "FieldValue": "默认情况下，Kanna Protecc 会将其代码注入该头像上任何支持的材质中。您可以在此调整该行为，以包含或移除某些材质。"
+        "FieldValue": "默认情况下，Kanna Protecc 会将其代码注入该模型上任何支持的材质中。您可以在此调整，以指定或移除某些材质。"
       },
       {
         "FieldName": "AutoDetect_Localized",
@@ -305,27 +305,27 @@
       },
       {
         "FieldName": "AutoDetectMaterialsTooltip_Localized",
-        "FieldValue": "尝试自动检测其他材料，如材料交换。"
+        "FieldValue": "尝试自动检测额外的材质，如动画里用到的材质。"
       },
       {
         "FieldName": "UnlockBitKeys_Localized",
-        "FieldValue": "解锁 BitKeys"
+        "FieldValue": "解锁比特密钥"
       },
       {
         "FieldName": "UnlockBitKeysTooltip_Localized",
-        "FieldValue": "允许更改按键选择"
+        "FieldValue": "允许更改比特密钥"
       },
       {
         "FieldName": "LockBitKeys_Localized",
-        "FieldValue": "锁定位键"
+        "FieldValue": "锁定比特密钥"
       },
       {
         "FieldName": "LockBitKeysTooltip_Localized",
-        "FieldValue": "防止更改按键选择"
+        "FieldValue": "防止更改比特密钥"
       },
       {
         "FieldName": "BitKeysLabel_Localized",
-        "FieldValue": "比特钥匙"
+        "FieldValue": "比特密钥"
       },
       {
         "FieldName": "EncryptTheMeshLabel_Localized",
@@ -333,7 +333,7 @@
       },
       {
         "FieldName": "HiddenToPreventLabel_Localized",
-        "FieldValue": "隐藏以防意外显示给他人 - 解锁显示。"
+        "FieldValue": "隐藏以防意外泄露给他人 - 点解锁可显示。"
       },
       {
         "FieldName": "GenerateNewKeys_Localized",
@@ -341,11 +341,11 @@
       },
       {
         "FieldName": "GenerateNewKeysTooltip_Localized",
-        "FieldValue": "生成覆盖旧密钥的新密钥。需要重新编写密钥！"
+        "FieldValue": "生成新密钥并覆盖旧密钥。需要重新编写密钥！"
       },
       {
         "FieldName": "DebugAndFix_Localized",
-        "FieldValue": "调试和修复损坏的头像"
+        "FieldValue": "调试和修复损坏的模型"
       },
       {
         "FieldName": "DeleteKannaProteccObjects_Localized",
@@ -353,15 +353,15 @@
       },
       {
         "FieldName": "DeleteKannaProteccObjectsTooltip_Localized",
-        "FieldValue": "删除 Kanna Protecc 写入控制器的所有对象。如果在加密过程中出现异常，请尝试运行此程序"
+        "FieldValue": "删除 Kanna Protecc 写入控制器的所有对象。如果在加密过程中出现异常，请尝试使用此项"
       },
       {
         "FieldName": "ForceUnprotecc_Localized",
-        "FieldValue": "部队解体"
+        "FieldValue": "强制取消保护"
       },
       {
         "FieldName": "ForceUnprotecTooltip_Localized",
-        "FieldValue": "如果出现问题，则强制取消 Proecc。"
+        "FieldValue": "如果出现问题，则使用强制取消保护。"
       },
       {
         "FieldName": "CreateTestLog_Localized",
@@ -381,11 +381,11 @@
       },
       {
         "FieldName": "BitKeysLengthLabelField_Localized",
-        "FieldValue": "BitKeys Length："
+        "FieldValue": "比特密钥长度："
       },
       {
         "FieldName": "ObfuscatorSettingsLabelField_Localized",
-        "FieldValue": "混淆器设置"
+        "FieldValue": "混淆设置"
       },
       {
         "FieldName": "ObjectNameObfuscation_Localized",
@@ -397,7 +397,7 @@
       },
       {
         "FieldName": "AutoExcludeVRCFuryObjectsTooltip_Localized",
-        "FieldValue": "Tries to detect typical VRCFury objects and excludes them."
+        "FieldValue": "尝试自动检测典型的 VRCFury 对象并将其排除在外。"
       },
       {
         "FieldName": "ParameterNameObfuscationRegEx_Localized",
@@ -409,7 +409,7 @@
       },
       {
         "FieldName": "AutoDetectAnimatorsTooltip_Localized",
-        "FieldValue": "尝试自动检测需要排除的动画师，如 GoGoLoco。"
+        "FieldValue": "尝试自动检测需要排除的控制器，如 GoGoLoco。"
       }
     ],
     "cs": [
