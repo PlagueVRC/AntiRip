@@ -245,7 +245,7 @@
       },
       {
         "FieldName": "ProteccAvatar_Localized",
-        "FieldValue": "模型保护"
+        "FieldValue": "保护模型"
       },
       {
         "FieldName": "CloseVRCToEncrypt_Localized",
@@ -253,7 +253,7 @@
       },
       {
         "FieldName": "UnproteccAvatar_Localized",
-        "FieldValue": "取消模型保护"
+        "FieldValue": "取消保护"
       },
       {
         "FieldName": "ProteccFromRippersTooltip_Localized",
@@ -333,7 +333,7 @@
       },
       {
         "FieldName": "HiddenToPreventLabel_Localized",
-        "FieldValue": "隐藏以防意外暴露给他人 - 点解锁可显示。"
+        "FieldValue": "隐藏以防意外泄露给他人 - 点解锁可显示。"
       },
       {
         "FieldName": "GenerateNewKeys_Localized",
@@ -357,15 +357,15 @@
       },
       {
         "FieldName": "ForceUnprotecc_Localized",
-        "FieldValue": "强制取消模型保护"
+        "FieldValue": "强制取消保护"
       },
       {
         "FieldName": "ForceUnprotecTooltip_Localized",
-        "FieldValue": "如果出现问题，则使用强制取消模型保护。"
+        "FieldValue": "如果出现问题，则使用强制取消保护。"
       },
       {
         "FieldName": "CreateTestLog_Localized",
-        "FieldValue": "生成测试日志"
+        "FieldValue": "创建测试日志"
       },
       {
         "FieldName": "CreateTestLogTooltip_Localized",
@@ -409,7 +409,7 @@
       },
       {
         "FieldName": "AutoDetectAnimatorsTooltip_Localized",
-        "FieldValue": "尝试自动检测需要排除的动画控制器，如 GoGoLoco。"
+        "FieldValue": "尝试自动检测需要排除的控制器，如 GoGoLoco。"
       }
     ],
     "cs": [
