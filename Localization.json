@@ -225,7 +225,7 @@
       },
       {
         "FieldName": "AdditionalMaterialsTooltip_Localized",
-        "FieldValue": "您可以指定额外的材质，例如动画里用到的材质。当点击 \"Protecc Avatar（模型保护）\"时，材质将会注入 Kanna Protecc 代码。"
+        "FieldValue": "您可以指定额外的材质，例如动画里用到的材质。当点击 \"保护模型\"时，材质将会注入 Kanna Protecc 代码。"
       },
       {
         "FieldName": "IgnoredMaterials_Localized",
