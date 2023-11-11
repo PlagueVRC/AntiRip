@@ -95,9 +95,6 @@ namespace Kanna.Protecc
 
             var maxDistance = mesh.bounds.max.magnitude - mesh.bounds.min.magnitude;
 
-            var minRange = maxDistance * -distortRatio;
-            const float maxRange = 0;
-
             for (var v = 0; v < newVertices.Length; v++)
             {
                 var SubIndex = GetSubmeshIndexForVertex(mesh, v);
@@ -127,11 +124,13 @@ namespace Kanna.Protecc
 
                 Debug.Log($"Resolved Material: {mat.name}: {SubIndex}");
 
-                uv7Offsets[v].x = Random.Range(minRange, maxRange);
-                uv7Offsets[v].y = Random.Range(minRange, maxRange);
+                var minRange = maxDistance * -distortRatio;
 
-                uv8Offsets[v].x = Random.Range(minRange, maxRange);
-                uv8Offsets[v].y = Random.Range(minRange, maxRange);
+                uv7Offsets[v].x = Random.Range(minRange, 0);
+                uv7Offsets[v].y = Random.Range(minRange, 0);
+
+                uv8Offsets[v].x = Random.Range(minRange, 0);
+                uv8Offsets[v].y = Random.Range(minRange, 0);
 
                 var isY = false;
 
@@ -148,24 +147,7 @@ namespace Kanna.Protecc
                     newVertices[v] += normals[v] * ((!isY ? uv8Offsets[v].x : uv8Offsets[v].y) * data.ComKey[i]);
                     isY = !isY;
                 }
-
-                //newVertices[v] += normals[v] * (uv7Offsets[v].x * data.ComKey[0]);
-                //newVertices[v] += normals[v] * (uv7Offsets[v].y * data.ComKey[1]);
-                //newVertices[v] += normals[v] * (uv7Offsets[v].x * data.ComKey[2]);
-                //newVertices[v] += normals[v] * (uv7Offsets[v].y * data.ComKey[3]);
-
-                //newVertices[v] += normals[v] * (uv8Offsets[v].y * data.ComKey[4]);
-                //newVertices[v] += normals[v] * (uv8Offsets[v].x * data.ComKey[5]);
-                //newVertices[v] += normals[v] * (uv8Offsets[v].y * data.ComKey[6]);
-                //newVertices[v] += normals[v] * (uv8Offsets[v].x * data.ComKey[7]);
             }
-
-            //Do Not Care What File Type The Mesh Is, Attempt Anyway.
-            //The Inline If Statement Is A Fallback Check, It Gets The Path Combined With The Filename Without Extension With Our Own Extension, If The Path Is Null, It Would Then Use Enviroment.CurrentDirectory Via Inheritance As The Path.
-            //var encryptedMeshPath = Path.GetDirectoryName(existingMeshPath) != null
-            //    ? (Path.Combine(Path.GetDirectoryName(existingMeshPath),
-            //        Path.GetFileNameWithoutExtension(existingMeshPath)) + $"_{mesh.name}_Encrypted.asset")
-            //    : (Path.GetFileNameWithoutExtension(existingMeshPath) + $"_{mesh.name}_Encrypted.asset");
 
             KannaLogger.LogToFile($"Creating Encrypted Mesh..", KannaProteccRoot.LogLocation);
 

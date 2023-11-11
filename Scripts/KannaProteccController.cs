@@ -315,7 +315,7 @@ public class DBT_API
 
                 state = CreateState(layer, $"{LayerName}_BlendRootState");
 
-                var TrapName = Utilities.GenerateRandomUniqueName(true);
+                var TrapName = Utilities.GenerateRandomUniqueName(false, true);
 
                 var trap = new AnimatorControllerParameter
                 {
