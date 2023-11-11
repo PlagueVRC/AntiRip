@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -62,7 +63,12 @@ namespace Kanna.Protecc
 
             if (KannaProteccRoot.Instance.SelectedLanguage == -1)
             {
-                KannaProteccRoot.Instance.SelectedLanguage = Languages.Length - 1; // Last Is English
+                var culture = CultureInfo.CurrentUICulture.Name.ToLower();
+                var withoutdash = culture.Substring(0, culture.IndexOf("-"));
+
+                var lang = Languages.ToList().FindIndex(o => culture == o || withoutdash == o);
+
+                KannaProteccRoot.Instance.SelectedLanguage = lang == -1 ? (Languages.Length - 1) : lang; // Last Is English
             }
 
             IsDeepLFreeAPIOpen = Process.GetProcessesByName("chrome")?.FirstOrDefault()?.MainModule?.FileName?.Contains("playwright") ?? false;

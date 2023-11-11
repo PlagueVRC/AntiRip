@@ -308,7 +308,7 @@ namespace Kanna.Protecc
             encodedGameObject.SetActive(false); // Temp
 
             AssetDatabase.SaveAssets();
-
+            
             // Force unity to import things
             AssetDatabase.Refresh();
 
