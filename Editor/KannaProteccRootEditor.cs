@@ -13,6 +13,8 @@ using VRC.SDK3.Avatars.Components;
 using AnimatorController = UnityEditor.Animations.AnimatorController;
 using Debug = UnityEngine.Debug;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace Kanna.Protecc
@@ -21,6 +23,43 @@ namespace Kanna.Protecc
     [CanEditMultipleObjects]
     public class KannaProteccRootEditor : Editor
     {
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+        // Delegate for the EnumWindows callback function
+        public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+        
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+        
+        [DllImport("user32.dll", SetLastError=true, CharSet=CharSet.Auto)]
+        static extern int GetWindowTextLength(IntPtr hWnd);
+        
+        public static string GetText(IntPtr hWnd)
+        {
+            // Allocate correct string length first
+            var length = GetWindowTextLength(hWnd);
+            var sb = new StringBuilder(length + 1);
+            GetWindowText(hWnd, sb, sb.Capacity);
+            return sb.ToString();
+        }
+        
+        // Function to get all window handles
+        public static List<IntPtr> GetAllWindowHandles()
+        {
+            var windowHandles = new List<IntPtr>();
+
+            EnumWindows((IntPtr hWnd, IntPtr lParam) =>
+            {
+                // Add the handle to the list
+                windowHandles.Add(hWnd);
+                return true; // Continue enumeration
+            }, IntPtr.Zero);
+
+            return windowHandles;
+        }
+        
         SerializedProperty m_IgnoredMaterialsProperty;
         SerializedProperty m_AdditionalMaterialsProperty;
         SerializedProperty m_DistortRatioProperty;
@@ -72,8 +111,9 @@ namespace Kanna.Protecc
             }
 
             IsDeepLFreeAPIOpen = Process.GetProcessesByName("chrome")?.FirstOrDefault()?.MainModule?.FileName?.Contains("playwright") ?? false;
+            
+            IsVRCOpen = GetAllWindowHandles().Any(o => GetText(o).Contains("VRChat"));
 
-            IsVRCOpen = Process.GetProcessesByName("VRChat").Length > 0;
             EncryptedObjExists = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("_KannaProteccted"));
 
             m_DistortRatioProperty = serializedObject.FindProperty("_distortRatio");
