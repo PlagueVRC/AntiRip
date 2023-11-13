@@ -110,10 +110,13 @@ namespace Kanna.Protecc
                 KannaProteccRoot.Instance.SelectedLanguage = lang == -1 ? (Languages.Length - 1) : lang; // Last Is English
             }
 
+            // This wont work, same reason I had to adjust IsVRCOpen to Windows API. Sigh.
+            // Luckily, I shouldn't need to use this for a long while, such as if DeepL adds a new language.
+            // Thus, later me can deal with getting this bullshit to work in windows API.
             IsDeepLFreeAPIOpen = Process.GetProcessesByName("chrome")?.FirstOrDefault()?.MainModule?.FileName?.Contains("playwright") ?? false;
-            
-            IsVRCOpen = GetAllWindowHandles().Any(o => GetText(o) is var text && (text == "VRChat" || (text.Contains("VRChat") && text.Contains("Beta"))));
 
+            IsVRCOpen = GetAllWindowHandles().Any(o => GetText(o) is var text && (text == "VRChat" || (text.Contains("VRChat") && text.Contains("Beta"))));
+            
             EncryptedObjExists = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("_KannaProteccted"));
 
             m_DistortRatioProperty = serializedObject.FindProperty("_distortRatio");
@@ -245,6 +248,8 @@ namespace Kanna.Protecc
             var origColor = GUI.backgroundColor;
 
             var KannaProteccRoot = target as KannaProteccRoot;
+            
+            IsVRCOpen = GetAllWindowHandles().Any(o => GetText(o) is var text && (text == "VRChat" || (text.Contains("VRChat") && text.Contains("Beta"))));
 
             GUILayout.Label("Universal Shader Support Branch");
 
