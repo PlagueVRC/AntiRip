@@ -1,27 +1,29 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Kanna.Protecc;
+using Newtonsoft.Json;
 using UnityEditor;
-using UnityEngine;
 using UnityEditorInternal;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using VRC.SDK3.Avatars.Components;
 using AnimatorController = UnityEditor.Animations.AnimatorController;
 using Debug = UnityEngine.Debug;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using Newtonsoft.Json;
 
 namespace Kanna.Protecc
 {
     [CustomEditor(typeof(KannaProteccRoot))]
     [CanEditMultipleObjects]
-    public class KannaProteccRootEditor : Editor
+    public class KannaProteccRootEditor : UnityEditor.Editor
     {
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -68,6 +70,9 @@ namespace Kanna.Protecc
 
         bool _debugFoldout = false;
         bool _lockKeys = true;
+        private bool _isavacrypt = false;
+        private bool _ismissingessentials = false;
+        private Material[] NativeMats;
 
         ReorderableList m_IgnoreList;
         ReorderableList m_AdditionalList;
@@ -92,9 +97,25 @@ namespace Kanna.Protecc
 
         private string AntiRipFolder;
 
+        private static List<RuntimeAnimatorController> AllControllers;
+
         void OnEnable()
         {
             KannaProteccRoot.Instance = (KannaProteccRoot)target;
+            
+            var obj = KannaProteccRoot.Instance.gameObject;
+
+            var descriptor = obj.GetComponent<VRCAvatarDescriptor>();
+
+            var MainAnimator = obj.GetComponent<Animator>().runtimeAnimatorController;
+            
+            NativeMats = obj.GetComponentsInChildren<Renderer>(true).SelectMany(o => o.sharedMaterials).ToArray();
+
+            AllControllers = obj.GetComponentsInChildren<Animator>(true).Select(o => o.runtimeAnimatorController).Where(a => a != null).Concat(descriptor.baseAnimationLayers.Select(p => p.animatorController)).Concat(descriptor.specialAnimationLayers.Select(p => p.animatorController)).ToList();
+
+            _ismissingessentials = MainAnimator == null || descriptor.baseAnimationLayers.First(o => o.type == VRCAvatarDescriptor.AnimLayerType.FX).animatorController == null || descriptor.expressionParameters == null || descriptor.expressionsMenu == null;
+            
+            _isavacrypt = AllControllers.Any(o => o != null && ((AnimatorController)o) is var Generic && ( Generic.layers.Any(p => p.name.StartsWith("BitKey")) || Generic.parameters.Any(i => i.name.StartsWith("BitKey")) || Generic.animationClips.Any(u => u.name.Contains("_BitKey_")) || descriptor.expressionParameters.parameters.Any(y => y.name.StartsWith("BitKey")) ) );
 
             AntiRipFolder = Path.GetDirectoryName(Path.GetDirectoryName(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this))));
 
@@ -113,7 +134,12 @@ namespace Kanna.Protecc
             // This wont work, same reason I had to adjust IsVRCOpen to Windows API. Sigh.
             // Luckily, I shouldn't need to use this for a long while, such as if DeepL adds a new language.
             // Thus, later me can deal with getting this bullshit to work in windows API.
-            IsDeepLFreeAPIOpen = Process.GetProcessesByName("chrome")?.FirstOrDefault()?.MainModule?.FileName?.Contains("playwright") ?? false;
+            IsDeepLFreeAPIOpen = GetAllWindowHandles().Any(o => GetText(o) is var text && text.StartsWith("DeepL Translate: The"));
+
+            if (IsDeepLFreeAPIOpen)
+            {
+                Debug.Log("DeepL Free API Found.");
+            }
 
             IsVRCOpen = GetAllWindowHandles().Any(o => GetText(o) is var text && (text == "VRChat" || (text.Contains("VRChat") && text.Contains("Beta"))));
             
@@ -241,9 +267,13 @@ namespace Kanna.Protecc
             EditorGUI.PropertyField(rect, element);
         }
 
-        public override void OnInspectorGUI()
+        public override async void OnInspectorGUI() // I sure hope the async add doesn't come back to bite me and unity handles things for me...
         {
             serializedObject.Update();
+
+            var wrappedlabel = EditorStyles.wordWrappedLabel;
+            var boldwrappedlabel = EditorStyles.boldLabel;
+            boldwrappedlabel.wordWrap = true;
 
             var origColor = GUI.backgroundColor;
 
@@ -258,12 +288,50 @@ namespace Kanna.Protecc
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
 
+            if (_ismissingessentials)
+            {
+                GUI.color = Color.red;
+                GUILayout.Label(KannaProteccRoot.MissingEssentialsLabel_Localized, boldwrappedlabel);
+                return;
+            }
+
+            if (_isavacrypt)
+            {
+                var old = GUI.color;
+                GUI.color = Color.red;
+                GUILayout.Label(KannaProteccRoot.LingeringAvaCryptLabel_Localized, boldwrappedlabel);
+                GUI.color = old;
+                if (GUILayout.Button(new GUIContent(KannaProteccRoot.AutoFixLabel_Localized, KannaProteccRoot.AutoFixLingeringAvaCryptTooltip_Localized)))
+                {
+                    foreach (AnimatorController controller in AllControllers)
+                    {
+                        var layers = controller.layers.ToList();
+                        layers.RemoveAll(o => o.name.StartsWith("BitKey"));
+                        controller.layers = layers.ToArray();
+                        
+                        var parameters = controller.parameters.ToList();
+                        parameters.RemoveAll(o => o.name.StartsWith("BitKey"));
+                        controller.parameters = parameters.ToArray();
+                    }
+
+                    var descriptor = KannaProteccRoot.gameObject.GetComponent<VRCAvatarDescriptor>();
+                    
+                    var eparameters = descriptor.expressionParameters.parameters.ToList();
+                    eparameters.RemoveAll(o => o.name.StartsWith("BitKey"));
+                    descriptor.expressionParameters.parameters = eparameters.ToArray();
+                    
+                    _isavacrypt = AllControllers.Any(o => o != null && ((AnimatorController)o) is var Generic && ( Generic.layers.Any(p => p.name.StartsWith("BitKey")) || Generic.parameters.Any(i => i.name.StartsWith("BitKey")) || Generic.animationClips.Any(u => u.name.Contains("_BitKey_")) || descriptor.expressionParameters.parameters.Any(y => y.name.StartsWith("BitKey")) ) );
+                }
+                return;
+            }
+
             if (IsDeepLFreeAPIOpen)
             {
                 var NewLanguage = EditorGUILayout.Popup(KannaProteccRoot.UILanguage_Localized, KannaProteccRoot.SelectedLanguage, Languages);
-                if (NewLanguage != KannaProteccRoot.SelectedLanguage && KannaProteccRoot.SelectedLanguage != (Languages.Length - 1))
+                if (NewLanguage != KannaProteccRoot.SelectedLanguage)
                 {
                     KannaProteccRoot.SelectedLanguage = NewLanguage;
+
                     TranslateUI();
                 }
             }
@@ -274,9 +342,9 @@ namespace Kanna.Protecc
                 {
                     KannaProteccRoot.SelectedLanguage = NewLanguage;
 
-                    var SelectedLang = typeof(Translator.Languages).GetField(Languages[KannaProteccRoot.SelectedLanguage], BindingFlags.NonPublic | BindingFlags.Static).GetValue(null).ToString();
+                    var SelectedLang = typeof(Translator.Languages).GetField(Languages[KannaProteccRoot.SelectedLanguage], BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null).ToString();
 
-                    var localizations = JsonConvert.DeserializeObject<Localizations>(File.ReadAllText($"{AntiRipFolder}\\Localization.json")).Translations[SelectedLang];
+                    var localizations = JsonConvert.DeserializeObject<Localizations>(File.ReadAllText($"{AntiRipFolder}\\Localization.json")).Translations[SelectedLang ?? "en"];
 
                     foreach (var localization in localizations)
                     {
@@ -286,7 +354,7 @@ namespace Kanna.Protecc
             }
             else
             {
-                if (GUILayout.Button(new GUIContent("UI Language Translator Missing! Hover For Details!", "DeepLFreeAPI Not Found! Install For Localizing! Click To Open GitHub Link To DeepLFreeAPI!")))
+                if (GUILayout.Button(new GUIContent("UI Language Translator Missing! Hover For Details!", "DeepLFreeAPI Not Found! Install For Localizing! Click To Open GitHub Link To DeepLFreeAPI!"), GUILayout.Height(Screen.width / 10f), GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f)))
                 {
                     Process.Start("https://github.com/MistressPlague/DeepLFreeLocalAPI");
                 }
@@ -338,28 +406,33 @@ namespace Kanna.Protecc
             m_DistortRatioProperty.floatValue = GUILayout.HorizontalSlider(m_DistortRatioProperty.floatValue, .6f, 5f);
             GUILayout.Space(15);
             GUILayout.BeginHorizontal();
-            GUILayout.Label(KannaProteccRoot.EncryptionIntensityLabel_Localized);
+            GUILayout.Label(KannaProteccRoot.EncryptionIntensityLabel_Localized, wrappedlabel);
             GUILayout.FlexibleSpace();
             m_DistortRatioProperty.floatValue = EditorGUILayout.FloatField(m_DistortRatioProperty.floatValue);
             GUILayout.EndHorizontal();
-            GUILayout.Label(KannaProteccRoot.EncryptionIntensityInfoLabel_Localized, EditorStyles.wordWrappedLabel);
+            GUILayout.Label(KannaProteccRoot.EncryptionIntensityInfoLabel_Localized, wrappedlabel);
             GUILayout.EndVertical();
 
             GUILayout.FlexibleSpace();
             GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f));
             GUILayout.Space(3);
-            GUILayout.Label(KannaProteccRoot.VRCSavedParamtersPathLabel_Localized);
+            GUILayout.Label(KannaProteccRoot.VRCSavedParamtersPathLabel_Localized, wrappedlabel);
             m_VrcSavedParamsPathProperty.stringValue = EditorGUILayout.TextField(m_VrcSavedParamsPathProperty.stringValue);
-            GUILayout.Label(KannaProteccRoot.EnsureLocalAvatarPathLabel_Localized, EditorStyles.wordWrappedLabel);
+            GUILayout.Label(KannaProteccRoot.EnsureLocalAvatarPathLabel_Localized, wrappedlabel);
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
             GUILayout.Space(5f);
 
             //draw additional and ignored material lists here
-            GUILayout.Label(new GUIContent(KannaProteccRoot.MaterialsTooltip_Localized, KannaProteccRoot.MaterialsTooltip_Localized), EditorStyles.boldLabel);
+            GUILayout.Label(new GUIContent(KannaProteccRoot.MaterialsTooltip_Localized, KannaProteccRoot.MaterialsTooltip_Localized), boldwrappedlabel);
             using (new GUILayout.VerticalScope(EditorStyles.helpBox))
             {
                 m_AdditionalList.DoLayoutList();
+                if (KannaProteccRoot.m_AdditionalMaterials.Any(o => o != null && NativeMats.Contains(o)))
+                {
+                    KannaProteccRoot.m_AdditionalMaterials = KannaProteccRoot.m_AdditionalMaterials.Where(p => p != null && !NativeMats.Contains(p)).ToList(); // Repair User Error
+                }
+                
                 if (GUILayout.Button(new GUIContent(KannaProteccRoot.AutoDetect_Localized, KannaProteccRoot.AutoDetectMaterialsTooltip_Localized)))
                 {
                     var avatar = KannaProteccRoot.gameObject;
@@ -371,7 +444,7 @@ namespace Kanna.Protecc
                     Anims.AddRange(descriptor.baseAnimationLayers.Where(p => p.animatorController != null).SelectMany(o => o.animatorController.animationClips));
                     Anims.AddRange(descriptor.specialAnimationLayers.Where(p => p.animatorController != null).SelectMany(o => o.animatorController.animationClips));
 
-                    var NativeMats = avatar.GetComponentsInChildren<Renderer>(true).SelectMany(o => o.sharedMaterials).ToArray();
+                    NativeMats = avatar.GetComponentsInChildren<Renderer>(true).SelectMany(o => o.sharedMaterials).ToArray();
 
                     foreach (var anim in Anims.Where(anim => anim != null))
                     {
@@ -591,9 +664,14 @@ namespace Kanna.Protecc
 
                 if (Environment.UserName == "krewe" && KannaProteccRoot.SelectedLanguage != -1) // Dev
                 {
-                    if (GUILayout.Button(new GUIContent("Save Translations To JSON", "Saves Translations To JSON For Publishing")))
+                    void SaveTranslations(int SelLang = -1)
                     {
-                        var SelectedLang = typeof(Translator.Languages).GetField(Languages[KannaProteccRoot.SelectedLanguage], BindingFlags.NonPublic | BindingFlags.Static).GetValue(null).ToString();
+                        if (SelLang == -1)
+                        {
+                            SelLang = KannaProteccRoot.SelectedLanguage;
+                        }
+                        
+                        var SelectedLang = typeof(Translator.Languages).GetField(Languages[SelLang], BindingFlags.NonPublic | BindingFlags.Static).GetValue(null).ToString();
 
                         var AllFields = typeof(KannaProteccRoot).GetFields(BindingFlags.Public | BindingFlags.Instance).Where(o => o.Name.EndsWith("_Localized"));
 
@@ -610,11 +688,62 @@ namespace Kanna.Protecc
 
                         var AllLangLocalizations = File.Exists("Assets\\AntiRip\\Localization.json") ? JsonConvert.DeserializeObject<Localizations>(File.ReadAllText("Assets\\AntiRip\\Localization.json")) : new Localizations();
 
-                        AllLangLocalizations.Translations[SelectedLang] = Localizations;
+                        if (AllLangLocalizations.Translations.ContainsKey(SelectedLang))
+                        {
+                            var localizations = new List<Localization>();
+                            
+                            localizations.AddRange(Localizations);
 
+                            for (var index = 0; index < localizations.Count; index++)
+                            {
+                                var entry = localizations[index];
+                                
+                                var match = AllLangLocalizations.Translations[SelectedLang].FirstOrDefault(o => o.FieldName == entry.FieldName);
+
+                                if (match != null)
+                                {
+                                    localizations[index] = match;
+                                }
+                                else
+                                {
+                                    Debug.Log($"Added: {entry.FieldName}");
+                                }
+                            }
+
+                            AllLangLocalizations.Translations[SelectedLang] = localizations;
+                        }
+                        else
+                        {
+                            AllLangLocalizations.Translations[SelectedLang] = Localizations;
+                        }
+                        
                         File.WriteAllText("Assets\\AntiRip\\Localization.json", JsonConvert.SerializeObject(AllLangLocalizations, Formatting.Indented));
 
                         Debug.Log("Done Writing!");
+                    }
+                    
+                    if (IsDeepLFreeAPIOpen)
+                    {
+                        if (GUILayout.Button(new GUIContent("Update Translations", "Updates All Translations When New Fields Are Added.")))
+                        {
+                            for (var index = 0; index < Languages.Length; index++)
+                            {
+                                var Lang = Languages[index];
+
+                                await TranslateUI(index);
+                                
+                                SaveTranslations(index);
+
+                                await TranslateUI(Languages.Length - 1);
+                                
+                                Debug.Log($"Finished: {Lang}");
+                            }
+                        }
+                    }
+                    
+                    if (GUILayout.Button(new GUIContent("Save Translations To JSON", "Saves Translations To JSON For Publishing")))
+                    {
+                        SaveTranslations();
                     }
                 }
             }
@@ -814,67 +943,41 @@ namespace Kanna.Protecc
             public string FieldValue;
         }
 
-        async void TranslateUI()
+        async Task TranslateUI(int SelectedLanguage = -1)
         {
             var _Instance = KannaProteccRoot.Instance;
 
-            if (_Instance.SelectedLanguage == -1)
+            if (SelectedLanguage == -1)
             {
-
+                SelectedLanguage = _Instance.SelectedLanguage;
+            }
+            
+            if (SelectedLanguage == -1)
+            {
+                return;
             }
 
-            var Lang = typeof(Translator.Languages).GetField(Languages[_Instance.SelectedLanguage], BindingFlags.Static | BindingFlags.NonPublic).GetValue(null).ToString();
+            var Lang = typeof(Translator.Languages).GetField(Languages[SelectedLanguage], BindingFlags.Static | BindingFlags.NonPublic)?.GetValue(null).ToString();
+
+            var translated = new List<string>();
+            
+            if (File.Exists($"{AntiRipFolder}\\Localization.json"))
+            {
+                var localizations = JsonConvert.DeserializeObject<Localizations>(File.ReadAllText($"{AntiRipFolder}\\Localization.json")).Translations[Lang ?? "en"];
+
+                foreach (var localization in localizations)
+                {
+                    typeof(KannaProteccRoot).GetField(localization.FieldName, BindingFlags.Public | BindingFlags.Instance).SetValue(_Instance, localization.FieldValue);
+                    translated.Add(localization.FieldName);
+                }
+            }
+            
             Debug.Log(Lang);
-            _Instance.ExcludeObjectsLabel_Localized = (await Translator.TranslateText(_Instance.ExcludeObjectsLabel_Localized, Lang)).translated_text;
-            _Instance.ExcludeParamsLabel_Localized = (await Translator.TranslateText(_Instance.ExcludeParamsLabel_Localized, Lang)).translated_text;
-            _Instance.ExcludeAnimsLabel_Localized = (await Translator.TranslateText(_Instance.ExcludeAnimsLabel_Localized, Lang)).translated_text;
-            _Instance.AdditionalMaterials_Localized = (await Translator.TranslateText(_Instance.AdditionalMaterials_Localized, Lang)).translated_text;
-            _Instance.AdditionalMaterialsTooltip_Localized = (await Translator.TranslateText(_Instance.AdditionalMaterialsTooltip_Localized, Lang)).translated_text;
-            _Instance.IgnoredMaterials_Localized = (await Translator.TranslateText(_Instance.IgnoredMaterials_Localized, Lang)).translated_text;
-            _Instance.IgnoredMaterialsTooltip_Localized = (await Translator.TranslateText(_Instance.IgnoredMaterialsTooltip_Localized, Lang)).translated_text;
-            _Instance.DiscordMessage_Localized = (await Translator.TranslateText(_Instance.DiscordMessage_Localized, Lang)).translated_text;
-            _Instance.UILanguage_Localized = (await Translator.TranslateText(_Instance.UILanguage_Localized, Lang)).translated_text;
-            _Instance.ProteccAvatar_Localized = (await Translator.TranslateText(_Instance.ProteccAvatar_Localized, Lang)).translated_text;
-            _Instance.CloseVRCToEncrypt_Localized = (await Translator.TranslateText(_Instance.CloseVRCToEncrypt_Localized, Lang)).translated_text;
-            _Instance.UnproteccAvatar_Localized = (await Translator.TranslateText(_Instance.UnproteccAvatar_Localized, Lang)).translated_text;
-            _Instance.ProteccFromRippersTooltip_Localized = (await Translator.TranslateText(_Instance.ProteccFromRippersTooltip_Localized, Lang)).translated_text;
-            _Instance.OriginalFormTooltip_Localized = (await Translator.TranslateText(_Instance.OriginalFormTooltip_Localized, Lang)).translated_text;
-            _Instance.WriteKeys_Localized = (await Translator.TranslateText(_Instance.WriteKeys_Localized, Lang)).translated_text;
-            _Instance.CloseVRChatToWriteKeys_Localized = (await Translator.TranslateText(_Instance.CloseVRChatToWriteKeys_Localized, Lang)).translated_text;
-            _Instance.WriteKeysTooltip_Localized = (await Translator.TranslateText(_Instance.WriteKeysTooltip_Localized, Lang)).translated_text;
-            _Instance.EncryptionIntensityLabel_Localized = (await Translator.TranslateText(_Instance.EncryptionIntensityLabel_Localized, Lang)).translated_text;
-            _Instance.EncryptionIntensityInfoLabel_Localized = (await Translator.TranslateText(_Instance.EncryptionIntensityInfoLabel_Localized, Lang)).translated_text;
-            _Instance.VRCSavedParamtersPathLabel_Localized = (await Translator.TranslateText(_Instance.VRCSavedParamtersPathLabel_Localized, Lang)).translated_text;
-            _Instance.EnsureLocalAvatarPathLabel_Localized = (await Translator.TranslateText(_Instance.EnsureLocalAvatarPathLabel_Localized, Lang)).translated_text;
-            _Instance.Materials_Localized = (await Translator.TranslateText(_Instance.Materials_Localized, Lang)).translated_text;
-            _Instance.MaterialsTooltip_Localized = (await Translator.TranslateText(_Instance.MaterialsTooltip_Localized, Lang)).translated_text;
-            _Instance.AutoDetect_Localized = (await Translator.TranslateText(_Instance.AutoDetect_Localized, Lang)).translated_text;
-            _Instance.AutoDetectMaterialsTooltip_Localized = (await Translator.TranslateText(_Instance.AutoDetectMaterialsTooltip_Localized, Lang)).translated_text;
-            _Instance.UnlockBitKeys_Localized = (await Translator.TranslateText(_Instance.UnlockBitKeys_Localized, Lang)).translated_text;
-            _Instance.UnlockBitKeysTooltip_Localized = (await Translator.TranslateText(_Instance.UnlockBitKeysTooltip_Localized, Lang)).translated_text;
-            _Instance.LockBitKeys_Localized = (await Translator.TranslateText(_Instance.LockBitKeys_Localized, Lang)).translated_text;
-            _Instance.LockBitKeysTooltip_Localized = (await Translator.TranslateText(_Instance.LockBitKeysTooltip_Localized, Lang)).translated_text;
-            _Instance.BitKeysLabel_Localized = (await Translator.TranslateText(_Instance.BitKeysLabel_Localized, Lang)).translated_text;
-            _Instance.EncryptTheMeshLabel_Localized = (await Translator.TranslateText(_Instance.EncryptTheMeshLabel_Localized, Lang)).translated_text;
-            _Instance.HiddenToPreventLabel_Localized = (await Translator.TranslateText(_Instance.HiddenToPreventLabel_Localized, Lang)).translated_text;
-            _Instance.GenerateNewKeys_Localized = (await Translator.TranslateText(_Instance.GenerateNewKeys_Localized, Lang)).translated_text;
-            _Instance.GenerateNewKeysTooltip_Localized = (await Translator.TranslateText(_Instance.GenerateNewKeysTooltip_Localized, Lang)).translated_text;
-            _Instance.DebugAndFix_Localized = (await Translator.TranslateText(_Instance.DebugAndFix_Localized, Lang)).translated_text;
-            _Instance.DeleteKannaProteccObjects_Localized = (await Translator.TranslateText(_Instance.DeleteKannaProteccObjects_Localized, Lang)).translated_text;
-            _Instance.DeleteKannaProteccObjectsTooltip_Localized = (await Translator.TranslateText(_Instance.DeleteKannaProteccObjectsTooltip_Localized, Lang)).translated_text;
-            _Instance.ForceUnprotecc_Localized = (await Translator.TranslateText(_Instance.ForceUnprotecc_Localized, Lang)).translated_text;
-            _Instance.ForceUnprotecTooltip_Localized = (await Translator.TranslateText(_Instance.ForceUnprotecTooltip_Localized, Lang)).translated_text;
-            _Instance.CreateTestLog_Localized = (await Translator.TranslateText(_Instance.CreateTestLog_Localized, Lang)).translated_text;
-            _Instance.CreateTestLogTooltip_Localized = (await Translator.TranslateText(_Instance.CreateTestLogTooltip_Localized, Lang)).translated_text;
-            _Instance.OpenLatestLog_Localized = (await Translator.TranslateText(_Instance.OpenLatestLog_Localized, Lang)).translated_text;
-            _Instance.OpenLatestLogTooltip_Localized = (await Translator.TranslateText(_Instance.OpenLatestLogTooltip_Localized, Lang)).translated_text;
-            _Instance.BitKeysLengthLabelField_Localized = (await Translator.TranslateText(_Instance.BitKeysLengthLabelField_Localized, Lang)).translated_text;
-            _Instance.ObfuscatorSettingsLabelField_Localized = (await Translator.TranslateText(_Instance.ObfuscatorSettingsLabelField_Localized, Lang)).translated_text;
-            _Instance.ObjectNameObfuscation_Localized = (await Translator.TranslateText(_Instance.ObjectNameObfuscation_Localized, Lang)).translated_text;
-            _Instance.AutoExcludeVRCFuryObjects_Localized = (await Translator.TranslateText(_Instance.AutoExcludeVRCFuryObjects_Localized, Lang)).translated_text;
-            _Instance.ParameterNameObfuscationRegEx_Localized = (await Translator.TranslateText(_Instance.ParameterNameObfuscationRegEx_Localized, Lang)).translated_text;
-            _Instance.AutoDetectParamsTooltip_Localized = (await Translator.TranslateText(_Instance.AutoDetectParamsTooltip_Localized, Lang)).translated_text;
-            _Instance.AutoDetectAnimatorsTooltip_Localized = (await Translator.TranslateText(_Instance.AutoDetectAnimatorsTooltip_Localized, Lang)).translated_text;
+
+            foreach (var field in typeof(KannaProteccRoot).GetFields().Where(o => !translated.Contains(o.Name) && o.Name.EndsWith("_Localized") && o.FieldType == typeof(string)))
+            {
+                field.SetValue(_Instance, Lang != Translator.Languages.English ? (await Translator.TranslateText((string)field.GetValue(_Instance), Lang)).translated_text : (string)field.GetValue(_Instance));
+            }
 
             Debug.Log("Done Translating!");
         }

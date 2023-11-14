@@ -1,11 +1,11 @@
 <div align="center">
-  <img src="Textures/Titlebar.png" />
+  <img src="Textures/Titlebar.png" alt="Titlebar" />
   <a href="https://discord.gg/SyZcuTPXZA">
-    <img src="Textures/Discord%20Button.png" alt="Discord Link"/>
+    <img src="Textures/Discord Button.png" alt="Discord Link"/>
   </a>
 </div>
 
-Fuck RipperStore!
+Fuck Rippers!
 This project was previously owned by rygo6. It has been passed on for me to own and work on.
 This is the official repository for this project.
 
