@@ -71,6 +71,7 @@ namespace Kanna.Protecc
         bool _lockKeys = true;
         private bool _isavacrypt = false;
         private bool _ismissingessentials = false;
+        private Material[] NativeMats;
 
         ReorderableList m_IgnoreList;
         ReorderableList m_AdditionalList;
@@ -106,6 +107,8 @@ namespace Kanna.Protecc
             var descriptor = obj.GetComponent<VRCAvatarDescriptor>();
 
             var MainAnimator = obj.GetComponent<Animator>().runtimeAnimatorController;
+            
+            NativeMats = obj.GetComponentsInChildren<Renderer>(true).SelectMany(o => o.sharedMaterials).ToArray();
 
             AllControllers = obj.GetComponentsInChildren<Animator>(true).Select(o => o.runtimeAnimatorController).Where(a => a != null).Concat(descriptor.baseAnimationLayers.Select(p => p.animatorController)).Concat(descriptor.specialAnimationLayers.Select(p => p.animatorController)).ToList();
 
@@ -416,6 +419,11 @@ namespace Kanna.Protecc
             using (new GUILayout.VerticalScope(EditorStyles.helpBox))
             {
                 m_AdditionalList.DoLayoutList();
+                if (KannaProteccRoot.m_AdditionalMaterials.Any(o => o != null && NativeMats.Contains(o)))
+                {
+                    KannaProteccRoot.m_AdditionalMaterials = KannaProteccRoot.m_AdditionalMaterials.Where(p => p != null && !NativeMats.Contains(p)).ToList(); // Repair User Error
+                }
+                
                 if (GUILayout.Button(new GUIContent(KannaProteccRoot.AutoDetect_Localized, KannaProteccRoot.AutoDetectMaterialsTooltip_Localized)))
                 {
                     var avatar = KannaProteccRoot.gameObject;
@@ -427,7 +435,7 @@ namespace Kanna.Protecc
                     Anims.AddRange(descriptor.baseAnimationLayers.Where(p => p.animatorController != null).SelectMany(o => o.animatorController.animationClips));
                     Anims.AddRange(descriptor.specialAnimationLayers.Where(p => p.animatorController != null).SelectMany(o => o.animatorController.animationClips));
 
-                    var NativeMats = avatar.GetComponentsInChildren<Renderer>(true).SelectMany(o => o.sharedMaterials).ToArray();
+                    NativeMats = avatar.GetComponentsInChildren<Renderer>(true).SelectMany(o => o.sharedMaterials).ToArray();
 
                     foreach (var anim in Anims.Where(anim => anim != null))
                     {
