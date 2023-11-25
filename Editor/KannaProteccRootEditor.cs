@@ -106,7 +106,7 @@ namespace Kanna.Protecc
 
             AllControllers = obj.GetComponentsInChildren<Animator>(true).Select(o => o.runtimeAnimatorController).Where(a => a != null).Concat(descriptor.baseAnimationLayers.Select(p => p.animatorController)).Concat(descriptor.specialAnimationLayers.Select(p => p.animatorController)).ToList();
             
-            _isavacrypt = AllControllers.Any(o => o != null && ((AnimatorController)o) is var Generic && ( Generic.layers.Any(p => p.name.StartsWith("BitKey")) || Generic.parameters.Any(i => i.name.StartsWith("BitKey")) || Generic.animationClips.Any(u => u.name.Contains("_BitKey_")) ) );
+            _isavacrypt = AllControllers.Any(o => o != null && ((AnimatorController)o) is var Generic && ( Generic.layers.Any(p => p.name.StartsWith("BitKey")) || Generic.parameters.Any(i => i.name.StartsWith("BitKey")) || Generic.animationClips.Any(u => u.name.Contains("_BitKey_")) || descriptor.expressionParameters.parameters.Any(y => y.name.StartsWith("BitKey")) ) );
 
             AntiRipFolder = Path.GetDirectoryName(Path.GetDirectoryName(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this))));
 
