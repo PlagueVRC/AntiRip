@@ -208,8 +208,13 @@ namespace Kanna.Protecc
             foreach (var keyName in _KannaProteccKeyNames)
             {
                 layerList.RemoveAll(l => l.name == keyName);
-
                 parametersList.RemoveAll(l => l.name == keyName);
+
+                if (KannaProteccRoot.Instance.ParameterRenamedValues.ContainsKey(keyName))
+                {
+                    layerList.RemoveAll(l => l.name == KannaProteccRoot.Instance.ParameterRenamedValues[keyName]);
+                    parametersList.RemoveAll(l => l.name == KannaProteccRoot.Instance.ParameterRenamedValues[keyName]);
+                }
             }
 
             controller.layers = layerList.ToArray();

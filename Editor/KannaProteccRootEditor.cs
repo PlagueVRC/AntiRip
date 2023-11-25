@@ -1,27 +1,28 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
+using Kanna.Protecc;
+using Newtonsoft.Json;
 using UnityEditor;
-using UnityEngine;
 using UnityEditorInternal;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using VRC.SDK3.Avatars.Components;
 using AnimatorController = UnityEditor.Animations.AnimatorController;
 using Debug = UnityEngine.Debug;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using Newtonsoft.Json;
 
 namespace Kanna.Protecc
 {
     [CustomEditor(typeof(KannaProteccRoot))]
     [CanEditMultipleObjects]
-    public class KannaProteccRootEditor : Editor
+    public class KannaProteccRootEditor : UnityEditor.Editor
     {
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -272,9 +273,9 @@ namespace Kanna.Protecc
                 {
                     KannaProteccRoot.SelectedLanguage = NewLanguage;
 
-                    var SelectedLang = typeof(Translator.Languages).GetField(Languages[KannaProteccRoot.SelectedLanguage], BindingFlags.NonPublic | BindingFlags.Static).GetValue(null).ToString();
+                    var SelectedLang = typeof(Translator.Languages).GetField(Languages[KannaProteccRoot.SelectedLanguage], BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null).ToString();
 
-                    var localizations = JsonConvert.DeserializeObject<Localizations>(File.ReadAllText($"{AntiRipFolder}\\Localization.json")).Translations[SelectedLang];
+                    var localizations = JsonConvert.DeserializeObject<Localizations>(File.ReadAllText($"{AntiRipFolder}\\Localization.json")).Translations[SelectedLang ?? "en"];
 
                     foreach (var localization in localizations)
                     {
@@ -818,10 +819,10 @@ namespace Kanna.Protecc
 
             if (_Instance.SelectedLanguage == -1)
             {
-
+                return;
             }
 
-            var Lang = typeof(Translator.Languages).GetField(Languages[_Instance.SelectedLanguage], BindingFlags.Static | BindingFlags.NonPublic).GetValue(null).ToString();
+            var Lang = typeof(Translator.Languages).GetField(Languages[_Instance.SelectedLanguage], BindingFlags.Static | BindingFlags.NonPublic)?.GetValue(null).ToString();
             Debug.Log(Lang);
             _Instance.ExcludeObjectsLabel_Localized = (await Translator.TranslateText(_Instance.ExcludeObjectsLabel_Localized, Lang)).translated_text;
             _Instance.ExcludeParamsLabel_Localized = (await Translator.TranslateText(_Instance.ExcludeParamsLabel_Localized, Lang)).translated_text;
