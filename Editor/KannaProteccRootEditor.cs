@@ -70,6 +70,7 @@ namespace Kanna.Protecc
         bool _debugFoldout = false;
         bool _lockKeys = true;
         private bool _isavacrypt = false;
+        private bool _ismissingessentials = false;
 
         ReorderableList m_IgnoreList;
         ReorderableList m_AdditionalList;
@@ -104,7 +105,11 @@ namespace Kanna.Protecc
 
             var descriptor = obj.GetComponent<VRCAvatarDescriptor>();
 
+            var MainAnimator = obj.GetComponent<Animator>().runtimeAnimatorController;
+
             AllControllers = obj.GetComponentsInChildren<Animator>(true).Select(o => o.runtimeAnimatorController).Where(a => a != null).Concat(descriptor.baseAnimationLayers.Select(p => p.animatorController)).Concat(descriptor.specialAnimationLayers.Select(p => p.animatorController)).ToList();
+
+            _ismissingessentials = MainAnimator == null || descriptor.baseAnimationLayers.First(o => o.type == VRCAvatarDescriptor.AnimLayerType.FX).animatorController == null || descriptor.expressionParameters == null || descriptor.expressionsMenu == null;
             
             _isavacrypt = AllControllers.Any(o => o != null && ((AnimatorController)o) is var Generic && ( Generic.layers.Any(p => p.name.StartsWith("BitKey")) || Generic.parameters.Any(i => i.name.StartsWith("BitKey")) || Generic.animationClips.Any(u => u.name.Contains("_BitKey_")) || descriptor.expressionParameters.parameters.Any(y => y.name.StartsWith("BitKey")) ) );
 
@@ -257,6 +262,10 @@ namespace Kanna.Protecc
         {
             serializedObject.Update();
 
+            var wrappedlabel = EditorStyles.wordWrappedLabel;
+            var boldwrappedlabel = EditorStyles.boldLabel;
+            boldwrappedlabel.wordWrap = true;
+
             var origColor = GUI.backgroundColor;
 
             var KannaProteccRoot = target as KannaProteccRoot;
@@ -268,9 +277,19 @@ namespace Kanna.Protecc
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
 
+            if (_ismissingessentials)
+            {
+                GUI.color = Color.red;
+                GUILayout.Label("Your avatar is missing essentials for function, such as a FX controller, expressionsMenu, expressionsParameters or FX Controller in main animator component.", boldwrappedlabel);
+                return;
+            }
+
             if (_isavacrypt)
             {
-                GUILayout.Label("Your avatar has lingering AvaCrypt on it. This will break Kanna Protecc. Kanna Protecc will not allow interaction until this is fixed.");
+                var old = GUI.color;
+                GUI.color = Color.red;
+                GUILayout.Label("Your avatar has lingering AvaCrypt on it. This will break Kanna Protecc. Kanna Protecc will not allow interaction until this is fixed.", boldwrappedlabel);
+                GUI.color = old;
                 if (GUILayout.Button(new GUIContent("Auto-Fix", "Attempts to automatically fix this issue, removing AvaCrypt from your avatar.")))
                 {
                     Debug.LogError("Coming Soon!");
@@ -306,7 +325,7 @@ namespace Kanna.Protecc
             }
             else
             {
-                if (GUILayout.Button(new GUIContent("UI Language Translator Missing! Hover For Details!", "DeepLFreeAPI Not Found! Install For Localizing! Click To Open GitHub Link To DeepLFreeAPI!")))
+                if (GUILayout.Button(new GUIContent("UI Language Translator Missing! Hover For Details!", "DeepLFreeAPI Not Found! Install For Localizing! Click To Open GitHub Link To DeepLFreeAPI!"), GUILayout.Height(Screen.width / 10f), GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f)))
                 {
                     Process.Start("https://github.com/MistressPlague/DeepLFreeLocalAPI");
                 }
@@ -358,25 +377,25 @@ namespace Kanna.Protecc
             m_DistortRatioProperty.floatValue = GUILayout.HorizontalSlider(m_DistortRatioProperty.floatValue, .6f, 5f);
             GUILayout.Space(15);
             GUILayout.BeginHorizontal();
-            GUILayout.Label(KannaProteccRoot.EncryptionIntensityLabel_Localized);
+            GUILayout.Label(KannaProteccRoot.EncryptionIntensityLabel_Localized, wrappedlabel);
             GUILayout.FlexibleSpace();
             m_DistortRatioProperty.floatValue = EditorGUILayout.FloatField(m_DistortRatioProperty.floatValue);
             GUILayout.EndHorizontal();
-            GUILayout.Label(KannaProteccRoot.EncryptionIntensityInfoLabel_Localized, EditorStyles.wordWrappedLabel);
+            GUILayout.Label(KannaProteccRoot.EncryptionIntensityInfoLabel_Localized, wrappedlabel);
             GUILayout.EndVertical();
 
             GUILayout.FlexibleSpace();
             GUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f));
             GUILayout.Space(3);
-            GUILayout.Label(KannaProteccRoot.VRCSavedParamtersPathLabel_Localized);
+            GUILayout.Label(KannaProteccRoot.VRCSavedParamtersPathLabel_Localized, wrappedlabel);
             m_VrcSavedParamsPathProperty.stringValue = EditorGUILayout.TextField(m_VrcSavedParamsPathProperty.stringValue);
-            GUILayout.Label(KannaProteccRoot.EnsureLocalAvatarPathLabel_Localized, EditorStyles.wordWrappedLabel);
+            GUILayout.Label(KannaProteccRoot.EnsureLocalAvatarPathLabel_Localized, wrappedlabel);
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
             GUILayout.Space(5f);
 
             //draw additional and ignored material lists here
-            GUILayout.Label(new GUIContent(KannaProteccRoot.MaterialsTooltip_Localized, KannaProteccRoot.MaterialsTooltip_Localized), EditorStyles.boldLabel);
+            GUILayout.Label(new GUIContent(KannaProteccRoot.MaterialsTooltip_Localized, KannaProteccRoot.MaterialsTooltip_Localized), boldwrappedlabel);
             using (new GUILayout.VerticalScope(EditorStyles.helpBox))
             {
                 m_AdditionalList.DoLayoutList();
