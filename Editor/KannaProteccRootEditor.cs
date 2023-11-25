@@ -69,6 +69,7 @@ namespace Kanna.Protecc
 
         bool _debugFoldout = false;
         bool _lockKeys = true;
+        private bool _isavacrypt = false;
 
         ReorderableList m_IgnoreList;
         ReorderableList m_AdditionalList;
@@ -93,9 +94,19 @@ namespace Kanna.Protecc
 
         private string AntiRipFolder;
 
+        private static List<RuntimeAnimatorController> AllControllers;
+
         void OnEnable()
         {
             KannaProteccRoot.Instance = (KannaProteccRoot)target;
+            
+            var obj = KannaProteccRoot.Instance.gameObject;
+
+            var descriptor = obj.GetComponent<VRCAvatarDescriptor>();
+
+            AllControllers = obj.GetComponentsInChildren<Animator>(true).Select(o => o.runtimeAnimatorController).Where(a => a != null).Concat(descriptor.baseAnimationLayers.Select(p => p.animatorController)).Concat(descriptor.specialAnimationLayers.Select(p => p.animatorController)).ToList();
+            
+            _isavacrypt = AllControllers.Any(o => o != null && ((AnimatorController)o) is var Generic && ( Generic.layers.Any(p => p.name.StartsWith("BitKey")) || Generic.parameters.Any(i => i.name.StartsWith("BitKey")) || Generic.animationClips.Any(u => u.name.Contains("_BitKey_")) ) );
 
             AntiRipFolder = Path.GetDirectoryName(Path.GetDirectoryName(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this))));
 
@@ -255,6 +266,16 @@ namespace Kanna.Protecc
             if (GUILayout.Button(new GUIContent(HeaderTexture, KannaProteccRoot.DiscordMessage_Localized), EditorStyles.label, GUILayout.Height(Screen.width / 8f), GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f)))
             {
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
+            }
+
+            if (_isavacrypt)
+            {
+                GUILayout.Label("Your avatar has lingering AvaCrypt on it. This will break Kanna Protecc. Kanna Protecc will not allow interaction until this is fixed.");
+                if (GUILayout.Button(new GUIContent("Auto-Fix", "Attempts to automatically fix this issue, removing AvaCrypt from your avatar.")))
+                {
+                    Debug.LogError("Coming Soon!");
+                }
+                return;
             }
 
             if (IsDeepLFreeAPIOpen)
