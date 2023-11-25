@@ -292,7 +292,24 @@ namespace Kanna.Protecc
                 GUI.color = old;
                 if (GUILayout.Button(new GUIContent("Auto-Fix", "Attempts to automatically fix this issue, removing AvaCrypt from your avatar.")))
                 {
-                    Debug.LogError("Coming Soon!");
+                    foreach (AnimatorController controller in AllControllers)
+                    {
+                        var layers = controller.layers.ToList();
+                        layers.RemoveAll(o => o.name.StartsWith("BitKey"));
+                        controller.layers = layers.ToArray();
+                        
+                        var parameters = controller.parameters.ToList();
+                        parameters.RemoveAll(o => o.name.StartsWith("BitKey"));
+                        controller.parameters = parameters.ToArray();
+                    }
+
+                    var descriptor = KannaProteccRoot.gameObject.GetComponent<VRCAvatarDescriptor>();
+                    
+                    var eparameters = descriptor.expressionParameters.parameters.ToList();
+                    eparameters.RemoveAll(o => o.name.StartsWith("BitKey"));
+                    descriptor.expressionParameters.parameters = eparameters.ToArray();
+                    
+                    _isavacrypt = AllControllers.Any(o => o != null && ((AnimatorController)o) is var Generic && ( Generic.layers.Any(p => p.name.StartsWith("BitKey")) || Generic.parameters.Any(i => i.name.StartsWith("BitKey")) || Generic.animationClips.Any(u => u.name.Contains("_BitKey_")) || descriptor.expressionParameters.parameters.Any(y => y.name.StartsWith("BitKey")) ) );
                 }
                 return;
             }
