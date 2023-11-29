@@ -4443,11 +4443,11 @@
     "pt-BR": [
       {
         "FieldName": "MissingEssentialsLabel_Localized",
-        "FieldValue": "Seu avatar não tem os elementos essenciais para a função, como um controlador FX, expressionsMenu, expressionsParameters ou FX Controller no componente principal do animador."
+        "FieldValue": "Seu avatar não tem elementos essenciais para a função, como um FX Controller, expressionsMenu, expressionsParameters ou FX Controller no componente principal do animator."
       },
       {
         "FieldName": "LingeringAvaCryptLabel_Localized",
-        "FieldValue": "Seu avatar tem AvaCrypt persistente nele. Isso quebrará o Kanna Protecc. O Kanna Protecc não permitirá a interação até que isso seja corrigido."
+        "FieldValue": "Seu avatar tem resquícios do AvaCrypt nele. Isso quebrará o Kanna Protecc. O Kanna Protecc não permitirá a interação até que isso seja corrigido."
       },
       {
         "FieldName": "AutoFixLabel_Localized",
@@ -4455,7 +4455,7 @@
       },
       {
         "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
-        "FieldValue": "Tenta corrigir automaticamente esse problema, removendo o AvaCrypt de seu avatar."
+        "FieldValue": "Tenta corrigir automaticamente esse problema, removendo o AvaCrypt do seu avatar."
       },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
