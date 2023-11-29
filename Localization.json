@@ -2,6 +2,22 @@
   "Translations": {
     "bg": [
       {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "В аватара ви липсват основните елементи на функцията, като например FX контролер, expressionsMenu, expressionsParameters или FX контролер в основния компонент на аниматора."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Върху аватара ви има остатъци от AvaCrypt. Това ще наруши Kanna Protecc. Kanna Protecc няма да позволи взаимодействие, докато това не бъде поправено."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Опитва се автоматично да отстрани този проблем, като премахва AvaCrypt от вашия аватар."
+      },
+      {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Изключване на обекти от преименуване"
       },
@@ -207,6 +223,22 @@
       }
     ],
     "zh": [
+      {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "您的头像缺少必要的功能，例如主动画组件中的特效控制器、表情菜单、表情参数或特效控制器。"
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "您的头像上有残留的 AvaCrypt。这将破坏 Kanna Protecc。在修复之前，Kanna Protecc 不允许进行交互。"
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "自动修复"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "尝试自动修复这个问题，从你的头像中移除 AvaCrypt。"
+      },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "不重命名的对象"
@@ -414,6 +446,22 @@
     ],
     "cs": [
       {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Vašemu avataru chybí základní prvky pro funkci, například FX controller, expressionsMenu, expressionsParameters nebo FX Controller v hlavní komponentě animátoru."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Na tvém avataru je vidět přetrvávající AvaCrypt. Tím se poruší Kanna Protecc. Kanna Protecc neumožní interakci, dokud to nebude opraveno."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Automatická oprava"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Pokusí se tento problém automaticky vyřešit odstraněním AvaCryptu z vašeho avatara."
+      },
+      {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Vyloučení objektů z přejmenování"
       },
@@ -619,6 +667,22 @@
       }
     ],
     "da": [
+      {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Din avatar mangler vigtige funktioner, såsom en FX-controller, expressionsMenu, expressionsParameters eller FX-controller i animatorens hovedkomponent."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Din avatar har stadig AvaCrypt på sig. Det vil ødelægge Kanna Protecc. Kanna Protecc vil ikke tillade interaktion, før dette er rettet."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Forsøger automatisk at løse dette problem ved at fjerne AvaCrypt fra din avatar."
+      },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Udeluk objekter fra omdøbning"
@@ -826,6 +890,22 @@
     ],
     "nl": [
       {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Uw avatar mist essentiële functies, zoals een FX-controller, expressionsMenu, expressionsParameters of FX-controller in de hoofdcomponent van de animator."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Uw avatar heeft AvaCrypt erop staan. Dit verbreekt Kanna Protecc. Kanna Protecc zal geen interactie toestaan totdat dit is opgelost."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Probeert dit probleem automatisch op te lossen door AvaCrypt van je avatar te verwijderen."
+      },
+      {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Objecten uitsluiten van hernoemen"
       },
@@ -1031,6 +1111,22 @@
       }
     ],
     "et": [
+      {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Teie avataril puuduvad olulised funktsioonid, näiteks FX kontroller, expressionsMenu, expressionsParameetrid või FX kontroller põhilises animatsioonikomponendis."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Teie avataril on pikaldane AvaCrypt. See rikub Kanna Protecci. Kanna Protecc ei luba suhtlemist, kuni see on parandatud."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Püüab selle probleemi automaatselt parandada, eemaldades AvaCrypti teie avatarilt."
+      },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Objektide välistamine ümbernimetamisest"
@@ -1238,6 +1334,22 @@
     ],
     "fi": [
       {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Avataristasi puuttuu toiminnon kannalta olennaisia osia, kuten FX-ohjain, expressionsMenu, expressionsParameters tai FX-ohjain animaattorin pääkomponentissa."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Avatarissasi on pitkäaikainen AvaCrypt. Tämä rikkoo Kanna Proteccin. Kanna Protecc ei salli vuorovaikutusta ennen kuin tämä on korjattu."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Yrittää korjata tämän ongelman automaattisesti poistamalla AvaCryptin avataristasi."
+      },
+      {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Objektien poissulkeminen uudelleennimeämisestä"
       },
@@ -1443,6 +1555,22 @@
       }
     ],
     "fr": [
+      {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Il manque à votre avatar des éléments essentiels à son fonctionnement, tels qu'un contrôleur FX, un menu d'expressions, des paramètres d'expressions ou un contrôleur FX dans le composant principal de l'animateur."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Votre avatar contient des traces d'AvaCrypt. Cela va briser Kanna Protecc. Kanna Protecc ne permettra pas d'interaction tant que ce problème n'aura pas été résolu."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Tente de résoudre automatiquement ce problème en supprimant AvaCrypt de votre avatar."
+      },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Objets qui ne seront pas renommés lors de l'obfuscation"
@@ -1650,6 +1778,22 @@
     ],
     "de": [
       {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Ihrem Avatar fehlen wesentliche Bestandteile für die Funktion, wie z.B. ein FX Controller, expressionsMenu, expressionsParameters oder FX Controller in der Hauptanimationskomponente."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Auf deinem Avatar befindet sich AvaCrypt. Dadurch wird der Kanna-Protecc gebrochen. Kanna Protecc wird keine Interaktion zulassen, bis das Problem behoben ist."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Versucht, dieses Problem automatisch zu beheben, indem es AvaCrypt von Ihrem Avatar entfernt."
+      },
+      {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Objekte von der Umbenennung ausschließen"
       },
@@ -1855,6 +1999,22 @@
       }
     ],
     "el": [
+      {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Από το άβαταρ σας λείπουν βασικά στοιχεία για τη λειτουργία, όπως ένας ελεγκτής FX, expressionsMenu, expressionsParameters ή FX Controller στο κύριο συστατικό animator."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Το avatar σας έχει παρατεταμένο AvaCrypt πάνω του. Αυτό θα σπάσει το Kanna Protecc. Το Kanna Protecc δεν θα επιτρέπει την αλληλεπίδραση μέχρι να διορθωθεί αυτό."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Προσπαθεί να διορθώσει αυτόματα αυτό το πρόβλημα, αφαιρώντας το AvaCrypt από το avatar σας."
+      },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Εξαίρεση αντικειμένων από τη μετονομασία"
@@ -2062,6 +2222,22 @@
     ],
     "hu": [
       {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Az avatarodból hiányoznak a működéshez szükséges alapvető elemek, például egy FX-vezérlő, expressionsMenu, expressionsParameters vagy FX-vezérlő a fő animátor komponensben."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Az avatarodon AvaCrypt maradványok vannak. Ez megtöri a Kanna Protecc-et. A Kanna Protecc nem engedélyezi az interakciót, amíg ez nem javul."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Megpróbálja automatikusan megoldani ezt a problémát, eltávolítva az AvaCryptet az avatarodról."
+      },
+      {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Objektumok kizárása az átnevezésből"
       },
@@ -2267,6 +2443,22 @@
       }
     ],
     "id": [
+      {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Avatar Anda tidak memiliki fungsi yang penting, seperti pengontrol FX, ekspresiMenu, ekspresiParameter, atau Pengontrol FX dalam komponen animator utama."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Avatar Anda memiliki AvaCrypt yang masih tersisa di dalamnya. Hal ini akan merusak Kanna Protecc. Kanna Protecc tidak akan mengizinkan interaksi hingga hal ini diperbaiki."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Perbaikan Otomatis"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Mencoba memperbaiki masalah ini secara otomatis, menghapus AvaCrypt dari avatar Anda."
+      },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Mengecualikan Objek Dari Penggantian Nama"
@@ -2474,6 +2666,22 @@
     ],
     "it": [
       {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "All'avatar mancano elementi essenziali per la funzione, come un controller FX, expressionsMenu, expressionsParameters o un controller FX nel componente animatore principale."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Il tuo avatar ha un AvaCrypt persistente. Questo romperà Kanna Protecc. Kanna Protecc non consentirà l'interazione fino a quando questo non sarà risolto."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Tenta di risolvere automaticamente questo problema, rimuovendo AvaCrypt dall'avatar."
+      },
+      {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Escludere gli oggetti dalla ridenominazione"
       },
@@ -2679,6 +2887,22 @@
       }
     ],
     "ja": [
+      {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "あなたのアバターには、メインアニメーターコンポーネントのFXコントローラー、expressionsMenu、expressionsParameters、FXコントローラーなど、機能に必要なものが欠けています。"
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "あなたのアバターにはAvaCryptが残っています。これはKanna Proteccを破壊します。これが修正されるまで、Kanna Proteccはインタラクションを許可しません。"
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "オートフィックス"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "この問題を自動的に修正し、アバターからAvaCryptを削除します。"
+      },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "名前の変更からオブジェクトを除外する"
@@ -2886,6 +3110,22 @@
     ],
     "ko": [
       {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "아바타에 FX 컨트롤러, 표현식 메뉴, 표현식 매개변수 또는 메인 애니메이터 컴포넌트의 FX 컨트롤러와 같은 기능에 필수적인 요소가 누락되어 있습니다."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "아바타에 아바크립트가 남아 있습니다. 이 경우 칸나 프로텍트가 중단됩니다. 이 문제가 해결될 때까지 칸나 프로텍트는 상호작용을 허용하지 않습니다."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "자동 수정"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "이 문제를 자동으로 해결하여 아바타에서 AvaCrypt를 제거하려고 시도합니다."
+      },
+      {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "이름 변경에서 개체 제외"
       },
@@ -3091,6 +3331,22 @@
       }
     ],
     "lv": [
+      {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Jūsu avatāram trūkst svarīgāko funkciju, piemēram, FX kontrolieris, expressionsMenu, expressionsParameters vai FX kontrolieris galvenajā animatora komponentē."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Uz jūsu avatāra ir palikusi AvaCrypt. Tas izjauks Kanna Protecc. Kanna Protecc nepieļaus mijiedarbību, kamēr tas nebūs novērsts."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Mēģina automātiski novērst šo problēmu, noņemot AvaCrypt no jūsu avatāra."
+      },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Objektu izslēgšana no pārdēvēšanas"
@@ -3298,6 +3554,22 @@
     ],
     "lt": [
       {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Jūsų avatarui trūksta esminių funkcijų, tokių kaip FX valdiklis, expressionsMenu, expressionsParameters arba FX valdiklis pagrindiniame animatoriaus komponente."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Ant jūsų avataro yra likęs \"AvaCrypt\". Tai pažeis Kanna Protecc. Kanna Protecc neleis sąveikauti, kol tai nebus ištaisyta."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "\"Auto-Fix\""
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Bandoma automatiškai išspręsti šią problemą, pašalinant \"AvaCrypt\" iš jūsų avataro."
+      },
+      {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Neįtraukti objektų pervadinimo"
       },
@@ -3503,6 +3775,22 @@
       }
     ],
     "nb": [
+      {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Avataren din mangler viktige funksjoner, for eksempel en FX-kontroller, expressionsMenu, expressionsParameters eller FX Controller i hovedanimatorkomponenten."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Avataren din har AvaCrypt på seg. Dette vil ødelegge Kanna Protecc. Kanna Protecc vil ikke tillate interaksjon før dette er løst."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Forsøker å løse dette problemet automatisk ved å fjerne AvaCrypt fra avataren din."
+      },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Utelukke objekter fra omdøping"
@@ -3710,6 +3998,22 @@
     ],
     "pl": [
       {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Twojemu awatarowi brakuje niezbędnych funkcji, takich jak kontroler FX, expressionsMenu, expressionsParameters lub kontroler FX w głównym komponencie animatora."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Na twoim awatarze znajduje się AvaCrypt. Spowoduje to złamanie Kanna Protecc. Kanna Protecc nie pozwoli na interakcję, dopóki nie zostanie to naprawione."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Próbuje automatycznie naprawić ten problem, usuwając AvaCrypt z awatara użytkownika."
+      },
+      {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Wyklucz obiekty ze zmiany nazwy"
       },
@@ -3915,6 +4219,22 @@
       }
     ],
     "pt-PT": [
+      {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "O teu avatar não tem os elementos essenciais para funcionar, como um controlador FX, expressionsMenu, expressionsParameters ou FX Controller no componente principal do animador."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "O teu avatar tem AvaCrypt. Isto vai quebrar o Kanna Protecc. O Kanna Protecc não permitirá a interação até que isto seja corrigido."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Tenta corrigir automaticamente este problema, removendo o AvaCrypt do seu avatar."
+      },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Excluir objetos da renomeação"
@@ -4122,6 +4442,22 @@
     ],
     "pt-BR": [
       {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Seu avatar não tem os elementos essenciais para a função, como um controlador FX, expressionsMenu, expressionsParameters ou FX Controller no componente principal do animador."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Seu avatar tem AvaCrypt persistente nele. Isso quebrará o Kanna Protecc. O Kanna Protecc não permitirá a interação até que isso seja corrigido."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Tenta corrigir automaticamente esse problema, removendo o AvaCrypt de seu avatar."
+      },
+      {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Excluir objetos da renomeação"
       },
@@ -4131,7 +4467,7 @@
       },
       {
         "FieldName": "ExcludeAnimsLabel_Localized",
-        "FieldValue": "Excluir Animator Controllers da ofuscação" 
+        "FieldValue": "Excluir Animator Controllers da ofuscação"
       },
       {
         "FieldName": "AdditionalMaterials_Localized",
@@ -4327,6 +4663,22 @@
       }
     ],
     "ro": [
+      {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Avatarului dvs. îi lipsesc elementele esențiale pentru funcționare, cum ar fi un controler FX, expressionsMenu, expressionsParameters sau un controler FX în componenta principală a animatorului."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Avatarul tău are urme de AvaCrypt pe el. Acest lucru va încălca Kanna Protecc. Kanna Protecc nu va permite interacțiunea până când acest lucru nu va fi rezolvat."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Încearcă să rezolve automat această problemă, eliminând AvaCrypt din avatarul dumneavoastră."
+      },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Excluderea obiectelor de la redenumire"
@@ -4534,6 +4886,22 @@
     ],
     "ru": [
       {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Вашему аватару не хватает необходимых функций, таких как FX-контроллер, expressionsMenu, expressionsParameters или FX-контроллер в главном компоненте аниматора."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "На вашем аватаре задерживается AvaCrypt. Это приведет к поломке Kanna Protecc. Kanna Protecc не позволит взаимодействовать, пока это не будет исправлено."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Попытка автоматически исправить эту проблему, удалив AvaCrypt с вашего аватара."
+      },
+      {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Исключение объектов из переименования"
       },
@@ -4739,6 +5107,22 @@
       }
     ],
     "sk": [
+      {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Vášmu avatarovi chýbajú základné prvky funkcie, ako napríklad FX controller, expressionsMenu, expressionsParameters alebo FX Controller v hlavnej komponente animátora."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Váš avatar má na sebe pretrvávajúci AvaCrypt. Tým sa poruší Kanna Protecc. Kanna Protecc nepovolí interakciu, kým to nebude opravené."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Automatická oprava"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Pokúsi sa automaticky vyriešiť tento problém odstránením aplikácie AvaCrypt z vášho avatara."
+      },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Vylúčenie objektov z premenovania"
@@ -4946,6 +5330,22 @@
     ],
     "sl": [
       {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Vašemu avatarju manjkajo bistveni elementi za delovanje, kot so krmilnik FX, expressionsMenu, expressionsParameters ali krmilnik FX v glavni komponenti animatorja."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Na vašem avatarju je ostal AvaCrypt. To bo prekinilo Kanna Protecc. Kanna Protecc ne bo dovolil interakcije, dokler to ne bo odpravljeno."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Samodejno popravljanje"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Poskuša samodejno odpraviti to težavo z odstranitvijo programa AvaCrypt iz vašega avatarja."
+      },
+      {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Izključitev predmetov iz preimenovanja"
       },
@@ -5151,6 +5551,22 @@
       }
     ],
     "es": [
+      {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "A tu avatar le faltan elementos esenciales para funcionar, como un controlador FX, expressionsMenu, expressionsParameters o un controlador FX en el componente animador principal."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Tu avatar tiene AvaCrypt persistente en él. Esto romperá Kanna Protecc. Kanna Protecc no permitirá la interacción hasta que esto se solucione."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Intenta solucionar automáticamente este problema, eliminando AvaCrypt de tu avatar."
+      },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Excluir objetos del renombrado"
@@ -5358,6 +5774,22 @@
     ],
     "sv": [
       {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Din avatar saknar väsentliga delar för funktionen, t.ex. en FX-kontroller, expressionsMenu, expressionsParameters eller FX-kontroller i huvudanimatorkomponenten."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Din avatar har kvardröjande AvaCrypt på sig. Detta kommer att bryta Kanna Protecc. Kanna Protecc kommer inte att tillåta interaktion förrän detta är åtgärdat."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Försöker automatiskt åtgärda problemet genom att ta bort AvaCrypt från din avatar."
+      },
+      {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Utesluta objekt från namnändring"
       },
@@ -5563,6 +5995,22 @@
       }
     ],
     "tr": [
+      {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Avatarınızda, ana animatör bileşeninde bir FX denetleyicisi, expressionsMenu, expressionsParameters veya FX Denetleyicisi gibi işlev için gerekli unsurlar eksik."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Avatarınızın üzerinde kalıcı AvaCrypt var. Bu Kanna Protecc'i bozacaktır. Kanna Protecc bu düzeltilene kadar etkileşime izin vermeyecektir."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Otomatik Düzeltme"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "AvaCrypt'i avatarınızdan kaldırarak bu sorunu otomatik olarak çözmeye çalışır."
+      },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Nesneleri Yeniden Adlandırmanın Dışında Bırakma"
@@ -5770,6 +6218,22 @@
     ],
     "uk": [
       {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Вашому аватару бракує необхідних для роботи компонентів, таких як FX-контролер, виразиMenu, виразиParameters або FX-контролер у головному компоненті аніматора."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "На вашій аватарці є затягнутий AvaCrypt. Це зламає Kanna Protecc. Kanna Protecc не дозволить взаємодіяти, поки це не буде виправлено."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Автофіксація"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Спроби автоматично виправити цю проблему, видаливши AvaCrypt з вашої аватарки."
+      },
+      {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Виключити об'єкти з перейменування"
       },
@@ -5975,6 +6439,22 @@
       }
     ],
     "en": [
+      {
+        "FieldName": "MissingEssentialsLabel_Localized",
+        "FieldValue": "Your avatar is missing essentials for function, such as a FX controller, expressionsMenu, expressionsParameters or FX Controller in main animator component."
+      },
+      {
+        "FieldName": "LingeringAvaCryptLabel_Localized",
+        "FieldValue": "Your avatar has lingering AvaCrypt on it. This will break Kanna Protecc. Kanna Protecc will not allow interaction until this is fixed."
+      },
+      {
+        "FieldName": "AutoFixLabel_Localized",
+        "FieldValue": "Auto-Fix"
+      },
+      {
+        "FieldName": "AutoFixLingeringAvaCryptTooltip_Localized",
+        "FieldValue": "Attempts to automatically fix this issue, removing AvaCrypt from your avatar."
+      },
       {
         "FieldName": "ExcludeObjectsLabel_Localized",
         "FieldValue": "Exclude Objects From Renaming"
