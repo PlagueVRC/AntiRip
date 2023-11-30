@@ -360,9 +360,11 @@ namespace Kanna.Protecc
                 }
             }
 
+            ShaderInfoLib.Infos.Clear();
+
             foreach (var mat in materials)
             {
-                if (mat != null && mat.shader != null/* && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderMatch)*/)
+                if (mat != null && mat.shader != null /* && KannaProteccMaterial.IsShaderSupported(mat.shader, out var shaderMatch)*/)
                 {
                     if (mat.shader.name.Contains("KannaProtecc"))
                     {
@@ -479,63 +481,123 @@ namespace Kanna.Protecc
 
                     var IncludeFileDirs = new List<string>();
 
-                    foreach (var include in mat.shader.FindAllShaderIncludes().Where(o => !o.Contains("KannaModelDecode.cginc")))
+                    ScanIncludesForVert(shaderInfo.VertMethod);
+
+                    void ScanIncludesForVert(string[] VertMethod, string IncludeFile = null, string structname = null)
                     {
-                        var includeText = File.ReadAllText(include);
+                        var array = mat.shader.FindAllShaderIncludes().Where(o => !o.Contains("KannaModelDecode.cginc") && (IncludeFile == null || o != IncludeFile)).ToArray();
 
-                        if (includeText.Contains("appdata_base") || includeText.Contains("appdata_tan") || includeText.Contains("appdata_full"))
+                        for (var index = 0; index < array.Length; index++)
                         {
-                            continue;
-                        }
+                            var include = array[index];
+                            
+                            var includepath = (IncludeFile == null ? include : $"{include.Substring(0, include.LastIndexOf(".", StringComparison.Ordinal))}_Protected{Path.GetExtension(include)}");
 
-                        ShaderInfoLib.KannaShaderInfo shaderInfo2 = null;
+                            if (!File.Exists(includepath))
+                            {
+                                includepath = includepath.Replace("_Protected", "");
+                            }
 
-                        try
-                        {
-                            shaderInfo2 = ShaderInfoLib.GetShaderInfo(includeText, shaderInfo.VertMethod);
-                        }
-                        catch
-                        {
+                            var includeText = File.ReadAllText(includepath);
 
-                        }
+                            if (includeText.Contains("appdata_base") || includeText.Contains("appdata_tan") || includeText.Contains("appdata_full"))
+                            {
+                                continue;
+                            }
 
-                        if (!includeText.Contains("//KannaProtecc Injected"))
-                        {
-                            KannaLogger.LogToFile($"Include File: {include} Not Yet Injected, Injecting..", LogLocation);
+                            ShaderInfoLib.KannaShaderInfo shaderInfo2 = null;
+
+                            try
+                            {
+                                shaderInfo2 = ShaderInfoLib.GetShaderInfo(includeText, VertMethod);
+                            }
+                            catch
+                            {
+                            }
 
                             _sb.Clear();
-                            _sb.AppendLine("//KannaProtecc Injected\r\n");
+                            if (!_sb.Contains("//KannaProtecc Injected\r\n"))
+                            {
+                                KannaLogger.LogToFile($"Include File: {includepath} Not Yet Injected, Injecting..", LogLocation);
+                                _sb.AppendLine("//KannaProtecc Injected\r\n");
+                            }
+                            
+                            if (structname != null && !_sb.Contains($"//Looking For UV: {structname}"))
+                            {
+                                _sb.AppendLine($"//Looking For UV: {structname}");
+                            }
+                            
                             _sb.Append(includeText);
 
                             if (shaderInfo2 != null)
                             {
-                                _sb.ReplaceOrLog(shaderInfo2.VertMethod, "#include \"KannaModelDecode.cginc\"\r\n{OrigText}"); // Vert Include Addition
+                                if (!_sb.Contains("//Vert Found.") && _sb.ReplaceOrLog(shaderInfo2.VertMethod, "#include \"KannaModelDecode.cginc\"\r\n{OrigText}"))
+                                {
+                                    _sb.PrependLine("//Vert Found.");
+                                } // Vert Include Addition
+                                else if (!_sb.Contains("//Vert Not Found."))
+                                {
+                                    _sb.PrependLine("//Vert Not Found.");
+                                }
 
                                 if (shaderInfo2.UVs.Length > 0)
                                 {
                                     foreach (var uv in shaderInfo2.UVs)
                                     {
-                                        var uvsplitlines = uv.Definition.Split('\n').ToList();
-                                        uvsplitlines.Insert(uvsplitlines.Count - 2, "float3 uv6: TEXCOORD6;");
-                                        uvsplitlines.Insert(uvsplitlines.Count - 2, "float3 uv7: TEXCOORD7;");
+                                        if (!_sb.Contains("//UVs Found."))
+                                        {
+                                            _sb.PrependLine("//UVs Found.");
+                                        }
+                                        
+                                        var uvsplitlines = uv.Definition.Split(new [] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-                                        _sb.ReplaceOrLog(new[] { uv.Definition }, string.Join("\r\n", uvsplitlines));
-                                        _sb.ReplaceOrLog(new[] { $"const {uv.Name}" }, $"{uv.Name}"); // yeet const
+                                        if (uvsplitlines.All(o => !o.Contains("float3 uv6")))
+                                        {
+                                            uvsplitlines.Insert(uvsplitlines.Count - 2, "float3 uv6: TEXCOORD6;");
+                                            uvsplitlines.Insert(uvsplitlines.Count - 2, "float3 uv7: TEXCOORD7;");
+
+                                            if (_sb.ReplaceOrLog(new[] { uv.Definition }, string.Join("\r\n", uvsplitlines)))
+                                            {
+                                                _sb.PrependLine("//UV Modify Success.");
+                                            }
+                                        }
+
+                                        if (_sb.ReplaceOrLog(new[] { $"const {uv.Name}" }, $"{uv.Name}"))
+                                        {
+                                            _sb.PrependLine("//UV Const Yeeted.");
+                                        } // yeet const
                                     }
 
-                                    _sb.ReplaceOrLog(new[] { "UNITY_SETUP_INSTANCE_ID(v);", "UNITY_SETUP_INSTANCE_ID( v );", "UNITY_SETUP_INSTANCE_ID(v );", "UNITY_SETUP_INSTANCE_ID( v);" }, $"v.{shaderInfo2.UVs[0].VertexPropertyName} = modelDecode(v.{shaderInfo2.UVs[0].VertexPropertyName}, v.normal, v.uv6, v.uv7);\r\n{{OrigText}}");
+                                    if (!_sb.Contains("//INSTANCE_ID Found") && _sb.ReplaceOrLog(new[] { "UNITY_SETUP_INSTANCE_ID(v);", "UNITY_SETUP_INSTANCE_ID( v );", "UNITY_SETUP_INSTANCE_ID(v );", "UNITY_SETUP_INSTANCE_ID( v);" }, $"v.{shaderInfo2.UVs[0].VertexPropertyName} = modelDecode(v.{shaderInfo2.UVs[0].VertexPropertyName}, v.normal, v.uv6, v.uv7);\r\n{{OrigText}}"))
+                                    {
+                                        _sb.PrependLine("//INSTANCE_ID Found, modelDecode Added.");
+                                    }
                                 }
-                                else
+                                else if (!_sb.Contains("//No UVs Found."))
                                 {
-                                    _sb.ReplaceOrLog(new[] { "UNITY_SETUP_INSTANCE_ID(v);", "UNITY_SETUP_INSTANCE_ID( v );", "UNITY_SETUP_INSTANCE_ID(v );", "UNITY_SETUP_INSTANCE_ID( v);" }, $"v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{{OrigText}}");
+                                    _sb.PrependLine("//No UVs Found.");
+
+                                    if (!_sb.Contains("//INSTANCE_ID Found") && _sb.ReplaceOrLog(new[] { "UNITY_SETUP_INSTANCE_ID(v);", "UNITY_SETUP_INSTANCE_ID( v );", "UNITY_SETUP_INSTANCE_ID(v );", "UNITY_SETUP_INSTANCE_ID( v);" }, $"v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{{OrigText}}"))
+                                    {
+                                        _sb.PrependLine("//INSTANCE_ID Found, modelDecode Added.");
+                                    }
                                 }
                             }
 
-                            var newFileName = include.Replace(Path.GetExtension(include), "") + $"_Protected{Path.GetExtension(include)}";
-                            IncludeFileDirs.Add(newFileName);
+                            var newFileName = includepath.Contains("_Protected") ? includepath : $"{includepath.Replace(Path.GetExtension(includepath), "")}_Protected{Path.GetExtension(includepath)}";
+                            if (!IncludeFileDirs.Contains(newFileName))
+                            {
+                                IncludeFileDirs.Add(newFileName);
+                            }
+
                             File.WriteAllText(newFileName, _sb.ToString());
 
                             KannaLogger.LogToFile($"Done, Written Modified Include To {newFileName}", LogLocation);
+
+                            if (shaderInfo2.VertMethod.Length > 0 && IncludeFile == null)
+                            {
+                                ScanIncludesForVert(shaderInfo2.VertMethod, include, shaderInfo2.UVTypeNames?.FirstOrDefault()); // Recursive, Slow
+                            }
                         }
                     }
 
@@ -566,6 +628,8 @@ namespace Kanna.Protecc
                     materialEncrypted = true;
                 }
             }
+            
+            ShaderInfoLib.Infos.Clear();
 
             return materialEncrypted;
         }
@@ -1371,6 +1435,7 @@ public class ShaderInfoLib
     public class KannaShaderInfo
     {
         public string[] VertMethod;
+        public string[] UVTypeNames;
         public UV[] UVs;
     }
 
@@ -1381,9 +1446,17 @@ public class ShaderInfoLib
         public string VertexPropertyName;
     }
 
+    public static Dictionary<string, KannaShaderInfo> Infos = new Dictionary<string, KannaShaderInfo>();
+    
     public static KannaShaderInfo GetShaderInfo(string contents, string[] vertsToAppend = null)
     {
+        // if (Infos.TryGetValue(contents, out var info))
+        // {
+        //     return info;
+        // }
+        
         var verts = new List<string>();
+        var UVTypeNames = new List<string>();
         var uvs = new List<UV>();
 
         if (vertsToAppend != null)
@@ -1517,36 +1590,84 @@ public class ShaderInfoLib
                         VertexPropertyName = prop
                     });
                 }
+
+                if (!UVTypeNames.Contains(uvtypename))
+                {
+                    UVTypeNames.Add(uvtypename);
+                }
             }
             catch
             {
             }
         }
 
-        return new KannaShaderInfo
+        Infos[contents] = new KannaShaderInfo
         {
             VertMethod = verts.ToArray(),
+            UVTypeNames = UVTypeNames.ToArray(),
             UVs = uvs.ToArray()
         };
+
+        return Infos[contents];
     }
 
     private static string GetDefinitionOfMethod(string region, string methodname)
     {
-        var location = region.RegexIndexOf(
-            $" {methodname}" +
-                   $"\\s*?" +
-                   $"\\(" +
-                   $"(.|\\s)" +
-                   $"*?" +
-                   $"\\)", RegexOptions.IgnoreCase);
+        if (!region.Contains("{") || !region.Contains("}"))
+        {
+            return "###########No Bodies.";
+        }
+        
+        var match = Regex.Match(region, $@" {methodname}\S*\W*\(.*?\)", RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
-        var textvertandafter = region.Substring(GetLineStartIndex(region, location.Item1));
+        if (!match.Success)
+        {
+            // Handle the case where the method definition is not found
+            return "###########Did Not Match.";
+        }
 
-        var closebracetofind = "\n" + GetLineContainingMatch(textvertandafter, "{").Replace("{", "}");
+        var methodStartIndex = match.Index;
 
-        var match = textvertandafter.Substring(0, textvertandafter.IndexOf(closebracetofind, StringComparison.OrdinalIgnoreCase) + closebracetofind.Length);
+        // Count the opening and closing braces to extract the entire method body
+        var braceCount = 0; // Start with 1 to account for the opening brace
+        var currentIndex = methodStartIndex;
 
-        return match;
+        while (currentIndex < region.Length)
+        {
+            if (region[currentIndex] == '{')
+            {
+                braceCount = 1;
+                currentIndex++;
+                break;
+            }
+            
+            currentIndex++;
+        }
+
+        while (braceCount > 0 && currentIndex < region.Length)
+        {
+            if (region[currentIndex] == '{')
+            {
+                braceCount++;
+            }
+            else if (region[currentIndex] == '}')
+            {
+                braceCount--;
+            }
+
+            currentIndex++;
+        }
+
+        if (braceCount == 0)
+        {
+            // Extract the entire method body
+            var start = GetLineStartIndex(region, methodStartIndex);
+            var methodBody = region.Substring(start, currentIndex - start);
+            return methodBody;
+        }
+
+        // Handle the case where matching closing brace '}' is not found
+        return $"###########No Closing Brace Found: {braceCount}";
     }
 
     private static int GetLineStartIndex(string input, int currentIndex)
