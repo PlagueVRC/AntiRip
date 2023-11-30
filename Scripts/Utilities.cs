@@ -14,7 +14,7 @@ public class Utilities
 
     public static string GenerateRandomUniqueName(bool safeNaming, bool canHaveSpaces = false)
     {
-        var str = "Kanna" + ((safeNaming || canHaveSpaces) ? $"_{GUID.Generate()}" : "");
+        var str = $"Kanna{((safeNaming || canHaveSpaces) ? $"_{GUID.Generate()}" : "")}";
 
         if (!safeNaming)
         {
