@@ -112,7 +112,7 @@ namespace Kanna.Protecc
                     throw new OperationCanceledException();
                 }
                 var o = gobj;
-                var gameObjectName = o.name.Trim() + "_Obfuscated";
+                var gameObjectName = $"{o.name.Trim()}_Obfuscated";
                 obj = Object.Instantiate(o);
                 obj.name = gameObjectName;
                 obj.SetActive(true);
@@ -975,9 +975,9 @@ namespace Kanna.Protecc
             string newPath;
             if (!_filePathDic.ContainsKey(originalPath)) // Gen File
             {
-                newPath = root.path + "/" + GUID.Generate() + "." + ext;
+                newPath = $"{root.path}/{GUID.Generate()}.{ext}";
                 while (!string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(newPath)))
-                    newPath = root.path + "/" + GUID.Generate() + ext;
+                    newPath = $"{root.path}/{GUID.Generate()}{ext}";
 
                 mapping.RenamedValues.Add(($"Asset: {ext}", Path.GetFileNameWithoutExtension(originalPath), Path.GetFileNameWithoutExtension(newPath)));
 

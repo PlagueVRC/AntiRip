@@ -299,7 +299,7 @@ public class DBT_API
                 defaultWeight = 1,
                 stateMachine = new AnimatorStateMachine
                 {
-                    name = LayerName + " State Machine"
+                    name = $"{LayerName} State Machine"
                 },
             };
 
