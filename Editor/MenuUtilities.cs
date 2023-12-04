@@ -82,12 +82,6 @@ namespace Kanna.Protecc
                         {
                             var AllIncludes = material.shader.FindAllShaderIncludes();
 
-                            material.shader = AssetDatabase.LoadAssetAtPath<Shader>(path.Replace("_Protected.shader", ".shader"));
-
-                            EditorUtility.SetDirty(material);
-
-                            File.Delete(path);
-
                             foreach (var include in AllIncludes)
                             {
                                 if (include.Contains("_Protected") || include.Contains("KannaModelDecode"))
@@ -95,6 +89,12 @@ namespace Kanna.Protecc
                                     File.Delete(include);
                                 }
                             }
+                            
+                            material.shader = AssetDatabase.LoadAssetAtPath<Shader>(path.Replace("_Protected.shader", ".shader"));
+
+                            EditorUtility.SetDirty(material);
+
+                            File.Delete(path);
                         }
 
                         if (Utilities.CanShaderBeLocked(material.shader) && Utilities.IsMaterialLocked(material))
@@ -135,12 +135,6 @@ namespace Kanna.Protecc
                         {
                             var AllIncludes = material.shader.FindAllShaderIncludes();
 
-                            material.shader = AssetDatabase.LoadAssetAtPath<Shader>(path.Replace("_Protected.shader", ".shader"));
-
-                            EditorUtility.SetDirty(material);
-
-                            File.Delete(path);
-
                             foreach (var include in AllIncludes)
                             {
                                 if (include.Contains("_Protected") || include.Contains("KannaModelDecode"))
@@ -148,6 +142,12 @@ namespace Kanna.Protecc
                                     File.Delete(include);
                                 }
                             }
+                            
+                            material.shader = AssetDatabase.LoadAssetAtPath<Shader>(path.Replace("_Protected.shader", ".shader"));
+
+                            EditorUtility.SetDirty(material);
+
+                            File.Delete(path);
                         }
 
                         if (Utilities.CanShaderBeLocked(material.shader) && Utilities.IsMaterialLocked(material))
@@ -186,12 +186,6 @@ namespace Kanna.Protecc
                     {
                         var AllIncludes = material.shader.FindAllShaderIncludes();
 
-                        material.shader = AssetDatabase.LoadAssetAtPath<Shader>(path.Replace("_Protected.shader", ".shader"));
-
-                        EditorUtility.SetDirty(material);
-
-                        File.Delete(path);
-
                         foreach (var include in AllIncludes)
                         {
                             if (include.Contains("_Protected") || include.Contains("KannaModelDecode"))
@@ -199,6 +193,12 @@ namespace Kanna.Protecc
                                 File.Delete(include);
                             }
                         }
+                        
+                        material.shader = AssetDatabase.LoadAssetAtPath<Shader>(path.Replace("_Protected.shader", ".shader"));
+
+                        EditorUtility.SetDirty(material);
+
+                        File.Delete(path);
                     }
 
                     if (Utilities.CanShaderBeLocked(material.shader) && Utilities.IsMaterialLocked(material))
