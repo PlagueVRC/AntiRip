@@ -333,6 +333,11 @@ namespace Kanna.Protecc
                     {
                         var childObject = ToRename[index];
 
+                        if (childObject.GetComponents<Component>().Any(z => z.GetType().Name.Contains("ModularAvatar"))) // These depend on object name
+                        {
+                            continue;
+                        }
+
                         if (ProgressBar($"Obfuscating {index + 1}/{ToRename.Length} Transform Names", 10))
                         {
                             throw new OperationCanceledException();
@@ -704,7 +709,7 @@ namespace Kanna.Protecc
                 {
                     t.name = _parameterDic[t.name.RemoveAllPhysBone()] + t.name.GetPhysBoneEnding();
                 }
-                else if (t.name.Contains("BitKey"))
+                else if (t.name.StartsWith("BitKey"))
                 {
                     var newName = root.ParameterRenamedValues[t.name];
 
@@ -1044,14 +1049,16 @@ namespace Kanna.Protecc
 
 public static class ObfuscatorExt
 {
+    private static string[] PhysBoneParameters = new[] { "_IsGrabbed", "_IsPosed", "_Angle", "_Stretch", "_Squish" };
+    
     public static string RemoveAllPhysBone(this string text)
     {
-        return text.RemoveAll(new[] { "_IsGrabbed", "_IsPosed", "_Angle", "_Stretch", "_Squish" });
+        return text.RemoveAll(PhysBoneParameters);
     }
 
     public static string GetPhysBoneEnding(this string text)
     {
-        return text.GetEndingMatch(new[] { "_IsGrabbed", "_IsPosed", "_Angle", "_Stretch", "_Squish" });
+        return text.GetEndingMatch(PhysBoneParameters);
     }
 
     public static string RemoveAll(this string text, IEnumerable<string> words)
