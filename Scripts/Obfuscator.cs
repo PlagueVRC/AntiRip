@@ -468,6 +468,11 @@ namespace Kanna.Protecc
 
             foreach (var child in AllChildren)
             {
+                if (child.GetComponents<Component>().Any(z => z.GetType().Name.Contains("ModularAvatar"))) // These depend on object index
+                {
+                    continue;
+                }
+                
                 child.SetSiblingIndex(UnityEngine.Random.Range(0, child.parent.childCount));
             }
         }
