@@ -768,7 +768,7 @@ namespace Kanna.Protecc
 
                 if (GUILayout.Button(new GUIContent(KannaProteccRoot.AutoExcludeVRCFuryObjects_Localized, KannaProteccRoot.AutoExcludeVRCFuryObjectsTooltip_Localized)))
                 {
-                    var AllObjects = KannaProteccRoot.gameObject.GetComponentsInChildren<Transform>().Where(o => o.GetComponents<MonoBehaviour>().Any(p => p.GetType().Name.Contains("Fury")));
+                    var AllObjects = KannaProteccRoot.gameObject.GetComponentsInChildren<Transform>().Where(o => o != KannaProteccRoot.transform && o.GetComponents<MonoBehaviour>().Any(p => p.GetType().Name.Contains("Fury")));
 
                     Debug.Log($"{string.Join(", ", AllObjects.Select(o => o.name))}");
 
