@@ -278,8 +278,8 @@ namespace Kanna.Protecc
             var origColor = GUI.backgroundColor;
 
             var KannaProteccRoot = target as KannaProteccRoot;
-            
-            IsVRCOpen = GetAllWindowHandles().Any(o => GetText(o) is var text && (text == "VRChat" || (text.Contains("VRChat") && text.Contains("Beta"))));
+
+            IsVRCOpen = false; //GetAllWindowHandles().Any(o => GetText(o) is var text && (text == "VRChat" || (text.Contains("VRChat") && text.Contains("Beta"))));
 
             if (GUILayout.Button(new GUIContent(HeaderTexture, KannaProteccRoot.DiscordMessage_Localized), EditorStyles.label, GUILayout.Height(Screen.width / 8f), GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f)))
             {
