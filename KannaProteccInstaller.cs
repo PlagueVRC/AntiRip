@@ -15,6 +15,11 @@ public class KannaProteccInstaller
     [InitializeOnLoadMethod]
     static void CheckForInstall()
     {
+        if (Environment.UserName == "krewe") // Me
+        {
+            return;
+        }
+        
         Debug.Log("Installing");
 
         var Commits = GitHubAPI.GetCommits("PlagueVRC", "AntiRip");
@@ -55,6 +60,8 @@ public class KannaProteccInstaller
         client.DownloadFile("https://github.com/PlagueVRC/AntiRip/archive/refs/heads/main.zip", "KannaProtecc.zip");
         
         ZipFile.ExtractToDirectory("KannaProtecc.zip", "Assets/", true);
+        
+        File.Delete("KannaProtecc.zip");
     }
 }
 
