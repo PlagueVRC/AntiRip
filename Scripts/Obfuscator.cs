@@ -229,7 +229,8 @@ namespace Kanna.Protecc
                 {
                     if (animator.runtimeAnimatorController == null) continue;
 
-                    var excluded = ((AnimatorController)animator.runtimeAnimatorController).name.ToLower().Contains("gogo") || root.excludeObjectNames.Any(z => z == (AnimatorController)animator.runtimeAnimatorController);
+                    var excluded = ((AnimatorController)animator.runtimeAnimatorController).name.ToLower().Contains("gogo") || root.excludeObjectNames.Any(z => z == (AnimatorController)animator.runtimeAnimatorController) ||
+                                   root.excludeObjectNames.Any(z => z == (AnimatorController)animator.runtimeAnimatorController);
 
                     if (excluded)
                     {
@@ -293,14 +294,15 @@ namespace Kanna.Protecc
                 }
                 var animators = obj.GetComponentsInChildren<Animator>(true);
                 var enumValues = Enum.GetValues(typeof(HumanBodyBones));
-                foreach (HumanBodyBones boneId in enumValues)
+
+                foreach (var a in animators)
                 {
-                    if (boneId == HumanBodyBones.LastBone) continue;
-                    foreach (var a in animators)
+                    foreach (HumanBodyBones boneId in enumValues)
                     {
+                        if (boneId == HumanBodyBones.LastBone) continue;
                         var boneTransform = a.GetBoneTransform(boneId);
                         if (boneTransform == null) continue;
-
+                        
                         AddAllParent(obj, a, boneTransform);
                     }
                 }
@@ -313,7 +315,6 @@ namespace Kanna.Protecc
                     {
                         _excludeNameSet.Add(objectName.name);
                     }
-
 
                     KannaLogger.LogToFile($"Getting Every Transform Recursively..", KannaProteccRoot.LogLocation);
                     var children = obj.GetComponentsInChildren<Transform>(true).Where(t => t != obj.transform).ToList();
@@ -490,8 +491,7 @@ namespace Kanna.Protecc
         {
             var gameObjectName = bone.gameObject.name;
 
-            if (!_excludeNameSet.Contains(gameObjectName))
-                _excludeNameSet.Add(gameObjectName);
+            _excludeNameSet.Add(gameObjectName);
         }
 
 #if VRC_SDK_VRCSDK3
