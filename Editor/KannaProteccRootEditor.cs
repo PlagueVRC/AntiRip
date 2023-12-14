@@ -27,7 +27,7 @@ namespace Kanna.Protecc
     {
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+        private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
 
         // Delegate for the EnumWindows callback function
         public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
@@ -37,8 +37,8 @@ namespace Kanna.Protecc
         
         [DllImport("user32.dll", SetLastError=true, CharSet=CharSet.Auto)]
         static extern int GetWindowTextLength(IntPtr hWnd);
-        
-        public static string GetText(IntPtr hWnd)
+
+        private static string GetText(IntPtr hWnd)
         {
             // Allocate correct string length first
             var length = GetWindowTextLength(hWnd);
@@ -47,8 +47,8 @@ namespace Kanna.Protecc
             return sb.ToString();
         }
         
-        // Function to get all window handles
-        public static List<IntPtr> GetAllWindowHandles()
+        // Function to get all window handles - this is used later for checking in vrchat is open or closed, and if deepL local translation server is open
+        private static List<IntPtr> GetAllWindowHandles()
         {
             var windowHandles = new List<IntPtr>();
 
@@ -68,10 +68,10 @@ namespace Kanna.Protecc
         SerializedProperty m_KeysProperty;
         SerializedProperty m_VrcSavedParamsPathProperty;
 
-        bool _debugFoldout = false;
+        bool _debugFoldout;
         bool _lockKeys = true;
-        private bool _isavacrypt = false;
-        private bool _ismissingessentials = false;
+        private bool _isavacrypt;
+        private bool _ismissingessentials;
         private Material[] NativeMats;
 
         ReorderableList m_IgnoreList;
@@ -86,7 +86,7 @@ namespace Kanna.Protecc
         ReorderableList _excludeParamNamesPropertyList;
         ReorderableList _excludeAnimatorLayersPropertyList;
 
-        static bool _objectNameObfuscationFoldout = false;
+        static bool _objectNameObfuscationFoldout;
 
         private bool IsVRCOpen;
         private bool EncryptedObjExists;
@@ -134,14 +134,37 @@ namespace Kanna.Protecc
             // This wont work, same reason I had to adjust IsVRCOpen to Windows API. Sigh.
             // Luckily, I shouldn't need to use this for a long while, such as if DeepL adds a new language.
             // Thus, later me can deal with getting this bullshit to work in windows API.
-            IsDeepLFreeAPIOpen = GetAllWindowHandles().Any(o => GetText(o) is var text && text.StartsWith("DeepL Translate: The"));
+            #if UNITY_2022
+            var handles = Process.GetProcesses(); //GetAllWindowHandles();
+            IsDeepLFreeAPIOpen = handles.Any(o => GetText(o.MainWindowHandle) is var text && text.StartsWith("DeepL Translate: The"));
 
             if (IsDeepLFreeAPIOpen)
             {
                 Debug.Log("DeepL Free API Found.");
             }
 
-            IsVRCOpen = GetAllWindowHandles().Any(o => GetText(o) is var text && (text == "VRChat" || (text.Contains("VRChat") && text.Contains("Beta"))));
+            IsVRCOpen = handles.Any(o => GetText(o.MainWindowHandle) is var text && (text == "VRChat" || (text.Contains("VRChat") && text.Contains("Beta"))));
+            
+            if (IsVRCOpen)
+            {
+                Debug.Log("VRChat Found.");
+            }
+            #elif UNITY_2019
+            var handles = GetAllWindowHandles();
+            IsDeepLFreeAPIOpen = handles.Any(o => GetText(o) is var text && text.StartsWith("DeepL Translate: The"));
+
+            if (IsDeepLFreeAPIOpen)
+            {
+                Debug.Log("DeepL Free API Found.");
+            }
+
+            IsVRCOpen = handles.Any(o => GetText(o) is var text && (text == "VRChat" || (text.Contains("VRChat") && text.Contains("Beta"))));
+            
+            if (IsVRCOpen)
+            {
+                Debug.Log("VRChat Found.");
+            }
+            #endif
             
             EncryptedObjExists = SceneManager.GetActiveScene().GetRootGameObjects().Any(o => o.name.Contains("_KannaProteccted"));
 
