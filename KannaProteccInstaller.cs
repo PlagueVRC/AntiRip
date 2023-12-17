@@ -57,9 +57,10 @@ public class KannaProteccInstaller
 
     static void Install()
     {
-        using var client = new WebClient();
-
-        client.DownloadFile("https://github.com/PlagueVRC/AntiRip/archive/refs/heads/universal-shader-support.zip", "KannaProtecc.zip");
+        using (var client = new WebClient())
+        {
+            client.DownloadFile("https://github.com/PlagueVRC/AntiRip/archive/refs/heads/universal-shader-support.zip", "KannaProtecc.zip");
+        }
 
         ZipFile.ExtractToDirectory("KannaProtecc.zip", "Assets/", true);
         
@@ -212,12 +213,14 @@ public class GitHubAPI
 
     public static BranchResponse GetBranch(string Owner, string Repo, string Branch)
     {
-        using var client = new WebClient();
-        client.Headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0";
+        using (var client = new WebClient())
+        {
+            client.Headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0";
 
-        var branch = JsonConvert.DeserializeObject<BranchResponse>(client.DownloadString($"https://api.github.com/repos/{Owner}/{Repo}/branches/{Branch}"));
-
-        return branch;
+            var branch = JsonConvert.DeserializeObject<BranchResponse>(client.DownloadString($"https://api.github.com/repos/{Owner}/{Repo}/branches/{Branch}"));
+            
+            return branch;
+        }
     }
 }
 #endif
