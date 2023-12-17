@@ -57,10 +57,11 @@ public class KannaProteccInstaller
 
     static void Install()
     {
-        using var client = new WebClient();
+        using (var client = new WebClient())
+        {
+            client.DownloadFile("https://github.com/PlagueVRC/AntiRip/archive/refs/heads/main.zip", "KannaProtecc.zip");
+        }
 
-        client.DownloadFile("https://github.com/PlagueVRC/AntiRip/archive/refs/heads/main.zip", "KannaProtecc.zip");
-        
         ZipFile.ExtractToDirectory("KannaProtecc.zip", "Assets/", true);
         
         File.Delete("KannaProtecc.zip");
@@ -178,12 +179,14 @@ public class GitHubAPI
 
     public static CommitResponse[] GetCommits(string Owner, string Repo)
     {
-        using var client = new WebClient();
-        client.Headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0";
+        using (var client = new WebClient())
+        {
+            client.Headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0";
 
-        var commits = JsonConvert.DeserializeObject<CommitResponse[]>(client.DownloadString($"https://api.github.com/repos/{Owner}/{Repo}/commits"));
+            var commits = JsonConvert.DeserializeObject<CommitResponse[]>(client.DownloadString($"https://api.github.com/repos/{Owner}/{Repo}/commits"));
 
-        return commits;
+            return commits;
+        }
     }
 }
 #endif
