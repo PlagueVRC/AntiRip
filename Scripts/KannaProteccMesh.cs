@@ -126,11 +126,11 @@ namespace Kanna.Protecc
 
                 var minRange = maxDistance * -distortRatio;
 
-                uv7Offsets[v].x = Random.Range(minRange, 0);
-                uv7Offsets[v].y = Random.Range(minRange, 0);
+                uv7Offsets[v].x = Random.Range(minRange, minRange / 2f);
+                uv7Offsets[v].y = Random.Range(minRange, minRange / 2f);
 
-                uv8Offsets[v].x = Random.Range(minRange, 0);
-                uv8Offsets[v].y = Random.Range(minRange, 0);
+                uv8Offsets[v].x = Random.Range(minRange, minRange / 2f);
+                uv8Offsets[v].y = Random.Range(minRange, minRange / 2f);
 
                 var isY = false;
 
