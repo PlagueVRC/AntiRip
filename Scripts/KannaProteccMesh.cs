@@ -32,33 +32,6 @@ namespace Kanna.Protecc
             return -1; // Index not found in any submesh
         }
 
-        //private static int GetSubmeshIndexForVertex(Mesh mesh, int vertexIndex)
-        //{
-        //    // This gets the number of submeshes in the mesh
-        //    var submeshCount = mesh.subMeshCount;
-
-        //    // This variable will store the submesh index for that vertex, or -1 if not found
-        //    var submeshIndex = -1;
-
-        //    // This loop goes over all the submeshes
-        //    for (var i = 0; i < submeshCount; i++)
-        //    {
-        //        // This gets the submesh at index i
-        //        var submesh = mesh.GetSubMesh(i);
-
-        //        // This checks if the vertex index is within the range of indices for that submesh
-        //        if (vertexIndex >= submesh.firstVertex && vertexIndex < (submesh.firstVertex + (submesh.vertexCount - 2)))
-        //        {
-        //            // If yes, then store the submesh index and break the loop
-        //            submeshIndex = i;
-        //            break;
-        //        }
-        //    }
-
-        //    // This returns the result
-        //    return submeshIndex;
-        //}
-
         public static Mesh EncryptMesh(Renderer renderer, Mesh mesh, float distortRatio, KannaProteccData data, List<Material> IgnoredMaterials)
         {
             if (mesh == null) return null;
