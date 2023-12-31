@@ -11,23 +11,6 @@ using Random = UnityEngine.Random;
 
 namespace Kanna.Protecc
 {
-    public class KannaDynamicShaderData
-    {
-        public class KannaReplaceText
-        {
-            public string[] TextToFind;
-            public string TextToReplaceWith;
-            public bool ApplyToIncludes;
-            public string[] ExcludeIncludes = {};
-        }
-
-        public string ShaderName_StartsWith;
-
-        public KannaReplaceText UV;
-        public KannaReplaceText Vert;
-        public KannaReplaceText VertexSetup;
-    }
-
     public static class KannaProteccMaterial
     {
         public static string GenerateDecodeShader(KannaProteccData data, bool[] keys)
@@ -43,8 +26,6 @@ namespace Kanna.Protecc
             }
 
             ModelShaderDecodeFirst += "\r\nfloat4 modelDecode(float4 vertex, float3 normal, float2 uv0, float2 uv1)\r\n{\r\n    // KannaProtecc Randomly Generated Begin\r\n"; // Finish Off First Part
-
-            // Make ModelShaderDecodeSecond dynamic too, and make the comKey{i} based on a ideal count. Context: this is for ShaderLab.
 
             ModelShaderDecodeSecond = "    // KannaProtecc Randomly Generated End\r\n\r\n";
 
@@ -108,73 +89,14 @@ namespace Kanna.Protecc
             return decodeShader;
         }
 
-        public const string ModelDecodeIfndef = "#ifndef KANNAMODELDECODE\r\n#define KANNAMODELDECODE\r\n";
-        
-        public const string ModelDecodeEndif = "#endif\r\n";
-        
-        static string ModelShaderDecodeFirst = 
-@"float _BitKey0;
-float _BitKey1;
-float _BitKey2;
-float _BitKey3;
+        private const string ModelDecodeIfndef = "#ifndef KANNAMODELDECODE\r\n#define KANNAMODELDECODE\r\n";
 
-float _BitKey4;
-float _BitKey5;
-float _BitKey6;
-float _BitKey7;
+        private const string ModelDecodeEndif = "#endif\r\n";
 
-float _BitKey8;
-float _BitKey9;
-float _BitKey10;
-float _BitKey11;
-
-float _BitKey12;
-float _BitKey13;
-float _BitKey14;
-float _BitKey15;
-
-float _BitKey16;
-float _BitKey17;
-float _BitKey18;
-float _BitKey19;
-
-float _BitKey20;
-float _BitKey21;
-float _BitKey22;
-float _BitKey23;
-
-float _BitKey24;
-float _BitKey25;
-float _BitKey26;
-float _BitKey27;
-
-float _BitKey28;
-float _BitKey29;
-float _BitKey30;
-float _BitKey31;
-
-float4 modelDecode(float4 vertex, float3 normal, float2 uv0, float2 uv1)
-{
-    // KannaProtecc Randomly Generated Begin
-";
+        private static string ModelShaderDecodeFirst = "";
 
         // 1/2 divided length to each uv, total comKey count is 
-        static string ModelShaderDecodeSecond =
-@" 
-    // KannaProtecc Randomly Generated End
-
-    vertex.xyz -= normal * (uv0.x * comKey0);
-    vertex.xyz -= normal * (uv0.y * comKey1);
-    vertex.xyz -= normal * (uv0.x * comKey2);
-    vertex.xyz -= normal * (uv0.y * comKey3);
-
-    vertex.xyz -= normal * (uv1.y * comKey4);
-    vertex.xyz -= normal * (uv1.x * comKey5);
-    vertex.xyz -= normal * (uv1.y * comKey6);
-    vertex.xyz -= normal * (uv1.x * comKey7);
-
-    return vertex;
-}";
+        private static string ModelShaderDecodeSecond = "";
     }
 
     public class KannaProteccData
