@@ -324,8 +324,10 @@ namespace Kanna.Protecc
                 GUI.color = old;
                 if (GUILayout.Button(new GUIContent(KannaProteccRoot.AutoFixLabel_Localized, KannaProteccRoot.AutoFixLingeringAvaCryptTooltip_Localized)))
                 {
-                    foreach (AnimatorController controller in AllControllers)
+                    foreach (var runtimeAnimatorController in AllControllers)
                     {
+                        var controller = (AnimatorController)runtimeAnimatorController;
+                        
                         var layers = controller.layers.ToList();
                         layers.RemoveAll(o => o.name.StartsWith("BitKey"));
                         controller.layers = layers.ToArray();

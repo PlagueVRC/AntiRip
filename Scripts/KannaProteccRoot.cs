@@ -156,172 +156,181 @@ namespace Kanna.Protecc
 
         public void EncryptAvatar()
         {
-            if (ParameterRenamedValues.Count == 0 && !string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId))
+            try
             {
-                if (EditorUtility.DisplayDialog("Error!", "Do Not Encrypt A Previously Non-Encrypted Avatar That Was Uploaded! Detach The Blueprint ID And Upload This To A New One!\r\nBypassing This Can Lead To Rippers Using A Older Non-Encrypted Version Of Your Avatar! Only Bypass If You Know It Was Never Uploaded Non-Encrypted!", "Okay", "Bypass Warning"))
+                if (ParameterRenamedValues.Count == 0 && !string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId))
                 {
-                    return;
-                }
-            }
-
-            var descriptor = gameObject.GetComponent<VRCAvatarDescriptor>();
-
-            if ((VRCExpressionParameters.MAX_PARAMETER_COST - descriptor.expressionParameters.CalcTotalCost()) is var freespace && freespace < 32)
-            {
-                if (EditorUtility.DisplayDialog("Error!", $"You Do Not Have 32 Bits Of Free Space In Your Expression Parameters!\r\nWould You Like To Use {freespace} Keys? Note This IS A SECURITY RISK.{(freespace < 16 ? " Less Than 16 Is Especially Insecure." : "")}", "Cancel", "I Understand The Danger"))
-                {
-                    return;
-                }
-
-                _bitKeys = new bool[freespace];
-                GenerateNewKey();
-            }
-
-            if (File.Exists(LogLocation))
-            {
-                File.Delete(LogLocation); // Remove Old Log
-                KannaLogger.LogCache.Clear();
-            }
-
-            Utilities.ResetRandomizer();
-
-            var newName = $"{gameObject.name.Trim()}_Encrypted";
-
-            // delete old GO, do as such in case its disabled
-            var scene = SceneManager.GetActiveScene();
-            var sceneRoots = scene.GetRootGameObjects();
-            foreach (var oldGameObject in sceneRoots)
-            {
-                if (oldGameObject.name.Trim() == newName)
-                {
-                    KannaLogger.LogToFile($"Destroying Old Encrypted Object: {newName}", LogLocation);
-                    DestroyImmediate(oldGameObject);
-                }
-            }
-
-            var encodedGameObject = Instantiate(gameObject);
-            encodedGameObject.name = newName;
-            encodedGameObject.SetActive(true);
-
-            var data = new KannaProteccData(_bitKeys.Length);
-            var decodeShader = KannaProteccMaterial.GenerateDecodeShader(data, _bitKeys);
-
-            KannaLogger.LogToFile($"Initialized, Getting All Meshes..", LogLocation);
-
-            var meshFilters = encodedGameObject.GetComponentsInChildren<MeshFilter>(true).Select(o => (o, o.gameObject.activeSelf));
-            var skinnedMeshRenderers = encodedGameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(o => (o, o.gameObject.activeSelf));
-
-            KannaLogger.LogToFile($"Got All Meshes, Encrypting Additional Materials..", LogLocation);
-
-            EncryptMaterials(null, m_AdditionalMaterials.ToArray(), decodeShader, m_IgnoredMaterials);
-
-            KannaLogger.LogToFile($"Additional Materials Encrypted, Processing MeshFilters..", LogLocation);
-
-            // Do encrypting
-            foreach (var meshFilter in meshFilters)
-            {
-                if (meshFilter.o.GetComponent<MeshRenderer>() != null)
-                {
-                    meshFilter.o.gameObject.SetActive(true);
-                    var materials = meshFilter.o.GetComponent<MeshRenderer>().sharedMaterials;
-                    if (EncryptMaterials(meshFilter.o.sharedMesh, materials, decodeShader, m_IgnoredMaterials))
+                    if (EditorUtility.DisplayDialog("Error!", "Do Not Encrypt A Previously Non-Encrypted Avatar That Was Uploaded! Detach The Blueprint ID And Upload This To A New One!\r\nBypassing This Can Lead To Rippers Using A Older Non-Encrypted Version Of Your Avatar! Only Bypass If You Know It Was Never Uploaded Non-Encrypted!", "Okay", "Bypass Warning"))
                     {
-                        meshFilter.o.sharedMesh = KannaProteccMesh.EncryptMesh(meshFilter.o.GetComponent<MeshRenderer>(), meshFilter.o.sharedMesh, _distortRatio, data, m_IgnoredMaterials) ?? meshFilter.o.sharedMesh;
+                        return;
+                    }
+                }
+
+                var descriptor = gameObject.GetComponent<VRCAvatarDescriptor>();
+
+                if ((VRCExpressionParameters.MAX_PARAMETER_COST - descriptor.expressionParameters.CalcTotalCost()) is var freespace && freespace < 32)
+                {
+                    if (EditorUtility.DisplayDialog("Error!", $"You Do Not Have 32 Bits Of Free Space In Your Expression Parameters!\r\nWould You Like To Use {freespace} Keys? Note This IS A SECURITY RISK.{(freespace < 16 ? " Less Than 16 Is Especially Insecure." : "")}", "Cancel", "I Understand The Danger"))
+                    {
+                        return;
+                    }
+
+                    _bitKeys = new bool[freespace];
+                    GenerateNewKey();
+                }
+
+                if (File.Exists(LogLocation))
+                {
+                    File.Delete(LogLocation); // Remove Old Log
+                    KannaLogger.LogCache.Clear();
+                }
+
+                Utilities.ResetRandomizer();
+
+                var newName = $"{gameObject.name.Trim()}_Encrypted";
+
+                // delete old GO, do as such in case its disabled
+                var scene = SceneManager.GetActiveScene();
+                var sceneRoots = scene.GetRootGameObjects();
+                foreach (var oldGameObject in sceneRoots)
+                {
+                    if (oldGameObject.name.Trim() == newName)
+                    {
+                        KannaLogger.LogToFile($"Destroying Old Encrypted Object: {newName}", LogLocation);
+                        DestroyImmediate(oldGameObject);
+                    }
+                }
+
+                var encodedGameObject = Instantiate(gameObject);
+                encodedGameObject.name = newName;
+                encodedGameObject.SetActive(true);
+
+                var data = new KannaProteccData(_bitKeys.Length);
+                var decodeShader = KannaProteccMaterial.GenerateDecodeShader(data, _bitKeys);
+
+                KannaLogger.LogToFile($"Initialized, Getting All Meshes..", LogLocation);
+
+                var meshFilters = encodedGameObject.GetComponentsInChildren<MeshFilter>(true).Select(o => (o, o.gameObject.activeSelf));
+                var skinnedMeshRenderers = encodedGameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(o => (o, o.gameObject.activeSelf));
+
+                KannaLogger.LogToFile($"Got All Meshes, Encrypting Additional Materials..", LogLocation);
+
+                EncryptMaterials(null, m_AdditionalMaterials.ToArray(), decodeShader, m_IgnoredMaterials);
+
+                KannaLogger.LogToFile($"Additional Materials Encrypted, Processing MeshFilters..", LogLocation);
+
+                // Do encrypting
+                foreach (var meshFilter in meshFilters)
+                {
+                    if (meshFilter.o.GetComponent<MeshRenderer>() != null)
+                    {
+                        meshFilter.o.gameObject.SetActive(true);
+                        var materials = meshFilter.o.GetComponent<MeshRenderer>().sharedMaterials;
+                        if (EncryptMaterials(meshFilter.o.sharedMesh, materials, decodeShader, m_IgnoredMaterials))
+                        {
+                            meshFilter.o.sharedMesh = KannaProteccMesh.EncryptMesh(meshFilter.o.GetComponent<MeshRenderer>(), meshFilter.o.sharedMesh, _distortRatio, data, m_IgnoredMaterials) ?? meshFilter.o.sharedMesh;
+                        }
+                        else
+                        {
+                            KannaLogger.LogToFile($"Ignoring Encrypt On Generic: {meshFilter.o.gameObject.name} - No Materials Encrypted", LogLocation, KannaLogger.LogType.Warning);
+                        }
+
+                        meshFilter.o.gameObject.SetActive(meshFilter.activeSelf);
                     }
                     else
                     {
-                        KannaLogger.LogToFile($"Ignoring Encrypt On Generic: {meshFilter.o.gameObject.name} - No Materials Encrypted", LogLocation, KannaLogger.LogType.Warning);
+                        KannaLogger.LogToFile($"WTF? MeshFilter Lacks A Renderer! -> {meshFilter.o.name}", LogLocation, KannaLogger.LogType.Error);
                     }
-
-                    meshFilter.o.gameObject.SetActive(meshFilter.activeSelf);
                 }
-                else
-                {
-                    KannaLogger.LogToFile($"WTF? MeshFilter Lacks A Renderer! -> {meshFilter.o.name}", LogLocation, KannaLogger.LogType.Error);
-                }
-            }
 
-            KannaLogger.LogToFile($"MeshFilters Done, Processing SkinnedMeshRenderers..", LogLocation);
+                KannaLogger.LogToFile($"MeshFilters Done, Processing SkinnedMeshRenderers..", LogLocation);
 
-            foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
-            {
-                if (skinnedMeshRenderer.o.GetComponent<Cloth>() == null)
+                foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
                 {
-                    skinnedMeshRenderer.o.gameObject.SetActive(true);
-                    var materials = skinnedMeshRenderer.o.sharedMaterials;
-                    if (EncryptMaterials(skinnedMeshRenderer.o.sharedMesh, materials, decodeShader, m_IgnoredMaterials))
+                    if (skinnedMeshRenderer.o.GetComponent<Cloth>() == null)
                     {
-                        skinnedMeshRenderer.o.sharedMesh = KannaProteccMesh.EncryptMesh(skinnedMeshRenderer.o, skinnedMeshRenderer.o.sharedMesh, _distortRatio, data, m_IgnoredMaterials) ?? skinnedMeshRenderer.o.sharedMesh;
+                        skinnedMeshRenderer.o.gameObject.SetActive(true);
+                        var materials = skinnedMeshRenderer.o.sharedMaterials;
+                        if (EncryptMaterials(skinnedMeshRenderer.o.sharedMesh, materials, decodeShader, m_IgnoredMaterials))
+                        {
+                            skinnedMeshRenderer.o.sharedMesh = KannaProteccMesh.EncryptMesh(skinnedMeshRenderer.o, skinnedMeshRenderer.o.sharedMesh, _distortRatio, data, m_IgnoredMaterials) ?? skinnedMeshRenderer.o.sharedMesh;
+                        }
+                        else
+                        {
+                            KannaLogger.LogToFile($"Ignoring Encrypt On Skinned: {skinnedMeshRenderer.o.gameObject.name} - No Materials Encrypted", LogLocation, KannaLogger.LogType.Warning);
+                        }
+
+                        skinnedMeshRenderer.o.gameObject.SetActive(skinnedMeshRenderer.activeSelf);
                     }
                     else
                     {
-                        KannaLogger.LogToFile($"Ignoring Encrypt On Skinned: {skinnedMeshRenderer.o.gameObject.name} - No Materials Encrypted", LogLocation, KannaLogger.LogType.Warning);
+                        KannaLogger.LogToFile($"Ignoring Encrypt On {skinnedMeshRenderer.o.gameObject.name} - Cloth Found.", LogLocation, KannaLogger.LogType.Warning);
                     }
-
-                    skinnedMeshRenderer.o.gameObject.SetActive(skinnedMeshRenderer.activeSelf);
                 }
-                else
+
+                KannaLogger.LogToFile($"SkinnedMeshRenderers Done, Removing Lingering KannaProteccRoot On Encrypted Object..", LogLocation);
+
+                var KannaProteccRoots = encodedGameObject.GetComponentsInChildren<KannaProteccRoot>(true);
+                foreach (var KannaProteccRoot in KannaProteccRoots)
                 {
-                    KannaLogger.LogToFile($"Ignoring Encrypt On {skinnedMeshRenderer.o.gameObject.name} - Cloth Found.", LogLocation, KannaLogger.LogType.Warning);
+                    DestroyImmediate(KannaProteccRoot);
                 }
+
+                KannaLogger.LogToFile($"Done Removing, Disabling Original Avatar Object And Refreshing AssetDatabase..", LogLocation);
+
+                // Disable old for convienence.
+                gameObject.SetActive(false);
+
+                // Force unity to import things
+                AssetDatabase.Refresh();
+
+                KannaLogger.LogToFile($"Done Refreshing, Beginning Obfuscation Stage..", LogLocation);
+
+                IsProtected = true;
+
+                EditorSceneManager.MarkAllScenesDirty();
+
+                // Do Obfuscation
+                var newobj = obfuscator.Obfuscate(encodedGameObject, this);
+
+                KannaLogger.LogToFile($"Done Obfuscating, Disabling Encrypted Object, Saving Assets And Scene, Then Refreshing AssetDatabase.", LogLocation);
+
+                encodedGameObject.SetActive(false); // Temp
+
+                AssetDatabase.SaveAssets();
+
+                // Force unity to import things
+                AssetDatabase.Refresh();
+
+                KannaLogger.LogToFile($"Done Refreshing, Writing Keys To ExpressionParameters", LogLocation);
+
+                WriteBitKeysToExpressions(newobj.GetComponent<VRCAvatarDescriptor>().expressionParameters, true);
+
+                KannaLogger.LogToFile($"Done Writing Keys, Validating FX Controller And Obfuscating Kanna Protecc Layer Within It", LogLocation);
+
+                ValidateAnimatorController(newobj, AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(newobj.GetComponent<VRCAvatarDescriptor>().baseAnimationLayers.First(o => o.type == VRCAvatarDescriptor.AnimLayerType.FX).animatorController)));
+
+                KannaLogger.LogToFile($"Done! Showing Dialog To User.", LogLocation);
+
+                DestroyImmediate(encodedGameObject);
+                newobj.name = newobj.name.Replace("_Encrypted_Obfuscated", "_KannaProteccted");
+
+                KannaLogger.WriteLogsToFile(LogLocation);
+
+                EditorSceneManager.MarkAllScenesDirty();
+
+                AssetDatabase.Refresh();
+                AssetDatabase.SaveAssets();
+                EditorSceneManager.SaveOpenScenes();
+
+                EditorUtility.DisplayDialog("Successfully Encrypted!", $"{(string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId) ? "" : "Keys were automatically written. ")}Your avatar should be ready to upload!", "Okay");
             }
-
-            KannaLogger.LogToFile($"SkinnedMeshRenderers Done, Removing Lingering KannaProteccRoot On Encrypted Object..", LogLocation);
-
-            var KannaProteccRoots = encodedGameObject.GetComponentsInChildren<KannaProteccRoot>(true);
-            foreach (var KannaProteccRoot in KannaProteccRoots)
+            catch (Exception ex)
             {
-                DestroyImmediate(KannaProteccRoot);
+                KannaLogger.LogToFile(ex.ToString(), LogLocation, KannaLogger.LogType.Error);
+                
+                KannaLogger.WriteLogsToFile(LogLocation);
             }
-
-            KannaLogger.LogToFile($"Done Removing, Disabling Original Avatar Object And Refreshing AssetDatabase..", LogLocation);
-
-            // Disable old for convienence.
-            gameObject.SetActive(false);
-
-            // Force unity to import things
-            AssetDatabase.Refresh();
-
-            KannaLogger.LogToFile($"Done Refreshing, Beginning Obfuscation Stage..", LogLocation);
-
-            IsProtected = true;
-
-            EditorSceneManager.MarkAllScenesDirty();
-
-            // Do Obfuscation
-            var newobj = obfuscator.Obfuscate(encodedGameObject, this);
-
-            KannaLogger.LogToFile($"Done Obfuscating, Disabling Encrypted Object, Saving Assets And Scene, Then Refreshing AssetDatabase.", LogLocation);
-
-            encodedGameObject.SetActive(false); // Temp
-
-            AssetDatabase.SaveAssets();
-
-            // Force unity to import things
-            AssetDatabase.Refresh();
-
-            KannaLogger.LogToFile($"Done Refreshing, Writing Keys To ExpressionParameters", LogLocation);
-
-            WriteBitKeysToExpressions(newobj.GetComponent<VRCAvatarDescriptor>().expressionParameters, true);
-
-            KannaLogger.LogToFile($"Done Writing Keys, Validating FX Controller And Obfuscating Kanna Protecc Layer Within It", LogLocation);
-
-            ValidateAnimatorController(newobj, AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(newobj.GetComponent<VRCAvatarDescriptor>().baseAnimationLayers.First(o => o.type == VRCAvatarDescriptor.AnimLayerType.FX).animatorController)));
-
-            KannaLogger.LogToFile($"Done! Showing Dialog To User.", LogLocation);
-
-            DestroyImmediate(encodedGameObject);
-            newobj.name = newobj.name.Replace("_Encrypted_Obfuscated", "_KannaProteccted");
-
-            KannaLogger.WriteLogsToFile(LogLocation);
-
-            EditorSceneManager.MarkAllScenesDirty();
-
-            AssetDatabase.Refresh();
-            AssetDatabase.SaveAssets();
-            EditorSceneManager.SaveOpenScenes();
-
-            EditorUtility.DisplayDialog("Successfully Encrypted!", $"{(string.IsNullOrEmpty(GetComponent<PipelineManager>()?.blueprintId) ? "" : "Keys were automatically written. ")}Your avatar should be ready to upload!", "Okay");
         }
 
         public static Type GetTypeFromAnyAssembly(string FullName)

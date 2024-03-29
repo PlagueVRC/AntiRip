@@ -109,6 +109,11 @@ namespace Kanna.Protecc
         public static bool IsShaderSupported(Shader shader, out KannaDynamicShaderData shaderData)
         {
             shaderData = Shaders.FirstOrDefault(o => o.ShaderName_StartsWith.Any(p => shader.name.Replace("Hidden/Locked/", "").StartsWith(p)));
+
+            if (shaderData == null)
+            {
+                KannaLogger.LogToFile($"Shader Unsupported: {shader.name}", KannaProteccRoot.LogLocation, KannaLogger.LogType.Warning);
+            }
             
             return shaderData != null;
         }
