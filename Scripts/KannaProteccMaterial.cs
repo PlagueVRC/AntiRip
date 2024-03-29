@@ -21,7 +21,7 @@ namespace Kanna.Protecc
             public string[] ExcludeIncludes = {};
         }
 
-        public string ShaderName_StartsWith;
+        public string[] ShaderName_StartsWith;
 
         public KannaReplaceText UV;
         public KannaReplaceText Vert;
@@ -108,7 +108,7 @@ namespace Kanna.Protecc
 
         public static bool IsShaderSupported(Shader shader, out KannaDynamicShaderData shaderData)
         {
-            shaderData = Shaders.FirstOrDefault(o => shader.name.Replace("Hidden/Locked/", "").StartsWith(o.ShaderName_StartsWith));
+            shaderData = Shaders.FirstOrDefault(o => o.ShaderName_StartsWith.Any(p => shader.name.Replace("Hidden/Locked/", "").StartsWith(p)));
             
             return shaderData != null;
         }
@@ -117,7 +117,7 @@ namespace Kanna.Protecc
         {
             new KannaDynamicShaderData
             {
-                ShaderName_StartsWith = ".poiyomi/Poiyomi 7.3",
+                ShaderName_StartsWith = new [] { ".poiyomi/Poiyomi 7.3", ".poiyomi/Old Versions/7.3" },
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
@@ -146,7 +146,7 @@ namespace Kanna.Protecc
 
             new KannaDynamicShaderData
             {
-                ShaderName_StartsWith = ".poiyomi/Poiyomi 8.0",
+                ShaderName_StartsWith = new [] { ".poiyomi/Poiyomi 8.0", ".poiyomi/Old Versions/8.0" },
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
@@ -175,7 +175,7 @@ namespace Kanna.Protecc
 
             new KannaDynamicShaderData
             {
-                ShaderName_StartsWith = ".poiyomi/Poiyomi 8.1",
+                ShaderName_StartsWith = new [] { ".poiyomi/Poiyomi 8.1", ".poiyomi/Old Versions/8.1" },
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
@@ -204,7 +204,7 @@ namespace Kanna.Protecc
 
             new KannaDynamicShaderData
             {
-                ShaderName_StartsWith = ".poiyomi/Poiyomi 8.2",
+                ShaderName_StartsWith = new [] { ".poiyomi/Poiyomi 8.2", ".poiyomi/Old Versions/8.2" },
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
@@ -233,7 +233,7 @@ namespace Kanna.Protecc
 
             new KannaDynamicShaderData
             {
-                ShaderName_StartsWith = "UnityChanToonShader",
+                ShaderName_StartsWith = new [] { "UnityChanToonShader" },
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
@@ -259,7 +259,7 @@ namespace Kanna.Protecc
 
             new KannaDynamicShaderData
             {
-                ShaderName_StartsWith = "GeoTetra/GTAvaToon", // why you gotta have inconsistent ass syntax and naming rygo xD
+                ShaderName_StartsWith = new [] { "GeoTetra/GTAvaToon" }, // why you gotta have inconsistent ass syntax and naming rygo xD
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
@@ -288,7 +288,7 @@ namespace Kanna.Protecc
 
             new KannaDynamicShaderData
             {
-                ShaderName_StartsWith = "Sunao Shader",
+                ShaderName_StartsWith = new [] { "Sunao Shader" },
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
@@ -314,7 +314,7 @@ namespace Kanna.Protecc
 
             new KannaDynamicShaderData
             {
-                ShaderName_StartsWith = "Xiexe/Toon",
+                ShaderName_StartsWith = new [] { "Xiexe/Toon" },
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
