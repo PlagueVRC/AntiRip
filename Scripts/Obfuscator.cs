@@ -528,8 +528,8 @@ namespace Kanna.Protecc
                     continue;
                 }
 
-                var newName = Utilities.GenerateRandomUniqueName(false, true);
-                while (_parameterDic.ContainsKey(newName)) newName = Utilities.GenerateRandomUniqueName(false, true);
+                var newName = Utilities.GenerateRandomUniqueName(false);
+                while (_parameterDic.ContainsKey(newName)) newName = Utilities.GenerateRandomUniqueName(false);
 
                 if (parameter.name.Contains("BitKey"))
                 {
@@ -580,10 +580,10 @@ namespace Kanna.Protecc
 
             while ((VRCExpressionParameters.MAX_PARAMETER_COST - (expressionParameters.CalcTotalCost() + AmountToReserveForOtherThings)) > 0)
             {
-                var newName = Utilities.GenerateRandomUniqueName(false, true);
+                var newName = Utilities.GenerateRandomUniqueName(false);
 
                 while (_parameterDic.ContainsKey(newName))
-                    newName = Utilities.GenerateRandomUniqueName(false, true);
+                    newName = Utilities.GenerateRandomUniqueName(false);
 
                 parameters.Add(new VRCExpressionParameters.Parameter
                 {
@@ -669,8 +669,8 @@ namespace Kanna.Protecc
                 }
                 else if (Array.FindIndex(SkipParameterNames, value => value == t.name) == -1 && root.excludeParamNames.All(o => !Regex.IsMatch(t.name.RemoveAllPhysBone(), o)) && !IgnoredParams.Contains(t.name.RemoveAllPhysBone()))
                 {
-                    var newName = Utilities.GenerateRandomUniqueName(false, true);
-                    while (_parameterDic.ContainsKey(newName)) newName = Utilities.GenerateRandomUniqueName(false, true);
+                    var newName = Utilities.GenerateRandomUniqueName(false);
+                    while (_parameterDic.ContainsKey(newName)) newName = Utilities.GenerateRandomUniqueName(false);
 
                     mapping.RenamedValues.Add(($"Animator Parameter", t.name.RemoveAllPhysBone(), newName));
                     _parameterDic.Add(t.name.RemoveAllPhysBone(), newName);
