@@ -315,8 +315,6 @@ namespace Kanna.Protecc
                 DestroyImmediate(encodedGameObject);
                 newobj.name = newobj.name.Replace("_Encrypted_Obfuscated", "_KannaProteccted");
 
-                KannaLogger.WriteLogsToFile(LogLocation);
-
                 EditorSceneManager.MarkAllScenesDirty();
 
                 AssetDatabase.Refresh();
@@ -328,9 +326,9 @@ namespace Kanna.Protecc
             catch (Exception ex)
             {
                 KannaLogger.LogToFile(ex.ToString(), LogLocation, KannaLogger.LogType.Error);
-                
-                KannaLogger.WriteLogsToFile(LogLocation);
             }
+            
+            KannaLogger.WriteLogsToFile(LogLocation);
         }
 
         public static Type GetTypeFromAnyAssembly(string FullName)
