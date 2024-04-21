@@ -12,7 +12,7 @@ public class Utilities
 {
     private static int Length = 1;
 
-    public static string GenerateRandomUniqueName(bool safeNaming, bool canHaveSpaces = false)
+    public static string GenerateRandomUniqueName(bool safeNaming)
     {
         var str = $"Kanna{((safeNaming) ? $"_{GUID.Generate()}" : "")}";
 
