@@ -292,7 +292,7 @@ namespace Kanna.Protecc
                 {
                     throw new OperationCanceledException();
                 }
-                var animators = obj.GetComponentsInChildren<Animator>(true);
+                var animators = obj.GetComponentsInChildren<Animator>(true).Where(o => o.avatar != null && o.avatar.isHuman);
                 var enumValues = Enum.GetValues(typeof(HumanBodyBones));
 
                 foreach (var a in animators)
