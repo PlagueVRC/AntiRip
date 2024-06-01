@@ -2,10 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
+using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -22,6 +25,7 @@ namespace Kanna.Protecc
         }
 
         public string[] ShaderName_StartsWith;
+        public string[] FileContentsRegexMatch;
 
         public KannaReplaceText UV;
         public KannaReplaceText Vert;
@@ -108,7 +112,7 @@ namespace Kanna.Protecc
 
         public static bool IsShaderSupported(Shader shader, out KannaDynamicShaderData shaderData)
         {
-            shaderData = Shaders.FirstOrDefault(o => o.ShaderName_StartsWith.Any(p => shader.name.Replace("Hidden/Locked/", "").StartsWith(p)));
+            shaderData = Shaders.FirstOrDefault(o => o.ShaderName_StartsWith.Any(p => shader.name.Replace("Hidden/Locked/", "").StartsWith(p)) || (o.FileContentsRegexMatch?.Length > 0 && o.FileContentsRegexMatch.Any(p => Regex.IsMatch(File.ReadAllText(AssetDatabase.GetAssetPath(shader)), p)))   );
 
             if (shaderData == null)
             {
@@ -126,18 +130,16 @@ namespace Kanna.Protecc
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = new [] { "float2 uv3 : TEXCOORD3;" },
+                    TextToFind = new [] { "float2 uv3 : TEXCOORD3;", "float2 uv3: TEXCOORD3;" },
                     TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
-                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 },
 
                 Vert = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = new [] { "v2f vert(", "v2f vert (" },
+                    TextToFind = new [] { "v2f vert(", "v2f vert (", "V2FShadow vertShadowCaster(" },
                     TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\n{OrigText}",
                     ApplyToIncludes = true,
-                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 },
 
                 VertexSetup = new KannaDynamicShaderData.KannaReplaceText
@@ -145,7 +147,6 @@ namespace Kanna.Protecc
                     TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
                     TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
                     ApplyToIncludes = true,
-                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 }
             },
 
@@ -155,18 +156,16 @@ namespace Kanna.Protecc
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = new [] { "float2 uv3 : TEXCOORD3;" },
+                    TextToFind = new [] { "float2 uv3 : TEXCOORD3;", "float2 uv3: TEXCOORD3;" },
                     TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
-                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 },
 
                 Vert = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = new [] { "v2f vert(", "v2f vert (" },
+                    TextToFind = new [] { "v2f vert(", "v2f vert (", "V2FShadow vertShadowCaster(" },
                     TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\n{OrigText}",
                     ApplyToIncludes = true,
-                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 },
 
                 VertexSetup = new KannaDynamicShaderData.KannaReplaceText
@@ -174,7 +173,6 @@ namespace Kanna.Protecc
                     TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
                     TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
                     ApplyToIncludes = true,
-                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 }
             },
 
@@ -184,18 +182,16 @@ namespace Kanna.Protecc
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = new [] { "float2 uv3 : TEXCOORD3;" },
+                    TextToFind = new [] { "float2 uv3 : TEXCOORD3;", "float2 uv3: TEXCOORD3;" },
                     TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
-                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 },
 
                 Vert = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = new [] { "VertexOut vert(", "VertexOut vert (" },
+                    TextToFind = new [] { "VertexOut vert(", "VertexOut vert (", "V2FShadow vertShadowCaster(" },
                     TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\n{OrigText}",
                     ApplyToIncludes = true,
-                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 },
 
                 VertexSetup = new KannaDynamicShaderData.KannaReplaceText
@@ -203,28 +199,26 @@ namespace Kanna.Protecc
                     TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
                     TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
                     ApplyToIncludes = true,
-                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 }
             },
 
             new KannaDynamicShaderData
             {
                 ShaderName_StartsWith = new [] { ".poiyomi/Poiyomi 8.2", ".poiyomi/Old Versions/8.2" },
+                FileContentsRegexMatch = new [] { @"shader_master_label.*Poiyomi 8\.2", @"shader_master_label.*Poiyomi 9\.0" },
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = new [] { "float2 uv3 : TEXCOORD3;" },
+                    TextToFind = new [] { "float2 uv3 : TEXCOORD3;", "float2 uv3: TEXCOORD3;" },
                     TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
                     ApplyToIncludes = true,
-                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 },
 
                 Vert = new KannaDynamicShaderData.KannaReplaceText
                 {
-                    TextToFind = new [] { "VertexOut vert(", "VertexOut vert (" },
+                    TextToFind = new [] { "VertexOut vert(", "VertexOut vert (", "V2FShadow vertShadowCaster(" },
                     TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\n{OrigText}",
                     ApplyToIncludes = true,
-                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 },
 
                 VertexSetup = new KannaDynamicShaderData.KannaReplaceText
@@ -232,7 +226,6 @@ namespace Kanna.Protecc
                     TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
                     TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
                     ApplyToIncludes = true,
-                    ExcludeIncludes = new [] { "CGI_PoiShadowVert" }
                 }
             },
 
