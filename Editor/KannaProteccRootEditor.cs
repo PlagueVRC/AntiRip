@@ -315,15 +315,34 @@ namespace Kanna.Protecc
             {
                 GUI.color = Color.red;
                 GUILayout.Label(KannaProteccRoot.MissingEssentialsLabel_Localized, boldwrappedlabel);
+                
+                var obj = KannaProteccRoot.Instance.gameObject;
+
+                var descriptor = obj.GetComponent<VRCAvatarDescriptor>();
+
+                var MainAnimator = obj.GetComponent<Animator>().runtimeAnimatorController;
+                
+// MainAnimator == null || descriptor.baseAnimationLayers.First(o => o.type == VRCAvatarDescriptor.AnimLayerType.FX).animatorController == null || descriptor.expressionParameters == null || descriptor.expressionsMenu == null
+                if (MainAnimator == null)
+                {
+                    // animator slot empty
+                    GUI.color = Color.white;
+                    if (GUILayout.Button("Fix"))
+                    {
+                        obj.GetComponent<Animator>().runtimeAnimatorController = descriptor.baseAnimationLayers.First(o => o.type == VRCAvatarDescriptor.AnimLayerType.FX).animatorController;
+                        EditorUtility.SetDirty(obj.GetComponent<Animator>());
+                        OnEnable();
+                    }
+                }
+                
                 return;
             }
 
             if (_isavacrypt)
             {
-                var old = GUI.color;
                 GUI.color = Color.red;
                 GUILayout.Label(KannaProteccRoot.LingeringAvaCryptLabel_Localized, boldwrappedlabel);
-                GUI.color = old;
+                GUI.color = Color.white;
                 if (GUILayout.Button(new GUIContent(KannaProteccRoot.AutoFixLabel_Localized, KannaProteccRoot.AutoFixLingeringAvaCryptTooltip_Localized)))
                 {
                     foreach (var runtimeAnimatorController in AllControllers)
