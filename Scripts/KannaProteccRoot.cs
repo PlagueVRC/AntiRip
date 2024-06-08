@@ -759,7 +759,7 @@ namespace Kanna.Protecc
             _KannaProteccController.DeleteKannaProteccObjectsFromController(GetAnimatorController());
         }
 
-        [SerializeField] public string MissingEssentialsLabel_Localized = "Your avatar is missing essentials for function, such as a FX controller, expressionsMenu, expressionsParameters or FX Controller in main animator component.";
+        [SerializeField] public string MissingEssentialsLabel_Localized = "Your avatar is missing essentials for Kanna Protecc to function, such as a FX controller, expressionsMenu, expressionsParameters or FX Controller in main animator component.";
 
         [SerializeField] public string LingeringAvaCryptLabel_Localized = "Your avatar has lingering AvaCrypt on it. This will break Kanna Protecc. Kanna Protecc will not allow interaction until this is fixed.";
 
