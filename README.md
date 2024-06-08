@@ -218,7 +218,3 @@ https://discord.gg/SyZcuTPXZA
 
 This will let you keep up to date with major features that will take time to implement. This does not act as a changelog, nor will it have every upcoming feature listed. Only time-consuming ones.
 https://trello.com/b/k88bNBvd/kanna-protecc
-
-Soy boy
-
-![image](https://github.com/PlagueVRC/AntiRip/assets/36628963/5645b5aa-a83e-4f38-a21e-53840fd31f34)
