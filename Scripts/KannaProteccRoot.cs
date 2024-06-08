@@ -151,7 +151,7 @@ namespace Kanna.Protecc
         {
             var existingMeshPath = AssetDatabase.GetAssetPath(mesh);
 
-            return !string.IsNullOrEmpty(existingMeshPath) && !existingMeshPath.Contains("unity default resources");
+            return !string.IsNullOrEmpty(existingMeshPath) && !existingMeshPath.Contains("unity default resources") && !existingMeshPath.Contains("_builtin_");
         }
 
         public void EncryptAvatar()
