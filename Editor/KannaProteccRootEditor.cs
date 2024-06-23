@@ -306,7 +306,7 @@ namespace Kanna.Protecc
 
             GUILayout.Label("Universal Shader Support Branch");
 
-            if (GUILayout.Button(new GUIContent(HeaderTexture, KannaProteccRoot.DiscordMessage_Localized), EditorStyles.label, GUILayout.Height(Screen.width / 8f), GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f)))
+            if (GUILayout.Button(new GUIContent(HeaderTexture, KannaProteccRoot.DiscordMessage_Localized), EditorStyles.label, GUILayout.Height(Screen.width / 8f), GUILayout.ExpandWidth(true)))
             {
                 Application.OpenURL("https://discord.gg/SyZcuTPXZA");
             }
