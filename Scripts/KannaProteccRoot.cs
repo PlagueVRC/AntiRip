@@ -371,9 +371,23 @@ namespace Kanna.Protecc
             {
                 if (mat != null && mat.shader != null)
                 {
+                    var shaderPath = AssetDatabase.GetAssetPath(mat.shader);
+                    
+                    if (!shaderPath.Contains("Assets"))
+                    {
+                        KannaLogger.LogToFile($"Ignoring Encrypt Of Shader: {mat.shader.name} As It Is Not In Assets!", LogLocation, KannaLogger.LogType.Warning);
+                        continue;
+                    }
+                    
                     if (mat.shader.name.Contains("KannaProtecc"))
                     {
                         materialEncrypted = true;
+                        continue;
+                    }
+                    
+                    if (aggregateIgnoredMaterials.Contains(mat))
+                    {
+                        KannaLogger.LogToFile($"Material: {mat.name} Is In IgnoredMaterials, Skipping..", LogLocation, KannaLogger.LogType.Warning);
                         continue;
                     }
 
@@ -383,20 +397,6 @@ namespace Kanna.Protecc
                     }
 
                     KannaLogger.LogToFile($"Found Supported Material: {mat.name} With Shader: {mat.shader.name}", LogLocation);
-
-                    if (aggregateIgnoredMaterials.Contains(mat))
-                    {
-                        KannaLogger.LogToFile($"Material: {mat.name} Is In IgnoredMaterials, Skipping..", LogLocation, KannaLogger.LogType.Warning);
-                        continue;
-                    }
-
-                    var shaderPath = AssetDatabase.GetAssetPath(mat.shader);
-
-                    if (!shaderPath.Contains("Assets"))
-                    {
-                        KannaLogger.LogToFile($"Ignoring Encrypt Of Shader: {mat.shader.name} As It Is Not In Assets!", LogLocation, KannaLogger.LogType.Warning);
-                        continue;
-                    }
 
                     if (Utilities.GetThry() && Utilities.CanShaderBeLocked(mat.shader) && !Utilities.IsMaterialLocked(mat)) // Double Check
                     {
