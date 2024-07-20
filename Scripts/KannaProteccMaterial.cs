@@ -205,7 +205,7 @@ namespace Kanna.Protecc
             new KannaDynamicShaderData
             {
                 ShaderName_StartsWith = new [] { ".poiyomi/Poiyomi 8.2", ".poiyomi/Old Versions/8.2" },
-                FileContentsRegexMatch = new [] { @"shader_master_label.*Poiyomi 8\.2", @"shader_master_label.*Poiyomi 9\.0" },
+                FileContentsRegexMatch = new [] { @"shader_master_label.*Poiyomi 8\.2", @"shader_master_label.*Poiyomi 9\.0", @"shader_master_label.*Poiyomi 9\.1" },
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
