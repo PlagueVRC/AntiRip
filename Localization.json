@@ -1867,7 +1867,7 @@
       },
       {
         "FieldName": "EncryptionIntensityInfoLabel_Localized",
-        "FieldValue": "Axústao o suficientemente alto para que a túa malla encriptada quede visualmente destrozada, canto más alto sexa o valor, más segura será. Por defecto = 5"
+        "FieldValue": "Axústao o suficientemente alto para que a túa malla encriptada quede visualmente destrozada, canto máis alto sexa o valor, máis segura será. Por defecto = 5"
       },
       {
         "FieldName": "VRCSavedParamtersPathLabel_Localized",
@@ -1883,7 +1883,7 @@
       },
       {
         "FieldName": "MaterialsTooltip_Localized",
-        "FieldValue": "Por defecto Kanna Protecc inyectará o seu código en calquera material soportado neste avatar. Aquí puedes axustar ese comportamiento para incluir ou eliminar algúns materiais."
+        "FieldValue": "Por defecto Kanna Protecc inxectará o seu código en calquera material soportado neste avatar. Aquí podes axustar ese comportamiento para incluir ou eliminar algúns materiais."
       },
       {
         "FieldName": "AutoDetect_Localized",
