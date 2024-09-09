@@ -1859,7 +1859,7 @@
       },
       {
         "FieldName": "WriteKeysTooltip_Localized",
-        "FieldValue": "Escribe túas claves a atributos gardados"
+        "FieldValue": "Escribe as túas claves a atributos gardados"
       },
       {
         "FieldName": "EncryptionIntensityLabel_Localized",
@@ -5923,7 +5923,7 @@
       },
       {
         "FieldName": "GenerateNewKeysTooltip_Localized",
-        "FieldValue": "Generar nueva clave anulando la anterior. Tendrá que volver a escribir las claves."
+        "FieldValue": "Generar nueva clave anulando la anterior. Tendrás que volver a escribir las claves."
       },
       {
         "FieldName": "DebugAndFix_Localized",
