@@ -5,6 +5,9 @@
   </a>
 </div>
 
+Want to support me? The sponsor links are on the right, and show on tapping the sponsor button on the repository!
+I barely scrape by, so dedicating time to Kanna Protecc without support is not viable. It's currently only free time if any.
+
 Fuck Rippers!
 This project was previously owned by rygo6. It has been passed on for me to own and work on.
 This is the official repository for this project.

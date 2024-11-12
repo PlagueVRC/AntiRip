@@ -21,6 +21,7 @@ public class Translator
         internal static readonly string Estonian = "et";
         internal static readonly string Finnish = "fi";
         internal static readonly string French = "fr";
+        internal static readonly string Galician = "gl";
         internal static readonly string German = "de";
 
         internal static readonly string Greek = "el";
