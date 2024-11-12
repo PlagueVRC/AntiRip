@@ -363,20 +363,16 @@ namespace Kanna.Protecc
 
         void Shuffle<T>(IList<T> list)
         {
-            using (var provider = new RNGCryptoServiceProvider())
+            using var provider = new RNGCryptoServiceProvider();
+            var n = list.Count;
+            while (n > 1)
             {
-                var n = list.Count;
-                while (n > 1)
-                {
-                    var box = new byte[1];
-                    do provider.GetBytes(box);
-                    while (!(box[0] < n * (Byte.MaxValue / n)));
-                    var k = (box[0] % n);
-                    n--;
-                    var value = list[k];
-                    list[k] = list[n];
-                    list[n] = value;
-                }
+                var box = new byte[1];
+                do provider.GetBytes(box);
+                while (!(box[0] < n * (byte.MaxValue / n)));
+                var k = (box[0] % n);
+                n--;
+                (list[k], list[n]) = (list[n], list[k]);
             }
         }
         

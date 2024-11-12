@@ -10,8 +10,6 @@ using Random = UnityEngine.Random;
 using System.Collections;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
@@ -22,7 +20,6 @@ using UnityEditor.Animations;
 using UnityEditor.SceneManagement;
 using VRC.Core;
 using VRC.SDK3.Avatars.Components;
-using System.Reflection;
 #endif
 
 namespace Kanna.Protecc
@@ -32,7 +29,7 @@ namespace Kanna.Protecc
         public static KannaProteccRoot Instance;
 
         #if UNITY_EDITOR
-        public Obfuscator obfuscator = new Obfuscator();
+        public readonly Obfuscator obfuscator = new Obfuscator();
         #endif
 
         [SerializeField] public bool IsProtected;
@@ -602,11 +599,10 @@ namespace Kanna.Protecc
                     }
                 }
 
-                if (paramFile == null)
+                paramFile ??= new ParamFile
                 {
-                    paramFile = new ParamFile();
-                    paramFile.animationParameters = new List<ParamFileEntry>();
-                }
+                    animationParameters = new List<ParamFileEntry>()
+                };
 
                 for (var i = 0; i < _bitKeys.Length; ++i)
                 {
@@ -628,14 +624,12 @@ namespace Kanna.Protecc
 
                 File.WriteAllText(filePath, JsonUtility.ToJson(paramFile));
 
-                using (var client = new HttpClient())
+                using var client = new HttpClient();
+                client.PostAsync("http://127.0.0.1:3456/protecc", new StringContent(JsonConvert.SerializeObject(new KannaProteccKeysData()
                 {
-                    client.PostAsync("http://127.0.0.1:3456/protecc", new StringContent(JsonConvert.SerializeObject(new KannaProteccKeysData()
-                    {
-                        AvatarID = pipelineManager.blueprintId,
-                        Values = paramFile.animationParameters.Select(o => new KeyValuePair<string, object>(o.name, o.value == 1 ? true : false)).ToDictionary(a => a.Key, b => b.Value)
-                    })));
-                }
+                    AvatarID = pipelineManager.blueprintId,
+                    Values = paramFile.animationParameters.Select(o => new KeyValuePair<string, object>(o.name, o.value == 1)).ToDictionary(a => a.Key, b => b.Value)
+                })));
             }
 
             if (DoLog)
@@ -1256,11 +1250,11 @@ public class KannaLogger
         return output;
     }
 
-    private static string LogStart = "<html>\r\n\t<head>\r\n\t\t<title>Kanna Protecc Log</title>\r\n\t\t\r\n\t\t<style>\r\n\t\t\th1\r\n\t\t\t{\r\n\t\t\t\tcolor: white;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\th2\r\n\t\t\t{\r\n\t\t\t\tcolor: white;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\tp\r\n\t\t\t{\r\n\t\t\t\tcolor: white;\r\n\t\t\t}\r\n\t\t\r\n\t\t\t.AvatarInformationLog\r\n\t\t\t{\r\n\t\t\t\tbackground-color: rgb(10, 10, 10);\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.AvatarInformationWarning\r\n\t\t\t{\r\n\t\t\t\tbackground-color: rgb(150, 150, 0);\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.AvatarInformationError\r\n\t\t\t{\r\n\t\t\t\tbackground-color: rgb(150, 0, 0);\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\tinput[type='checkbox'].toggle\r\n\t\t\t{\r\n\t\t\t\tdisplay: none; \r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.wrap-collabsible\r\n\t\t\t{\r\n\t\t\t\tmargin: 1.2rem 0;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.lbl-toggle\r\n\t\t\t{\r\n\t\t\t\tdisplay: block;\r\n\t\t\t\tfont-weight: bold;\r\n\t\t\t\tfont-family: monospace;\r\n\t\t\t\tfont-size: 1.2rem;\r\n\t\t\t\ttext-transform: uppercase;\r\n\t\t\t\ttext-align: center;\r\n\t\t\t\tpadding: 1rem;\r\n\t\t\t\tcolor: #DDD;\r\n\t\t\t\tbackground: #69696950;\r\n\t\t\t\tcursor: pointer;\r\n\t\t\t\tborder-radius: 7px;\r\n\t\t\t\ttransition: all 0.25s ease-out;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.lbl-toggle:hover\r\n\t\t\t{\r\n\t\t\t\tcolor: #FFF;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.lbl-toggle::before\r\n\t\t\t{\r\n\t\t\t\tcontent: ' ';\r\n\t\t\t\tdisplay: inline-block;\r\n\t\t\t\tborder-top: 5px solid transparent;\r\n\t\t\t\tborder-bottom: 5px solid transparent;\r\n\t\t\t\tborder-left: 5px solid currentColor;\r\n\t\t\t\tvertical-align: middle;\r\n\t\t\t\tmargin-right: .7rem;\r\n\t\t\t\ttransform: translateY(-2px);\r\n\t\t\t\ttransition: transform .2s ease-out;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.toggle:checked+.lbl-toggle::before\r\n\t\t\t{\r\n\t\t\t\ttransform: rotate(90deg) translateX(-3px);\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.collapsible-content\r\n\t\t\t{\r\n\t\t\t\tmax-height: 0px;\r\n\t\t\t\toverflow: hidden;\r\n\t\t\t\ttransition: max-height .25s ease-in-out;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.toggle:checked + .lbl-toggle + .collapsible-content\r\n\t\t\t{\r\n\t\t\t\tmax-height: 350px;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.toggle:checked+.lbl-toggle\r\n\t\t\t{\r\n\t\t\t\tborder-bottom-right-radius: 0;\r\n\t\t\t\tborder-bottom-left-radius: 0;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.collapsible-content .content-inner\r\n\t\t\t{\r\n\t\t\t\tbackground: rgba(0, 105, 255, .2);\r\n\t\t\t\tborder-bottom: 1px solid rgba(0, 105, 255, .45);\r\n\t\t\t\tborder-bottom-left-radius: 7px;\r\n\t\t\t\tborder-bottom-right-radius: 7px;\r\n\t\t\t\tpadding: .5rem 1rem;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.collapsible-content p\r\n\t\t\t{\r\n\t\t\t\tmargin-bottom: 0;\r\n\t\t\t}\r\n\t\t</style>\r\n\t\t\r\n\t\t<script>\r\n\t\t\tfunction togglelogs(checkbox) {\r\n\t\t\t\tlet entries = document.getElementsByClassName(\"AvatarInformationLog\");\r\n\r\n\t\t\t\tfor (let i = 0; i < entries.length; i++) {\r\n\t\t\t\t\tentries[i].hidden = !checkbox.checked;\r\n\t\t\t\t}\r\n\t\t\t}\r\n\r\n\t\t\tfunction togglewarnings(checkbox) {\r\n\t\t\t\tlet entries = document.getElementsByClassName(\"AvatarInformationWarning\");\r\n\r\n\t\t\t\tfor (let i = 0; i < entries.length; i++) {\r\n\t\t\t\t\tentries[i].hidden = !checkbox.checked;\r\n\t\t\t\t}\r\n\t\t\t}\r\n\r\n\t\t\tfunction toggleerrors(checkbox) {\r\n\t\t\t\tlet entries = document.getElementsByClassName(\"AvatarInformationError\");\r\n\r\n\t\t\t\tfor (let i = 0; i < entries.length; i++) {\r\n\t\t\t\t\tentries[i].hidden = !checkbox.checked;\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t</script>\r\n\t</head>\r\n\t\r\n\t<body>\r\n\t\t<h1>Kanna Protecc Log</h1>\r\n\t\t\r\n\t\t<input class=\"showlogs\" type=\"checkbox\" onclick=\"togglelogs(this);\" checked>Show Logs</input>\r\n\t\t<input class=\"showwarnings\" type=\"checkbox\" onclick=\"togglewarnings(this);\" checked>Show Warnings</input>\r\n\t\t<input class=\"showerrors\" type=\"checkbox\" onclick=\"toggleerrors(this);\" checked>Show Errors</input>\r\n\t\t\r\n\t";
+    private const string LogStart = "<html>\r\n\t<head>\r\n\t\t<title>Kanna Protecc Log</title>\r\n\t\t\r\n\t\t<style>\r\n\t\t\th1\r\n\t\t\t{\r\n\t\t\t\tcolor: white;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\th2\r\n\t\t\t{\r\n\t\t\t\tcolor: white;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\tp\r\n\t\t\t{\r\n\t\t\t\tcolor: white;\r\n\t\t\t}\r\n\t\t\r\n\t\t\t.AvatarInformationLog\r\n\t\t\t{\r\n\t\t\t\tbackground-color: rgb(10, 10, 10);\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.AvatarInformationWarning\r\n\t\t\t{\r\n\t\t\t\tbackground-color: rgb(150, 150, 0);\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.AvatarInformationError\r\n\t\t\t{\r\n\t\t\t\tbackground-color: rgb(150, 0, 0);\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\tinput[type='checkbox'].toggle\r\n\t\t\t{\r\n\t\t\t\tdisplay: none; \r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.wrap-collabsible\r\n\t\t\t{\r\n\t\t\t\tmargin: 1.2rem 0;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.lbl-toggle\r\n\t\t\t{\r\n\t\t\t\tdisplay: block;\r\n\t\t\t\tfont-weight: bold;\r\n\t\t\t\tfont-family: monospace;\r\n\t\t\t\tfont-size: 1.2rem;\r\n\t\t\t\ttext-transform: uppercase;\r\n\t\t\t\ttext-align: center;\r\n\t\t\t\tpadding: 1rem;\r\n\t\t\t\tcolor: #DDD;\r\n\t\t\t\tbackground: #69696950;\r\n\t\t\t\tcursor: pointer;\r\n\t\t\t\tborder-radius: 7px;\r\n\t\t\t\ttransition: all 0.25s ease-out;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.lbl-toggle:hover\r\n\t\t\t{\r\n\t\t\t\tcolor: #FFF;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.lbl-toggle::before\r\n\t\t\t{\r\n\t\t\t\tcontent: ' ';\r\n\t\t\t\tdisplay: inline-block;\r\n\t\t\t\tborder-top: 5px solid transparent;\r\n\t\t\t\tborder-bottom: 5px solid transparent;\r\n\t\t\t\tborder-left: 5px solid currentColor;\r\n\t\t\t\tvertical-align: middle;\r\n\t\t\t\tmargin-right: .7rem;\r\n\t\t\t\ttransform: translateY(-2px);\r\n\t\t\t\ttransition: transform .2s ease-out;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.toggle:checked+.lbl-toggle::before\r\n\t\t\t{\r\n\t\t\t\ttransform: rotate(90deg) translateX(-3px);\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.collapsible-content\r\n\t\t\t{\r\n\t\t\t\tmax-height: 0px;\r\n\t\t\t\toverflow: hidden;\r\n\t\t\t\ttransition: max-height .25s ease-in-out;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.toggle:checked + .lbl-toggle + .collapsible-content\r\n\t\t\t{\r\n\t\t\t\tmax-height: 350px;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.toggle:checked+.lbl-toggle\r\n\t\t\t{\r\n\t\t\t\tborder-bottom-right-radius: 0;\r\n\t\t\t\tborder-bottom-left-radius: 0;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.collapsible-content .content-inner\r\n\t\t\t{\r\n\t\t\t\tbackground: rgba(0, 105, 255, .2);\r\n\t\t\t\tborder-bottom: 1px solid rgba(0, 105, 255, .45);\r\n\t\t\t\tborder-bottom-left-radius: 7px;\r\n\t\t\t\tborder-bottom-right-radius: 7px;\r\n\t\t\t\tpadding: .5rem 1rem;\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\t.collapsible-content p\r\n\t\t\t{\r\n\t\t\t\tmargin-bottom: 0;\r\n\t\t\t}\r\n\t\t</style>\r\n\t\t\r\n\t\t<script>\r\n\t\t\tfunction togglelogs(checkbox) {\r\n\t\t\t\tlet entries = document.getElementsByClassName(\"AvatarInformationLog\");\r\n\r\n\t\t\t\tfor (let i = 0; i < entries.length; i++) {\r\n\t\t\t\t\tentries[i].hidden = !checkbox.checked;\r\n\t\t\t\t}\r\n\t\t\t}\r\n\r\n\t\t\tfunction togglewarnings(checkbox) {\r\n\t\t\t\tlet entries = document.getElementsByClassName(\"AvatarInformationWarning\");\r\n\r\n\t\t\t\tfor (let i = 0; i < entries.length; i++) {\r\n\t\t\t\t\tentries[i].hidden = !checkbox.checked;\r\n\t\t\t\t}\r\n\t\t\t}\r\n\r\n\t\t\tfunction toggleerrors(checkbox) {\r\n\t\t\t\tlet entries = document.getElementsByClassName(\"AvatarInformationError\");\r\n\r\n\t\t\t\tfor (let i = 0; i < entries.length; i++) {\r\n\t\t\t\t\tentries[i].hidden = !checkbox.checked;\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t</script>\r\n\t</head>\r\n\t\r\n\t<body>\r\n\t\t<h1>Kanna Protecc Log</h1>\r\n\t\t\r\n\t\t<input class=\"showlogs\" type=\"checkbox\" onclick=\"togglelogs(this);\" checked>Show Logs</input>\r\n\t\t<input class=\"showwarnings\" type=\"checkbox\" onclick=\"togglewarnings(this);\" checked>Show Warnings</input>\r\n\t\t<input class=\"showerrors\" type=\"checkbox\" onclick=\"toggleerrors(this);\" checked>Show Errors</input>\r\n\t\t\r\n\t";
 
-    private static string LogEnd = "</body>\r\n</html>";
+    private const string LogEnd = "</body>\r\n</html>";
 
-    public static LogEntry FormatLog(string text, LogType type = LogType.Log)
+    private static LogEntry FormatLog(string text, LogType type = LogType.Log)
     {
         var stackTrace = new StackTrace(fNeedFileInfo: true);
 
@@ -1271,7 +1265,7 @@ public class KannaLogger
             text = text
         };
 
-        foreach (var frame in stackTrace.GetFrames().Skip(2))
+        foreach (var frame in stackTrace.GetFrames()!.Skip(2))
         {
             if (entry.Stack.Count == 2)
             {
