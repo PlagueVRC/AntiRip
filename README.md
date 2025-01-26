@@ -229,3 +229,8 @@ https://trello.com/b/k88bNBvd/kanna-protecc
 
 This is not a password protector, nor does this work with prefabs. The only prefab is a "show my avatar to see it" quad.
 They claim to be a "software developer", yet are clueless with software if they could not tell that.
+
+This is all the prefab is:
+![image](https://github.com/user-attachments/assets/d5c31247-f4ac-4dc9-829b-8a15a6a7e52a)
+
+It will only show if the avatar is has shaders un-shown, otherwise invisible.
