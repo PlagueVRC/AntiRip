@@ -221,3 +221,10 @@ https://discord.gg/SyZcuTPXZA
 
 This will let you keep up to date with major features that will take time to implement. This does not act as a changelog, nor will it have every upcoming feature listed. Only time-consuming ones.
 https://trello.com/b/k88bNBvd/kanna-protecc
+
+# Don't be like this "creator", who was caught in a ripping server intending to rip a world without permission from the creator
+![image](https://github.com/user-attachments/assets/664aa0d8-7fd1-4d8f-9540-f25c83d99527)
+![image](https://github.com/user-attachments/assets/c9b95ce4-0db4-46e8-871a-031e7e9b0724)
+
+This is not a password protector, nor does this work with prefabs. The only prefab is a "show my avatar to see it" quad.
+They claim to be a "software developer", yet are clueless with software if they could not tell that.
