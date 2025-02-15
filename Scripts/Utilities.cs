@@ -19,7 +19,7 @@ public class Utilities
         if (!safeNaming)
         {
             // \u200B = ZWSP
-            str += new string('\u2008', Length);
+            str += new string('\u200B', Length);
 
             Length++;
         }
