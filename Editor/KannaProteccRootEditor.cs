@@ -435,7 +435,7 @@ namespace Kanna.Protecc
 
             if (GUILayout.Button(new GUIContent(!IsVRCOpen ? KannaProteccRoot.WriteKeys_Localized : KannaProteccRoot.CloseVRChatToWriteKeys_Localized, KannaProteccRoot.WriteKeysTooltip_Localized), GUILayout.Height(Screen.width / 10f), GUILayout.ExpandWidth(true), GUILayout.MaxWidth(999999f)))
             {
-                KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name.Trim() + "_KannaProteccted").GetComponent<VRCAvatarDescriptor>().expressionParameters, true, true);
+                KannaProteccRoot.WriteBitKeysToExpressions(GameObject.Find(KannaProteccRoot.gameObject.name + "_KannaProteccted").GetComponent<VRCAvatarDescriptor>().expressionParameters, true, true);
             }
 
             GUI.enabled = true;
