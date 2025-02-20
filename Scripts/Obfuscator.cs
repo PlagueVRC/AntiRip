@@ -683,8 +683,11 @@ namespace Kanna.Protecc
 
             var layers = animator.layers.ToList();
 
-            foreach (var layer in layers)
+            for (var index = 0; index < layers.Count; index++)
             {
+                var layer = layers[index];
+                //layer = Object.Instantiate(layer);
+                
                 if (layer?.stateMachine == null)
                 {
                     continue;
@@ -693,7 +696,7 @@ namespace Kanna.Protecc
                 var newLayerName = Utilities.GenerateRandomUniqueName(false);
                 mapping.RenamedValues.Add(($"Animator Layer", layer.name, newLayerName));
                 layer.name = newLayerName;
-                layer.stateMachine = StateMachineObfuscator(layer.name, Object.Instantiate(layer.stateMachine), root);
+                layer.stateMachine = StateMachineObfuscator(layer.name, layer.stateMachine, root);
             }
 
             animator.layers = layers.ToArray();
@@ -747,38 +750,52 @@ namespace Kanna.Protecc
 
         private ChildAnimatorStateMachine ChildStateMachineObfuscator(ChildAnimatorStateMachine stateMachine, KannaProteccRoot root)
         {
+            if (stateMachine.position.x == float.NaN)
+            {
+                return stateMachine;
+            }
+
+            var newstatemachine = stateMachine.stateMachine;
+            
             var newName = Utilities.GenerateRandomUniqueName(false);
             return new ChildAnimatorStateMachine
             {
                 position = new Vector3(float.NaN, float.NaN, float.NaN),
-                stateMachine = StateMachineObfuscator(newName, stateMachine.stateMachine, root),
+                stateMachine = StateMachineObfuscator(newName, newstatemachine, root),
             };
         }
 
         private AnimatorStateMachine StateMachineObfuscator(string stateMachineName, AnimatorStateMachine stateMachine, KannaProteccRoot root)
         {
-            mapping.RenamedValues.Add(($"State Machine", stateMachine.name, stateMachineName));
+            if (stateMachine.anyStatePosition.x == float.NaN)
+            {
+                return stateMachine;
+            }
+
+            var newstateMachine = stateMachine;
+            
+            mapping.RenamedValues.Add(($"State Machine", newstateMachine.name, stateMachineName));
             stateMachine.name = stateMachineName;
 
 #if VRC_SDK_VRCSDK3
-            var behaviours = stateMachine.behaviours.ToList();
+            var behaviours = newstateMachine.behaviours.ToList();
             foreach (var parameter in behaviours.OfType<VRCAvatarParameterDriver>()
                          .SelectMany(behaviour => behaviour.parameters))
                 parameter.name = _parameterDic.TryGetValue(parameter.name.RemoveAllPhysBone(), out var value)
                     ? value + parameter.name.GetPhysBoneEnding()
                     : parameter.name;
 
-            stateMachine.behaviours = behaviours.ToArray();
+            newstateMachine.behaviours = behaviours.ToArray();
 #endif
 
-            stateMachine.anyStatePosition = new Vector3(float.NaN, float.NaN, float.NaN);
-            stateMachine.exitPosition = new Vector3(float.NaN, float.NaN, float.NaN);
-            stateMachine.parentStateMachinePosition = new Vector3(float.NaN, float.NaN, float.NaN);
-            stateMachine.entryPosition = new Vector3(float.NaN, float.NaN, float.NaN);
+            newstateMachine.anyStatePosition = new Vector3(float.NaN, float.NaN, float.NaN);
+            newstateMachine.exitPosition = new Vector3(float.NaN, float.NaN, float.NaN);
+            newstateMachine.parentStateMachinePosition = new Vector3(float.NaN, float.NaN, float.NaN);
+            newstateMachine.entryPosition = new Vector3(float.NaN, float.NaN, float.NaN);
 
             var childStates = new List<ChildAnimatorState>();
 
-            foreach (var t in stateMachine.states)
+            foreach (var t in newstateMachine.states)
             {
                 childStates.Add(
                     new ChildAnimatorState
@@ -789,16 +806,16 @@ namespace Kanna.Protecc
                 );
             }
 
-            stateMachine.states = childStates.ToArray();
+            newstateMachine.states = childStates.ToArray();
 
 
             var stateMachines = new List<ChildAnimatorStateMachine>();
-            foreach (var t in stateMachine.stateMachines)
+            foreach (var t in newstateMachine.stateMachines)
                 stateMachines.Add(ChildStateMachineObfuscator(t, root));
-            stateMachine.stateMachines = stateMachines.ToArray();
+            newstateMachine.stateMachines = stateMachines.ToArray();
 
 
-            var entryTransitions = stateMachine.entryTransitions.ToList();
+            var entryTransitions = newstateMachine.entryTransitions.ToList();
             foreach (var transition in entryTransitions)
             {
                 var conditions = new List<AnimatorCondition>();
@@ -815,9 +832,9 @@ namespace Kanna.Protecc
                 transition.conditions = conditions.ToArray();
             }
 
-            stateMachine.entryTransitions = entryTransitions.ToArray();
+            newstateMachine.entryTransitions = entryTransitions.ToArray();
 
-            var anyStateTransitions = stateMachine.anyStateTransitions.ToList();
+            var anyStateTransitions = newstateMachine.anyStateTransitions.ToList();
             foreach (var transition in anyStateTransitions)
             {
                 var conditions = new List<AnimatorCondition>();
@@ -834,27 +851,34 @@ namespace Kanna.Protecc
                 transition.conditions = conditions.ToArray();
             }
 
-            stateMachine.anyStateTransitions = anyStateTransitions.ToArray();
+            newstateMachine.anyStateTransitions = anyStateTransitions.ToArray();
 
-            return stateMachine;
+            return newstateMachine;
         }
 
         private AnimatorState AnimatorStateObfuscator(AnimatorState state, KannaProteccRoot root)
         {
-            state.name = Utilities.GenerateRandomUniqueName(false);
+            var newstate = state;
+            
+            newstate.name = Utilities.GenerateRandomUniqueName(false);
 
 #if VRC_SDK_VRCSDK3
-            var behaviours = state.behaviours.ToList();
-            foreach (var parameter in behaviours.OfType<VRCAvatarParameterDriver>()
-                         .SelectMany(behaviour => behaviour.parameters))
-                parameter.name = _parameterDic.TryGetValue(parameter.name.RemoveAllPhysBone(), out var value)
-                    ? value + parameter.name.GetPhysBoneEnding()
-                    : parameter.name;
+            var behaviours = newstate.behaviours.ToList();
+            //foreach (var behaviour in behaviours)
+            //{
+                // dupe?
+                
+                foreach (var parameter in behaviours.OfType<VRCAvatarParameterDriver>()
+                             .SelectMany(behaviour => behaviour.parameters))
+                    parameter.name = _parameterDic.TryGetValue(parameter.name.RemoveAllPhysBone(), out var value)
+                        ? value + parameter.name.GetPhysBoneEnding()
+                        : parameter.name;
+            //}
 
-            state.behaviours = behaviours.ToArray();
+            newstate.behaviours = behaviours.ToArray();
 #endif
 
-            var transitions = state.transitions.ToList();
+            var transitions = newstate.transitions.ToList();
             foreach (var transition in transitions)
             {
                 var conditions = new List<AnimatorCondition>();
@@ -871,31 +895,31 @@ namespace Kanna.Protecc
                 transition.conditions = conditions.ToArray();
             }
 
-            state.transitions = transitions.ToArray();
+            newstate.transitions = transitions.ToArray();
 
-            if (state.speedParameterActive)
-                state.speedParameter = _parameterDic.TryGetValue(state.speedParameter.RemoveAllPhysBone(), out var value)
-                    ? value + state.speedParameter.GetPhysBoneEnding()
-                    : state.speedParameter;
+            if (newstate.speedParameterActive)
+                newstate.speedParameter = _parameterDic.TryGetValue(newstate.speedParameter.RemoveAllPhysBone(), out var value)
+                    ? value + newstate.speedParameter.GetPhysBoneEnding()
+                    : newstate.speedParameter;
 
-            if (state.mirrorParameterActive)
-                state.mirrorParameter = _parameterDic.TryGetValue(state.mirrorParameter.RemoveAllPhysBone(), out var value)
-                    ? value + state.mirrorParameter.GetPhysBoneEnding()
-                    : state.mirrorParameter;
+            if (newstate.mirrorParameterActive)
+                newstate.mirrorParameter = _parameterDic.TryGetValue(newstate.mirrorParameter.RemoveAllPhysBone(), out var value)
+                    ? value + newstate.mirrorParameter.GetPhysBoneEnding()
+                    : newstate.mirrorParameter;
 
-            if (state.timeParameterActive)
-                state.timeParameter = _parameterDic.TryGetValue(state.timeParameter.RemoveAllPhysBone(), out var value)
-                    ? value + state.timeParameter.GetPhysBoneEnding()
-                    : state.timeParameter;
+            if (newstate.timeParameterActive)
+                newstate.timeParameter = _parameterDic.TryGetValue(newstate.timeParameter.RemoveAllPhysBone(), out var value)
+                    ? value + newstate.timeParameter.GetPhysBoneEnding()
+                    : newstate.timeParameter;
 
-            if (state.cycleOffsetParameterActive)
-                state.cycleOffsetParameter = _parameterDic.TryGetValue(state.cycleOffsetParameter.RemoveAllPhysBone(), out var value)
-                    ? value + state.cycleOffsetParameter.GetPhysBoneEnding()
-                    : state.cycleOffsetParameter;
+            if (newstate.cycleOffsetParameterActive)
+                newstate.cycleOffsetParameter = _parameterDic.TryGetValue(newstate.cycleOffsetParameter.RemoveAllPhysBone(), out var value)
+                    ? value + newstate.cycleOffsetParameter.GetPhysBoneEnding()
+                    : newstate.cycleOffsetParameter;
 
-            if (state.motion != null) state.motion = MotionObfuscator(state.motion, root);
+            if (newstate.motion != null) newstate.motion = MotionObfuscator(newstate.motion, root);
 
-            return state;
+            return newstate;
         }
 
         private Motion MotionObfuscator(Motion motion, KannaProteccRoot root)
@@ -983,8 +1007,11 @@ namespace Kanna.Protecc
                 KannaLogger.LogToFile($"Ignoring Asset: {original.name}: No Path!", KannaProteccRoot.LogLocation);
                 return original;
             }
-
-            var newobj = Object.Instantiate(original);
+            
+            T newSubAsset = Object.Instantiate(original);
+            
+            Utilities.DeepCopyFields(original, newSubAsset);
+            Utilities.DeepCopyProperties(original, newSubAsset);
 
             KannaLogger.LogToFile($"Copying Asset: {originalPath}", KannaProteccRoot.LogLocation);
 
@@ -996,8 +1023,8 @@ namespace Kanna.Protecc
 
             mapping.RenamedValues.Add(($"Asset: {ext}", Path.GetFileNameWithoutExtension(originalPath), Path.GetFileNameWithoutExtension(newPath)));
 
-            AssetDatabase.CreateAsset(newobj, newPath);
-            _filePathDic[newobj] = newPath;
+            AssetDatabase.CreateAsset(newSubAsset, newPath);
+            _filePathDic[newSubAsset] = newPath;
             // if (!_filePathDic.ContainsKey(originalPath)) // Gen File
             // {
             //     newPath = $"{root.path}/{GUID.Generate()}.{ext}";
