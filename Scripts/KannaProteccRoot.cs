@@ -132,7 +132,7 @@ namespace Kanna.Protecc
                 return null;
             }
 
-            var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(runtimeController));
+            var controller = (AnimatorController)runtimeController;
             if (controller == null)
             {
                 EditorUtility.DisplayDialog("Could not get AnimatorController.",
@@ -167,7 +167,12 @@ namespace Kanna.Protecc
 
                 if ((VRCExpressionParameters.MAX_PARAMETER_COST - descriptor.expressionParameters.CalcTotalCost()) is var freespace && freespace < 32)
                 {
-                    if (EditorUtility.DisplayDialog("Error!", $"You Do Not Have 32 Bits Of Free Space In Your Expression Parameters!\r\nWould You Like To Use {freespace} Keys? Note This IS A SECURITY RISK.{(freespace < 16 ? " Less Than 16 Is Especially Insecure." : "")}", "Cancel", "I Understand The Danger"))
+                    if (freespace % 2 != 0)
+                    {
+                        freespace -= 1;
+                    }
+
+                    if (!EditorUtility.DisplayDialog("Error!", $"You Do Not Have 32 Bits Of Free Space In Your Expression Parameters!\r\nWould You Like To Use {freespace} Keys? Note This IS A SECURITY RISK.{(freespace < 16 ? " Less Than 16 Is Especially Insecure." : "")}", "I Understand The Danger", "Cancel"))
                     {
                         return;
                     }
@@ -205,16 +210,16 @@ namespace Kanna.Protecc
                 var data = new KannaProteccData(_bitKeys.Length);
                 var decodeShader = KannaProteccMaterial.GenerateDecodeShader(data, _bitKeys);
 
-                KannaLogger.LogToFile($"Initialized, Getting All Meshes..", LogLocation);
+                KannaLogger.LogToFile("Initialized, Getting All Meshes..", LogLocation);
 
                 var meshFilters = encodedGameObject.GetComponentsInChildren<MeshFilter>(true).Select(o => (o, o.gameObject.activeSelf));
                 var skinnedMeshRenderers = encodedGameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(o => (o, o.gameObject.activeSelf));
 
-                KannaLogger.LogToFile($"Got All Meshes, Encrypting Additional Materials..", LogLocation);
+                KannaLogger.LogToFile("Got All Meshes, Encrypting Additional Materials..", LogLocation);
 
                 EncryptMaterials(null, m_AdditionalMaterials.ToArray(), decodeShader, m_IgnoredMaterials);
 
-                KannaLogger.LogToFile($"Additional Materials Encrypted, Processing MeshFilters..", LogLocation);
+                KannaLogger.LogToFile("Additional Materials Encrypted, Processing MeshFilters..", LogLocation);
 
                 // Do encrypting
                 foreach (var meshFilter in meshFilters)
@@ -240,7 +245,7 @@ namespace Kanna.Protecc
                     }
                 }
 
-                KannaLogger.LogToFile($"MeshFilters Done, Processing SkinnedMeshRenderers..", LogLocation);
+                KannaLogger.LogToFile("MeshFilters Done, Processing SkinnedMeshRenderers..", LogLocation);
 
                 foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
                 {
@@ -265,7 +270,7 @@ namespace Kanna.Protecc
                     }
                 }
 
-                KannaLogger.LogToFile($"SkinnedMeshRenderers Done, Removing Lingering KannaProteccRoot On Encrypted Object..", LogLocation);
+                KannaLogger.LogToFile("SkinnedMeshRenderers Done, Removing Lingering KannaProteccRoot On Encrypted Object..", LogLocation);
 
                 var KannaProteccRoots = encodedGameObject.GetComponentsInChildren<KannaProteccRoot>(true);
                 foreach (var KannaProteccRoot in KannaProteccRoots)
@@ -273,7 +278,7 @@ namespace Kanna.Protecc
                     DestroyImmediate(KannaProteccRoot);
                 }
 
-                KannaLogger.LogToFile($"Done Removing, Disabling Original Avatar Object And Refreshing AssetDatabase..", LogLocation);
+                KannaLogger.LogToFile("Done Removing, Disabling Original Avatar Object And Refreshing AssetDatabase..", LogLocation);
 
                 // Disable old for convienence.
                 gameObject.SetActive(false);
@@ -281,7 +286,7 @@ namespace Kanna.Protecc
                 // Force unity to import things
                 AssetDatabase.Refresh();
 
-                KannaLogger.LogToFile($"Done Refreshing, Beginning Obfuscation Stage..", LogLocation);
+                KannaLogger.LogToFile("Done Refreshing, Beginning Obfuscation Stage..", LogLocation);
 
                 IsProtected = true;
 
@@ -290,7 +295,7 @@ namespace Kanna.Protecc
                 // Do Obfuscation
                 var newobj = obfuscator.Obfuscate(encodedGameObject, this);
 
-                KannaLogger.LogToFile($"Done Obfuscating, Disabling Encrypted Object, Saving Assets And Scene, Then Refreshing AssetDatabase.", LogLocation);
+                KannaLogger.LogToFile("Done Obfuscating, Disabling Encrypted Object, Saving Assets And Scene, Then Refreshing AssetDatabase.", LogLocation);
 
                 encodedGameObject.SetActive(false); // Temp
 
@@ -299,15 +304,15 @@ namespace Kanna.Protecc
                 // Force unity to import things
                 AssetDatabase.Refresh();
 
-                KannaLogger.LogToFile($"Done Refreshing, Writing Keys To ExpressionParameters", LogLocation);
+                KannaLogger.LogToFile("Done Refreshing, Writing Keys To ExpressionParameters", LogLocation);
 
                 WriteBitKeysToExpressions(newobj.GetComponent<VRCAvatarDescriptor>().expressionParameters, true);
 
-                KannaLogger.LogToFile($"Done Writing Keys, Validating FX Controller And Obfuscating Kanna Protecc Layer Within It", LogLocation);
+                KannaLogger.LogToFile("Done Writing Keys, Validating FX Controller And Obfuscating Kanna Protecc Layer Within It", LogLocation);
 
-                ValidateAnimatorController(newobj, AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(newobj.GetComponent<VRCAvatarDescriptor>().baseAnimationLayers.First(o => o.type == VRCAvatarDescriptor.AnimLayerType.FX).animatorController)));
+                ValidateAnimatorController(newobj, (AnimatorController)newobj.GetComponent<VRCAvatarDescriptor>().baseAnimationLayers.First(o => o.type == VRCAvatarDescriptor.AnimLayerType.FX).animatorController);
 
-                KannaLogger.LogToFile($"Done! Showing Dialog To User.", LogLocation);
+                KannaLogger.LogToFile("Done! Showing Dialog To User.", LogLocation);
 
                 DestroyImmediate(encodedGameObject);
                 newobj.name = newobj.name.Replace("_Encrypted_Obfuscated", "_KannaProteccted");
@@ -324,8 +329,10 @@ namespace Kanna.Protecc
             {
                 KannaLogger.LogToFile(ex.ToString(), LogLocation, KannaLogger.LogType.Error);
             }
-            
-            KannaLogger.WriteLogsToFile(LogLocation);
+            finally
+            {
+                KannaLogger.WriteLogsToFile(LogLocation);
+            }
         }
 
         public static Type GetTypeFromAnyAssembly(string FullName)
@@ -349,7 +356,7 @@ namespace Kanna.Protecc
                 return false;
             }
 
-            KannaLogger.LogToFile($"EncryptMaterials Start..", LogLocation);
+            KannaLogger.LogToFile("EncryptMaterials Start..", LogLocation);
             var materialEncrypted = false;
 
             if (Utilities.GetThry())
@@ -358,7 +365,7 @@ namespace Kanna.Protecc
 
                 if (lockablemats.Length > 0)
                 {
-                    KannaLogger.LogToFile($"Some Shaders Support Locking And Are Not Locked, Locking..", LogLocation);
+                    KannaLogger.LogToFile("Some Shaders Support Locking And Are Not Locked, Locking..", LogLocation);
 
                     Utilities.SetShadersLockedState(lockablemats, true);
                 }
@@ -407,7 +414,7 @@ namespace Kanna.Protecc
                     var decodeShaderPath = Path.Combine(path, "KannaModelDecode.cginc");
                     File.WriteAllText(decodeShaderPath, decodeShader);
 
-                    KannaLogger.LogToFile($"Done Writing, Processing Shader Contents..", LogLocation);
+                    KannaLogger.LogToFile("Done Writing, Processing Shader Contents..", LogLocation);
 
                     var shaderText = File.ReadAllText(shaderPath);
                     if (!shaderText.Contains("//KannaProtecc Injected"))
@@ -431,13 +438,13 @@ namespace Kanna.Protecc
 
                         _sb.ReplaceOrLog(shaderMatch.VertexSetup.TextToFind, shaderMatch.VertexSetup.TextToReplaceWith);
 
-                        KannaLogger.LogToFile($"Done, Writing Shader File..", LogLocation);
+                        KannaLogger.LogToFile("Done, Writing Shader File..", LogLocation);
 
                         shaderPath = $"{shaderPath.Replace(Path.GetExtension(shaderPath), "")}_Protected.shader";
 
                         File.WriteAllText(shaderPath, _sb.ToString());
 
-                        KannaLogger.LogToFile($"Done, Refreshing AssetDatabase..", LogLocation);
+                        KannaLogger.LogToFile("Done, Refreshing AssetDatabase..", LogLocation);
 
                         AssetDatabase.Refresh();
 
@@ -450,7 +457,7 @@ namespace Kanna.Protecc
 
                     AssetDatabase.Refresh();
 
-                    KannaLogger.LogToFile($"Done Handling Injection, Handling Shader Includes..", LogLocation);
+                    KannaLogger.LogToFile("Done Handling Injection, Handling Shader Includes..", LogLocation);
 
                     var IncludeFileDirs = new List<string>();
 
@@ -493,7 +500,7 @@ namespace Kanna.Protecc
 
                         FileText = FileText.Replace(newName.Replace("_Protected", ""), newName);
 
-                        KannaLogger.LogToFile($"Done, Now Handling Recursive Includes..", LogLocation);
+                        KannaLogger.LogToFile("Done, Now Handling Recursive Includes..", LogLocation);
 
                         foreach (var towrite in IncludeFileDirs) // write all new include names
                         {
@@ -516,7 +523,7 @@ namespace Kanna.Protecc
 
         public void WriteBitKeysToExpressions(VRCExpressionParameters ExtraParams = null, bool WriteOnlyToExtra = false, bool DoLog = false)
         {
-            KannaLogger.LogToFile($"WriteBitKeysToExpressions Started", KannaProteccRoot.LogLocation);
+            KannaLogger.LogToFile("WriteBitKeysToExpressions Started", KannaProteccRoot.LogLocation);
 
             #if VRC_SDK_VRCSDK3
             var descriptor = GetComponent<VRCAvatarDescriptor>();
@@ -589,7 +596,7 @@ namespace Kanna.Protecc
                 ParamFile paramFile = null;
                 if (File.Exists(filePath))
                 {
-                    KannaLogger.LogToFile($"Avatar param file already exists, loading and editing.", KannaProteccRoot.LogLocation);
+                    KannaLogger.LogToFile("Avatar param file already exists, loading and editing.", KannaProteccRoot.LogLocation);
                     var json = File.ReadAllText(filePath);
                     paramFile = JsonUtility.FromJson<ParamFile>(json);
 

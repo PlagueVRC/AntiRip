@@ -77,7 +77,7 @@ namespace Kanna.Protecc
 
         private readonly Dictionary<string, string> _parameterDic = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _objectNameDic = new Dictionary<string, string>();
-        private readonly Dictionary<string, string> _filePathDic = new Dictionary<string, string>();
+        private readonly Dictionary<Object, string> _filePathDic = new Dictionary<Object, string>();
         private readonly List<AnimationClip> _animClipList = new List<AnimationClip>();
         private readonly HashSet<string> _excludeNameSet = new HashSet<string>();
         private List<string> IgnoredParams = new List<string>();
@@ -693,7 +693,7 @@ namespace Kanna.Protecc
                 var newLayerName = Utilities.GenerateRandomUniqueName(false);
                 mapping.RenamedValues.Add(($"Animator Layer", layer.name, newLayerName));
                 layer.name = newLayerName;
-                layer.stateMachine = StateMachineObfuscator(layer.name, layer.stateMachine, root);
+                layer.stateMachine = StateMachineObfuscator(layer.name, Object.Instantiate(layer.stateMachine), root);
             }
 
             animator.layers = layers.ToArray();
@@ -912,7 +912,7 @@ namespace Kanna.Protecc
                         }
 
                         var animationClip = CopyAssetFile("anim", clip, root);
-                        animationClip.name = GetAssetName(animationClip);
+                        animationClip.name = Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(animationClip));
                         _animClipList.Add(animationClip);
                         EditorUtility.SetDirty(animationClip);
                         return animationClip;
@@ -920,7 +920,7 @@ namespace Kanna.Protecc
                 case BlendTree tree:
                     {
                         var blendTree = CopyAssetFile("asset", tree, root);
-                        blendTree.name = GetAssetName(blendTree);
+                        blendTree.name = Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(blendTree));
 
                         var children = new List<ChildMotion>();
                         children.AddRange(blendTree.children);
@@ -972,29 +972,44 @@ namespace Kanna.Protecc
 
         private T CopyAssetFile<T>(string ext, T original, KannaProteccRoot root) where T : Object
         {
-            var originalPath = AssetDatabase.GetAssetPath(original);
-            if (string.IsNullOrEmpty(originalPath) || AssetDatabase.IsSubAsset(original) ||
-                !AssetDatabase.IsMainAsset(original))
+            if (_filePathDic.ContainsKey(original))
             {
-                KannaLogger.LogToFile($"Ignoring Asset: {original.name}: No Path, Is Sub Asset Or Is Main Asset!", KannaProteccRoot.LogLocation);
+                return AssetDatabase.LoadAssetAtPath<T>(_filePathDic[original]);
+            }
+            
+            var originalPath = AssetDatabase.GetAssetPath(original);
+            if (string.IsNullOrEmpty(originalPath))
+            {
+                KannaLogger.LogToFile($"Ignoring Asset: {original.name}: No Path!", KannaProteccRoot.LogLocation);
                 return original;
             }
+
+            var newobj = Object.Instantiate(original);
 
             KannaLogger.LogToFile($"Copying Asset: {originalPath}", KannaProteccRoot.LogLocation);
 
             string newPath;
-            if (!_filePathDic.ContainsKey(originalPath)) // Gen File
-            {
+            newPath = $"{root.path}/{GUID.Generate()}.{ext}";
+            
+            while (!string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(newPath)))
                 newPath = $"{root.path}/{GUID.Generate()}.{ext}";
-                while (!string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(newPath)))
-                    newPath = $"{root.path}/{GUID.Generate()}{ext}";
 
-                mapping.RenamedValues.Add(($"Asset: {ext}", Path.GetFileNameWithoutExtension(originalPath), Path.GetFileNameWithoutExtension(newPath)));
+            mapping.RenamedValues.Add(($"Asset: {ext}", Path.GetFileNameWithoutExtension(originalPath), Path.GetFileNameWithoutExtension(newPath)));
 
-                AssetDatabase.CopyAsset(originalPath, newPath);
-                _filePathDic[originalPath] = newPath;
-            }
-            else newPath = _filePathDic[originalPath]; // Use Existing
+            AssetDatabase.CreateAsset(newobj, newPath);
+            _filePathDic[newobj] = newPath;
+            // if (!_filePathDic.ContainsKey(originalPath)) // Gen File
+            // {
+            //     newPath = $"{root.path}/{GUID.Generate()}.{ext}";
+            //     while (!string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(newPath)))
+            //         newPath = $"{root.path}/{GUID.Generate()}{ext}";
+            //
+            //     mapping.RenamedValues.Add(($"Asset: {ext}", Path.GetFileNameWithoutExtension(originalPath), Path.GetFileNameWithoutExtension(newPath)));
+            //
+            //     AssetDatabase.CopyAsset(originalPath, newPath);
+            //     _filePathDic[originalPath] = newPath;
+            // }
+            // else newPath = _filePathDic[originalPath]; // Use Existing
 
             var asset = AssetDatabase.LoadAssetAtPath<T>(newPath);
 
@@ -1006,23 +1021,6 @@ namespace Kanna.Protecc
             EditorUtility.SetDirty(asset);
 
             return asset;
-        }
-
-        private string GetAssetName<T>(T asset) where T : Object
-        {
-            string fileName = null;
-            if (asset != null && !AssetDatabase.IsSubAsset(asset) && AssetDatabase.IsMainAsset(asset))
-            {
-                var assetPath = AssetDatabase.GetAssetPath(asset);
-                if (!string.IsNullOrEmpty(assetPath))
-                    fileName = Path.GetFileName(assetPath);
-
-                if (string.IsNullOrEmpty(fileName)) return fileName;
-            }
-
-            fileName = GUID.Generate().ToString();
-
-            return fileName;
         }
 
         public void ClearObfuscatedFiles(KannaProteccRoot root)
