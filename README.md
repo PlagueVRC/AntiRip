@@ -234,3 +234,7 @@ This is all the prefab is:
 ![image](https://github.com/user-attachments/assets/d5c31247-f4ac-4dc9-829b-8a15a6a7e52a)
 
 It will only show if the avatar is has shaders un-shown, otherwise invisible.
+
+As an extra, here's them admitting to try to rip that world, since they are now trying to lie they never tried to rip anything:
+![image](https://github.com/user-attachments/assets/bb597192-c245-4315-a561-93d2267982fc)
+
