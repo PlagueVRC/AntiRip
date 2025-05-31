@@ -126,32 +126,6 @@ namespace Kanna.Protecc
         {
             new KannaDynamicShaderData
             {
-                ShaderName_StartsWith = new [] {  },
-
-                UV = new KannaDynamicShaderData.KannaReplaceText
-                {
-                    TextToFind = new [] { "float2 uv3 : TEXCOORD3;", "float2 uv3: TEXCOORD3;" },
-                    TextToReplaceWith = "{OrigText}\r\nfloat3 uv6: TEXCOORD6;\r\nfloat3 uv7: TEXCOORD7;",
-                    ApplyToIncludes = true,
-                },
-
-                Vert = new KannaDynamicShaderData.KannaReplaceText
-                {
-                    TextToFind = new [] { "v2f vert(", "v2f vert (", "V2FShadow vertShadowCaster(" },
-                    TextToReplaceWith = "#include \"KannaModelDecode.cginc\"\r\n{OrigText}",
-                    ApplyToIncludes = true,
-                },
-
-                VertexSetup = new KannaDynamicShaderData.KannaReplaceText
-                {
-                    TextToFind = new [] { "UNITY_SETUP_INSTANCE_ID(v);" },
-                    TextToReplaceWith = "v.vertex = modelDecode(v.vertex, v.normal, v.uv6, v.uv7);\r\n{OrigText}",
-                    ApplyToIncludes = true,
-                }
-            },
-
-            new KannaDynamicShaderData
-            {
                 ShaderName_StartsWith = new [] { ".poiyomi/Poiyomi 7.3", ".poiyomi/Old Versions/7.3", ".poiyomi/Poiyomi 8.0", ".poiyomi/Old Versions/8.0", ".poiyomi/Poiyomi 8.1", ".poiyomi/Old Versions/8.1", ".poiyomi/Poiyomi 8.2", ".poiyomi/Old Versions/8.2", ".poiyomi/Poiyomi 9.0", ".poiyomi/Old Versions/9.0", ".poiyomi/Poiyomi 9.1", ".poiyomi/Old Versions/9.1", ".poiyomi/Poiyomi 9.2", ".poiyomi/Old Versions/9.2" },
                 FileContentsRegexMatch = new [] { @"shader_master_label.*Poiyomi 7\.3", @"shader_master_label.*Poiyomi 8\.0", @"shader_master_label.*Poiyomi 8\.1", @"shader_master_label.*Poiyomi 8\.2", @"shader_master_label.*Poiyomi 9\.0", @"shader_master_label.*Poiyomi 9\.1", @"shader_master_label.*Poiyomi 9\.2" },
 
