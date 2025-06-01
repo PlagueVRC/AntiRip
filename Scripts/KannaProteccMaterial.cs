@@ -126,8 +126,8 @@ namespace Kanna.Protecc
         {
             new KannaDynamicShaderData
             {
-                ShaderName_StartsWith = new [] { ".poiyomi/Poiyomi 7.3", ".poiyomi/Old Versions/7.3", ".poiyomi/Poiyomi 8.0", ".poiyomi/Old Versions/8.0", ".poiyomi/Poiyomi 8.1", ".poiyomi/Old Versions/8.1", ".poiyomi/Poiyomi 8.2", ".poiyomi/Old Versions/8.2", ".poiyomi/Poiyomi 9.0", ".poiyomi/Old Versions/9.0", ".poiyomi/Poiyomi 9.1", ".poiyomi/Old Versions/9.1", ".poiyomi/Poiyomi 9.2", ".poiyomi/Old Versions/9.2" },
-                FileContentsRegexMatch = new [] { @"shader_master_label.*Poiyomi 7\.3", @"shader_master_label.*Poiyomi 8\.0", @"shader_master_label.*Poiyomi 8\.1", @"shader_master_label.*Poiyomi 8\.2", @"shader_master_label.*Poiyomi 9\.0", @"shader_master_label.*Poiyomi 9\.1", @"shader_master_label.*Poiyomi 9\.2" },
+                ShaderName_StartsWith = new [] { ".poiyomi/Poiyomi 7.3", ".poiyomi/Old Versions/7.3", ".poiyomi/Poiyomi 8.0", ".poiyomi/Old Versions/8.0", ".poiyomi/Poiyomi 8.1", ".poiyomi/Old Versions/8.1", ".poiyomi/Poiyomi 8.2", ".poiyomi/Old Versions/8.2", ".poiyomi/Poiyomi 9.0", ".poiyomi/Old Versions/9.0", ".poiyomi/Poiyomi 9.1", ".poiyomi/Old Versions/9.1", ".poiyomi/Poiyomi 9.2", ".poiyomi/Old Versions/9.2", ".poiyomi/Poiyomi 9.3", ".poiyomi/Old Versions/9.3" },
+                FileContentsRegexMatch = new [] { @"shader_master_label.*Poiyomi 7\.3", @"shader_master_label.*Poiyomi 8\.0", @"shader_master_label.*Poiyomi 8\.1", @"shader_master_label.*Poiyomi 8\.2", @"shader_master_label.*Poiyomi 9\.0", @"shader_master_label.*Poiyomi 9\.1", @"shader_master_label.*Poiyomi 9\.2", @"shader_master_label.*Poiyomi 9\.3" },
 
                 UV = new KannaDynamicShaderData.KannaReplaceText
                 {
